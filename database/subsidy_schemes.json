@@ -1,0 +1,72 @@
+[
+  {
+    "name": "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)",
+    "description": "Income support of ₹6,000/year in 3 installments to landholding farmer families.",
+    "applicableCrops": "All",
+    "applicableDistricts": "All",
+    "subsidyAmount": "₹6,000/year"
+  },
+  {
+    "name": "Sub-Mission on Agricultural Mechanization (SMAM)",
+    "description": "Subsidy on purchase of tractors, power tillers, and farm machinery/implements.",
+    "applicableCrops": "All",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Varies by machinery type"
+  },
+  {
+    "name": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)",
+    "description": "Subsidy for drip and sprinkler irrigation systems; TN adds a state top-up for small/marginal farmers.",
+    "applicableCrops": "Horticulture, Sugarcane, Cotton, Banana",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Varies by category"
+  },
+  {
+    "name": "National Food Security Mission (NFSM)",
+    "description": "Input subsidies (seed, INM/IPM kits) for rice, wheat, pulses, coarse cereals, oilseeds, commercial crops.",
+    "applicableCrops": "Paddy, Maize, Pulses, Oilseeds, Cotton",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Input subsidies"
+  },
+  {
+    "name": "Soil Health Card Scheme",
+    "description": "Free soil testing and nutrient recommendation card every 2 years.",
+    "applicableCrops": "All",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Free"
+  },
+  {
+    "name": "Rashtriya Krishi Vikas Yojana (RKVY)",
+    "description": "Flexible funding for state-specific agri infrastructure, value chain and innovation projects.",
+    "applicableCrops": "All",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Flexible funding"
+  },
+  {
+    "name": "Paramparagat Krishi Vikas Yojana (PKVY) – Organic Farming",
+    "description": "Cluster-based organic farming support including certification and inputs.",
+    "applicableCrops": "Vegetables, Millets, Pulses",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Organic farming inputs and certification"
+  },
+  {
+    "name": "Kisan Credit Card (KCC)",
+    "description": "Short-term credit for crop production and post-harvest expenses at subsidized interest.",
+    "applicableCrops": "All",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Subsidized credit"
+  },
+  {
+    "name": "National Bamboo Mission",
+    "description": "Support for bamboo plantation and processing infrastructure.",
+    "applicableCrops": "Bamboo",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Plantation support"
+  },
+  {
+    "name": "Tamil Nadu Mission on Sustainable Dryland Agriculture (TNMSDA)",
+    "description": "State mission promoting resilient dryland/rainfed cropping systems.",
+    "applicableCrops": "Millets, Pulses, Oilseeds",
+    "applicableDistricts": "All",
+    "subsidyAmount": "Resilient farming support"
+  }
+]
