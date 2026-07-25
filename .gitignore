@@ -141,3 +141,12 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Java / Maven / IDE
+target/
+*.class
+.mvn/wrapper/maven-wrapper.jar
+.idea/
+*.iml
+HELP.md
+
