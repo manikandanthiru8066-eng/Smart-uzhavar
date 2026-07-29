@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif",
+    "description": "Yield-based crop insurance scheme covering crop loss due to non-preventable natural risks during Kharif season. Premium rate is 2% of sum insured.",
+    "schemeType": "YIELD_BASED",
+    "applicableCrops": "Paddy, Maize, Millets, Pulses",
+    "premiumRatePercentage": 2.00,
+    "sumInsuredPerAcre": 35000.00
+  },
+  {
+    "name": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Rabi",
+    "description": "Yield-based crop insurance scheme covering crop loss due to non-preventable natural risks during Rabi season. Premium rate is 1.5% of sum insured.",
+    "schemeType": "YIELD_BASED",
+    "applicableCrops": "Wheat, Barley, Mustard, Pulses",
+    "premiumRatePercentage": 1.50,
+    "sumInsuredPerAcre": 30000.00
+  },
+  {
+    "name": "Restructured Weather Based Crop Insurance Scheme (RWBCIS) - Rainfall Index",
+    "description": "Weather-index based insurance addressing crop losses due to adverse rainfall (deficit/excess) and temperature anomalies. Premium rate is 5.0% of sum insured.",
+    "schemeType": "WEATHER_BASED",
+    "applicableCrops": "Cotton, Groundnut, Sugarcane",
+    "premiumRatePercentage": 5.00,
+    "sumInsuredPerAcre": 40000.00
+  },
+  {
+    "name": "Unified Package Insurance Scheme (UPIS) - Revenue Guard",
+    "description": "Protects farmers against post-harvest loss and market price fluctuations. Premium rate is 4.5% of sum insured.",
+    "schemeType": "REVENUE_BASED",
+    "applicableCrops": "Banana, Mango, Turmeric, Potato, Ginger",
+    "premiumRatePercentage": 4.50,
+    "sumInsuredPerAcre": 55000.00
+  },
+  {
+    "name": "Coconut Palm Insurance Scheme (CPIS)",
+    "description": "Insures individual coconut palms against natural calamities, pest and disease attack, and fire damage. Offered jointly by the Coconut Development Board and empanelled insurers. Premium rate is 3.5% of sum insured.",
+    "schemeType": "YIELD_BASED",
+    "applicableCrops": "Coconut",
+    "premiumRatePercentage": 3.50,
+    "sumInsuredPerAcre": 50000.00
+  }
+]
