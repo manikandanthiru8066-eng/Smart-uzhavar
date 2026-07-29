@@ -49,3 +49,38 @@ CREATE TABLE IF NOT EXISTS subsidy_applications (
     remarks TEXT,
     CONSTRAINT unique_farmer_scheme UNIQUE (farmer_id, scheme_id)
 );
+
+-- 6. Insurance Schemes table
+CREATE TABLE IF NOT EXISTS insurance_schemes (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
+    scheme_type VARCHAR(50) NOT NULL, -- WEATHER_BASED, YIELD_BASED, REVENUE_BASED
+    applicable_crops VARCHAR(255) NOT NULL, -- Comma-separated list of crops, or "All"
+    premium_rate_percentage DECIMAL(5, 2) NOT NULL,
+    sum_insured_per_acre DECIMAL(12, 2) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Insurance Estimates table
+CREATE TABLE IF NOT EXISTS insurance_estimates (
+    id SERIAL PRIMARY KEY,
+    farmer_id INTEGER NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
+    scheme_id INTEGER NOT NULL REFERENCES insurance_schemes(id) ON DELETE CASCADE,
+    land_size_acres DECIMAL(10, 2) NOT NULL,
+    crop VARCHAR(100) NOT NULL,
+    premium_estimate DECIMAL(12, 2) NOT NULL,
+    sum_insured DECIMAL(12, 2) NOT NULL,
+    calculated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Notifications table
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    farmer_id INTEGER NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
