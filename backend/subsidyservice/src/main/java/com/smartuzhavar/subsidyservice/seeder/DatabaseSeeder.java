@@ -60,10 +60,14 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedSubsidySchemes() {
-        if (subsidySchemeRepository.count() > 0) {
-            log.info("Subsidy schemes table already seeded.");
+        boolean needsReseed = subsidySchemeRepository.count() == 0 ||
+                subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getNameTa() == null);
+        if (!needsReseed) {
+            log.info("Subsidy schemes table already seeded with Tamil translations.");
             return;
         }
+
+        subsidySchemeRepository.deleteAll();
 
         File file = findFile("database/subsidy_schemes.json");
         if (file == null || !file.exists()) {

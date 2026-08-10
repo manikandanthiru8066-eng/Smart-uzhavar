@@ -22,30 +22,52 @@ public class DatabaseSeeder implements CommandLineRunner {
     private static final long EXPECTED_SCHEME_COUNT = 5;
 
     private final InsuranceSchemeRepository insuranceSchemeRepository;
+    private final com.smartuzhavar.insuranceservice.repository.DistrictRepository districtRepository;
     private final ObjectMapper objectMapper;
 
     public DatabaseSeeder(InsuranceSchemeRepository insuranceSchemeRepository,
+                          com.smartuzhavar.insuranceservice.repository.DistrictRepository districtRepository,
                           ObjectMapper objectMapper) {
         this.insuranceSchemeRepository = insuranceSchemeRepository;
+        this.districtRepository = districtRepository;
         this.objectMapper = objectMapper;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        seedDistricts();
         seedInsuranceSchemes();
+    }
+
+    private void seedDistricts() {
+        if (districtRepository.count() == 0) {
+            List<String> defaultDistricts = List.of(
+                "Thanjavur", "Thiruvarur", "Nagapattinam", "Trichy", "Ariyalur", "Karur",
+                "Pudukkottai", "Madurai", "Coimbatore", "Chennai", "Cuddalore", "Dharmapuri",
+                "Dindigul", "Erode", "Kanchipuram", "Kanyakumari", "Krishnagiri", "Namakkal",
+                "Perambalur", "Ramanathapuram", "Salem", "Sivaganga", "Tenkasi", "Theni",
+                "Thoothukudi", "Tirunelveli", "Tiruppur", "Tiruvallur", "Tiruvannamalai",
+                "Vellore", "Viluppuram", "Virudhunagar"
+            );
+            List<com.smartuzhavar.insuranceservice.entity.District> districts = defaultDistricts.stream()
+                .map(com.smartuzhavar.insuranceservice.entity.District::new)
+                .toList();
+            districtRepository.saveAll(districts);
+            log.info("Successfully seeded {} districts in insurance-service.", districts.size());
+        }
     }
 
     private void seedInsuranceSchemes() {
         long currentCount = insuranceSchemeRepository.count();
+        boolean hasMissingTa = insuranceSchemeRepository.findAll().stream().anyMatch(s -> s.getNameTa() == null);
 
-        if (currentCount == EXPECTED_SCHEME_COUNT) {
-            log.info("Insurance schemes table already has {} schemes — skipping seed.", currentCount);
+        if (currentCount == EXPECTED_SCHEME_COUNT && !hasMissingTa) {
+            log.info("Insurance schemes table already has {} schemes with Tamil translations — skipping seed.", currentCount);
             return;
         }
 
-        if (currentCount > 0 && currentCount != EXPECTED_SCHEME_COUNT) {
-            log.warn("Insurance schemes table has {} rows but expected {}. Clearing and re-seeding...",
-                    currentCount, EXPECTED_SCHEME_COUNT);
+        if (currentCount > 0) {
+            log.warn("Insurance schemes table needs re-seeding for Tamil translations. Clearing and re-seeding...");
             insuranceSchemeRepository.deleteAll();
         }
 

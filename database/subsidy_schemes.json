@@ -1,71 +1,101 @@
 [
   {
     "name": "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)",
+    "nameTa": "பிஎம்-கிசான் (பிரதம மந்திரி கிசான் சம்மான் நிதி)",
     "description": "Income support of ₹6,000/year in 3 installments to landholding farmer families.",
+    "descriptionTa": "நில உரிமையாளர் விவசாய குடும்பங்களுக்கு ஆண்டிற்கு ₹6,000 வருமான உதவி 3 தவணைகளில் வழங்கப்படுகிறது.",
     "applicableCrops": "All",
+    "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
     "subsidyAmount": "₹6,000/year"
   },
   {
     "name": "Sub-Mission on Agricultural Mechanization (SMAM)",
+    "nameTa": "வேளாண் இயந்திரமயமாக்கல் துணை மிஷன் (SMAM)",
     "description": "Subsidy on purchase of tractors, power tillers, and farm machinery/implements.",
+    "descriptionTa": "ட்ராக்டர்கள், பவர் டில்லர்கள் மற்றும் விவசாய இயந்திரங்கள் வாங்க மானியம்.",
     "applicableCrops": "All",
+    "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
     "subsidyAmount": "Varies by machinery type"
   },
   {
     "name": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)",
+    "nameTa": "சொட்டு நீர் பாசன திட்டம் (PMKSY-MI)",
     "description": "Subsidy for drip and sprinkler irrigation systems; TN adds a state top-up for small/marginal farmers.",
+    "descriptionTa": "சொட்டு நீர் மற்றும் தெளிப்பு நீர் பாசன அமைப்புகளுக்கு மானியம்; சிறு/குறு விவசாயிகளுக்கு சிறப்பு மானியம்.",
     "applicableCrops": "Horticulture, Sugarcane, Cotton, Banana",
+    "applicableCropsTa": "தோட்டக்கலை, கரும்பு, பருத்தி, வாழை",
     "applicableDistricts": "All",
     "subsidyAmount": "Varies by category"
   },
   {
     "name": "National Food Security Mission (NFSM)",
+    "nameTa": "தேசிய உணவு பாதுகாப்பு திட்டம் (NFSM)",
     "description": "Input subsidies (seed, INM/IPM kits) for rice, wheat, pulses, coarse cereals, oilseeds, commercial crops.",
+    "descriptionTa": "நெல், கோதுமை, பருப்பு வகைகளுக்கான விதை மற்றும் உள்ளீட்டு மானியங்கள்.",
     "applicableCrops": "Paddy, Maize, Pulses, Oilseeds, Cotton",
+    "applicableCropsTa": "நெல், மக்காச்சோளம், பருப்பு வகைகள், எண்ணெய் வித்துக்கள், பருத்தி",
     "applicableDistricts": "All",
     "subsidyAmount": "Input subsidies"
   },
   {
     "name": "Soil Health Card Scheme",
+    "nameTa": "மண் வள அட்டை திட்டம்",
     "description": "Free soil testing and nutrient recommendation card every 2 years.",
+    "descriptionTa": "2 ஆண்டுகளுக்கு ஒருமுறை இலவச மண் பரிசோதனை மற்றும் ஊட்டச்சத்து ஆலோசனை அட்டை.",
     "applicableCrops": "All",
+    "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
     "subsidyAmount": "Free"
   },
   {
     "name": "Rashtriya Krishi Vikas Yojana (RKVY)",
+    "nameTa": "ராஷ்ட்ரிய கிரிஷி விகாஸ் யோஜனா (RKVY)",
     "description": "Flexible funding for state-specific agri infrastructure, value chain and innovation projects.",
+    "descriptionTa": "வேளாண் உள்கட்டமைப்பு மற்றும் மதிப்பு கூட்டல் திட்டங்களுக்கான நிதி உதவி.",
     "applicableCrops": "All",
+    "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
     "subsidyAmount": "Flexible funding"
   },
   {
     "name": "Paramparagat Krishi Vikas Yojana (PKVY) – Organic Farming",
+    "nameTa": "பரம்பராகத் கிரிஷி விகாஸ் யோஜனா (PKVY) - இயற்கை விவசாயம்",
     "description": "Cluster-based organic farming support including certification and inputs.",
+    "descriptionTa": "சான்றளிப்பு மற்றும் உள்ளீடுகள் உட்பட குழு அடிப்படையிலான இயற்கை விவசாய ஆதரவு.",
     "applicableCrops": "Vegetables, Millets, Pulses",
+    "applicableCropsTa": "காய்கறிகள், சிறுதானியங்கள், பருப்பு வகைகள்",
     "applicableDistricts": "All",
     "subsidyAmount": "Organic farming inputs and certification"
   },
   {
     "name": "Kisan Credit Card (KCC)",
+    "nameTa": "கிசான் கிரெடிட் கார்டு (KCC)",
     "description": "Short-term credit for crop production and post-harvest expenses at subsidized interest.",
+    "descriptionTa": "மானிய வட்டி விகிதத்தில் பயிர் உற்பத்திக்கான குறுகிய கால கடன் வசதி.",
     "applicableCrops": "All",
+    "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
     "subsidyAmount": "Subsidized credit"
   },
   {
     "name": "National Bamboo Mission",
+    "nameTa": "தேசிய மூங்கில் மிஷன்",
     "description": "Support for bamboo plantation and processing infrastructure.",
+    "descriptionTa": "மூங்கில் தோட்டம் மற்றும் பதப்படுத்துதல் உள்கட்டமைப்புக்கான ஆதரவு.",
     "applicableCrops": "Bamboo",
+    "applicableCropsTa": "மூங்கில்",
     "applicableDistricts": "All",
     "subsidyAmount": "Plantation support"
   },
   {
     "name": "Tamil Nadu Mission on Sustainable Dryland Agriculture (TNMSDA)",
+    "nameTa": "தமிழ்நாடு நிலையான மானாவாரி விவசாய மிஷன் (TNMSDA)",
     "description": "State mission promoting resilient dryland/rainfed cropping systems.",
+    "descriptionTa": "மானாவாரி விவசாய முறைகளை ஊக்குவிக்கும் மாநில மிஷன்.",
     "applicableCrops": "Millets, Pulses, Oilseeds",
+    "applicableCropsTa": "சிறுதானியங்கள், பருப்பு வகைகள், எண்ணெய் வித்துக்கள்",
     "applicableDistricts": "All",
     "subsidyAmount": "Resilient farming support"
   }

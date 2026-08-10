@@ -81,8 +81,11 @@ public class SubsidyController {
                 recommendations.add(new RecommendedSubsidyResponse(
                         scheme.getId(),
                         scheme.getName(),
+                        scheme.getNameTa(),
                         scheme.getDescription(),
+                        scheme.getDescriptionTa(),
                         scheme.getApplicableCrops(),
+                        scheme.getApplicableCropsTa(),
                         scheme.getApplicableDistricts(),
                         scheme.getSubsidyAmount(),
                         scheme.getCreatedAt(),

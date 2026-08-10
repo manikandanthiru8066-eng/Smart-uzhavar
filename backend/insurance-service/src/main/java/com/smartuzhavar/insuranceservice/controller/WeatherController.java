@@ -17,6 +17,7 @@ public class WeatherController {
         response.put("humidityPercentage", 65.0);
         response.put("rainfallMm", 15.2);
         response.put("condition", "Scattered Showers");
+        response.put("conditionTa", "சிதறிய மழை");
         response.put("windSpeedKmph", 12.8);
         return ResponseEntity.ok(response);
     }
