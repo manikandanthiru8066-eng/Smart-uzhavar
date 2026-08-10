@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Uzhavar — Personalized Farmer Decision Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* =========================================================
+TOKENS
+========================================================= */
+:root{
+--emerald:#0F9D68;
+--emerald-deep:#0B7A51;
+--emerald-bright:#12B981;
+--light-green:#D8F3E4;
+--light-green-soft:#EFFAF4;
+--bg:#FFFFFF;
+--surface:#FBFDFC;
+--surface-2:#F3F7F5;
+--border:#E4EAE7;
+--ink:#0E1512;
+--ink-soft:#5C6B63;
+--ink-faint:#94A39B;
+--shadow-sm:0 1px 2px rgba(15,23,18,.04), 0 1px 1px rgba(15,23,18,.03);
+--shadow-md:0 8px 24px rgba(15,23,18,.07), 0 2px 6px rgba(15,23,18,.04);
+--shadow-lg:0 20px 48px rgba(15,23,18,.12), 0 6px 16px rgba(15,23,18,.06);
+--radius-lg:20px;
+--radius-md:16px;
+--radius-sm:11px;
+--sp1:8px; --sp2:16px; --sp3:24px; --sp4:32px; --sp5:48px;
+--font-display:'Plus Jakarta Sans', sans-serif;
+--font-body:'Inter', sans-serif;
+--font-mono:'JetBrains Mono', monospace;
+--amber:#B8862B;
+--amber-soft:#FBF1DD;
+--sky:#2E7A94;
+--sky-soft:#E4F1F5;
+--rust:#B24A2E;
+--rust-soft:#F8E5DE;
+}
+body.dark{
+--bg:#0B120E;
+--surface:#101B15;
+--surface-2:#16221B;
+--border:#22322A;
+--ink:#EAF3EE;
+--ink-soft:#9FB3A8;
+--ink-faint:#5E7368;
+--light-green:#173A29;
+--light-green-soft:#122A1F;
+--emerald-bright:#2FD98A;
+--shadow-sm:0 1px 2px rgba(0,0,0,.3);
+--shadow-md:0 8px 24px rgba(0,0,0,.35);
+--shadow-lg:0 20px 48px rgba(0,0,0,.45);
+--amber-soft:#2B2413;
+--sky-soft:#12262C;
+--rust-soft:#2B1911;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--ink);transition:background .25s ease, color .25s ease;}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;}
+button{font-family:inherit;cursor:pointer;}
+input,select{font-family:inherit;}
+::selection{background:var(--light-green);}
+a{color:inherit;}
+[data-lucide]{width:18px;height:18px;}
+
+.hidden{display:none !important;}
+.fade-in{animation:fadeIn .35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+
+/* =========================================================
+SHARED COMPONENTS
+========================================================= */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;border:none;transition:.18s ease;}
+.btn-primary{background:var(--emerald);color:#fff;box-shadow:0 1px 2px rgba(15,23,18,.06);}
+.btn-primary:hover{background:var(--emerald-deep);transform:translateY(-1px);box-shadow:var(--shadow-md);}
+.btn-ghost{background:var(--surface-2);color:var(--ink);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--light-green-soft);border-color:var(--emerald);}
+.btn-lg{padding:15px 28px;font-size:15px;border-radius:14px;}
+.btn-sm{padding:8px 14px;font-size:12.5px;border-radius:9px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);transition:.2s ease;}
+.card.hoverable:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:color-mix(in srgb, var(--emerald) 25%, var(--border));}
+
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:20px;font-family:var(--font-body);}
+.badge-green{background:var(--light-green-soft);color:var(--emerald-deep);}
+.badge-amber{background:var(--amber-soft);color:var(--amber);}
+.badge-sky{background:var(--sky-soft);color:var(--sky);}
+.badge-rust{background:var(--rust-soft);color:var(--rust);}
+.badge-neutral{background:var(--surface-2);color:var(--ink-soft);border:1px solid var(--border);}
+
+.ribbon{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--emerald),var(--emerald-bright));width:56px;}
+
+.field label{font-size:12.5px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px;}
+.field input,.field select{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--ink);font-size:13.5px;outline:none;transition:.15s;}
+.field input:focus,.field select:focus{border-color:var(--emerald);box-shadow:0 0 0 3px color-mix(in srgb, var(--emerald) 15%, transparent);}
+.field{margin-bottom:16px;}
+.field-row{display:flex;gap:14px;}
+.field-row .field{flex:1;}
+
+.skeleton{background:linear-gradient(90deg,var(--surface-2) 25%,var(--border) 50%,var(--surface-2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:10px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+.empty-state{text-align:center;padding:48px 20px;color:var(--ink-soft);}
+.empty-state [data-lucide]{width:34px;height:34px;color:var(--ink-faint);margin-bottom:12px;}
+
+/* =========================================================
+LANDING PAGE
+========================================================= */
+#landingPage{min-height:100vh;}
+.land-nav{display:flex;align-items:center;justify-content:space-between;padding:20px 48px;position:sticky;top:0;background:color-mix(in srgb, var(--bg) 85%, transparent);backdrop-filter:blur(10px);z-index:50;border-bottom:1px solid var(--border);}
+.brandmark{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:700;font-size:18px;}
+.brandmark .dot{width:9px;height:9px;border-radius:50%;background:var(--emerald-bright);box-shadow:0 0 0 4px var(--light-green-soft);}
+.land-nav-actions{display:flex;gap:10px;align-items:center;}
+
+.hero{display:flex;align-items:center;gap:56px;padding:72px 48px 40px 48px;max-width:1240px;margin:0 auto;}
+.hero-copy{flex:1;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--emerald-deep);background:var(--light-green-soft);padding:6px 12px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:44px;line-height:1.12;letter-spacing:-.02em;margin-bottom:18px;}
+.hero h1 .accent{color:var(--emerald);}
+.hero p.sub{font-size:16px;color:var(--ink-soft);line-height:1.6;max-width:480px;margin-bottom:28px;}
+.hero-actions{display:flex;gap:12px;}
+
+.hero-illustration{flex:1;position:relative;}
+.hero-illustration .plot{background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow-lg);padding:22px;position:relative;overflow:hidden;}
+.mini-chart{display:flex;align-items:flex-end;gap:6px;height:64px;margin-top:14px;}
+.mini-chart .bar{flex:1;background:linear-gradient(180deg,var(--emerald-bright),var(--emerald));border-radius:6px 6px 2px 2px;animation:growBar .8s ease both;}
+@keyframes growBar{from{transform:scaleY(0);transform-origin:bottom;}to{transform:scaleY(1);}}
+.float-badge{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px 14px;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;animation:floaty 4s ease-in-out infinite;}
+@keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+.feature-strip{max-width:1240px;margin:20px auto 80px auto;padding:0 48px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+.feat-card{padding:24px;}
+.feat-card .ic-wrap{width:42px;height:42px;border-radius:12px;background:var(--light-green-soft);display:flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--emerald-deep);}
+.feat-card h4{font-size:15.5px;margin-bottom:6px;}
+.feat-card p{font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin:0;}
+
+.land-footer{border-top:1px solid var(--border);padding:36px 48px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;color:var(--ink-soft);font-size:13px;max-width:1240px;margin:0 auto;}
+.land-footer .cols{display:flex;gap:56px;flex-wrap:wrap;}
+.land-footer .col h5{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:10px;}
+.land-footer .col a{display:block;margin-bottom:7px;color:var(--ink-soft);text-decoration:none;}
+.land-footer .col a:hover{color:var(--emerald-deep);}
+
+/* =========================================================
+AUTH
+========================================================= */
+#authPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--surface-2);padding:20px;}
+.auth-card{width:400px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:40px 36px;}
+.auth-card .brandmark{margin-bottom:6px;}
+.auth-sub{color:var(--ink-soft);font-size:13px;margin-bottom:28px;}
+.otp-boxes{display:flex;gap:8px;margin-bottom:20px;}
+.otp-boxes input{width:44px;height:52px;text-align:center;font-family:var(--font-mono);font-size:19px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--ink);}
+.otp-boxes input:focus{border-color:var(--emerald);outline:none;box-shadow:0 0 0 3px color-mix(in srgb, var(--emerald) 15%, transparent);}
+.phone-field{display:flex;border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:20px;}
+.phone-field .cc{padding:11px 12px;background:var(--surface-2);border-right:1px solid var(--border);font-family:var(--font-mono);font-size:13.5px;color:var(--ink-soft);}
+.phone-field input{border:none;padding:11px 13px;flex:1;font-family:var(--font-mono);font-size:14px;background:var(--surface);color:var(--ink);outline:none;}
+.auth-foot-link{text-align:center;font-size:12.5px;color:var(--ink-soft);margin-top:16px;}
+.auth-foot-link .link{color:var(--emerald-deep);font-weight:600;cursor:pointer;}
+.auth-step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:22px;}
+.auth-step-dots span{width:20px;height:4px;border-radius:4px;background:var(--border);}
+.auth-step-dots span.active{background:var(--emerald);}
+
+/* =========================================================
+APP SHELL
+========================================================= */
+#appShell{display:flex;min-height:100vh;}
+.sidebar{width:248px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar .brandmark{padding:0 8px;margin-bottom:26px;}
+.side-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;font-size:13.5px;font-weight:500;color:var(--ink-soft);cursor:pointer;margin-bottom:2px;transition:.15s;}
+.side-link:hover{background:var(--surface-2);color:var(--ink);}
+.side-link.active{background:var(--light-green-soft);color:var(--emerald-deep);font-weight:700;}
+.side-link .badge-dot{margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--rust);}
+.side-divider{height:1px;background:var(--border);margin:14px 4px;}
+.side-foot{margin-top:auto;font-size:11.5px;color:var(--ink-faint);padding:10px 8px;}
+
+.main-area{flex:1;min-width:0;display:flex;flex-direction:column;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10;}
+.topbar-left h3{font-size:16.5px;}
+.topbar-left p{margin:2px 0 0 0;font-size:12px;color:var(--ink-soft);}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.icon-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);position:relative;transition:.15s;}
+.icon-btn:hover{border-color:var(--emerald);color:var(--emerald-deep);}
+.icon-btn .dot-alert{position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--rust);border-radius:50%;}
+.avatar-chip{display:flex;align-items:center;gap:9px;padding:5px 12px 5px 5px;border-radius:30px;border:1px solid var(--border);background:var(--surface);cursor:pointer;}
+.avatar-chip .av{width:30px;height:30px;border-radius:50%;background:var(--light-green);color:var(--emerald-deep);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px;}
+.avatar-chip span{font-size:13px;font-weight:600;}
+
+.page-content{padding:28px 32px 60px 32px;max-width:1180px;width:100%;margin:0 auto;}
+.page-hd{margin-bottom:22px;}
+.page-hd h1{font-size:24px;margin-bottom:5px;}
+.page-hd p{color:var(--ink-soft);font-size:13.5px;margin:0;}
+
+/* Dashboard */
+.welcome-card{background:linear-gradient(135deg,var(--emerald-deep),var(--emerald));border-radius:var(--radius-lg);padding:26px 28px;color:#fff;display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;box-shadow:var(--shadow-md);}
+.welcome-card h2{font-size:19px;margin-bottom:6px;}
+.welcome-card .stats-inline{display:flex;gap:26px;margin-top:14px;}
+.welcome-card .stats-inline .s-item .l{font-size:11px;opacity:.75;}
+.welcome-card .stats-inline .s-item .v{font-family:var(--font-mono);font-size:16px;font-weight:600;}
+.welcome-card .weather-mini{text-align:right;}
+.welcome-card .weather-mini .t{font-family:var(--font-mono);font-size:32px;font-weight:700;}
+
+.profile-cta-banner{background:var(--amber-soft);border:1px solid color-mix(in srgb, var(--amber) 35%, transparent);border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;gap:20px;}
+.profile-cta-banner .txt h3{font-size:15.5px;color:var(--ink);margin-bottom:4px;}
+.profile-cta-banner .txt p{font-size:12.5px;color:var(--ink-soft);margin:0;}
+
+.module-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px;}
+.module-card{padding:20px;position:relative;}
+.module-card .m-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.module-card h4{font-size:14.5px;margin-bottom:6px;}
+.module-card .m-detail{font-size:12px;color:var(--ink-soft);margin-bottom:14px;min-height:32px;}
+.module-card .m-foot{display:flex;justify-content:space-between;align-items:center;}
+.module-card .m-num{font-family:var(--font-mono);font-weight:700;font-size:20px;}
+
+.quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.qs-card{padding:18px 20px;}
+.qs-card .l{font-size:11.5px;color:var(--ink-soft);margin-bottom:8px;}
+.qs-card .v{font-family:var(--font-mono);font-size:22px;font-weight:700;}
+.qs-card .trend{font-size:11px;margin-top:6px;}
+
+/* Filters / list / recommendation cards */
+.filter-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.filter-bar .search{position:relative;flex:1;min-width:200px;}
+.filter-bar .search input{width:100%;padding:10px 14px 10px 38px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--ink);font-size:13px;}
+.filter-bar .search [data-lucide]{position:absolute;left:12px;top:11px;width:15px;height:15px;color:var(--ink-faint);}
+.filter-bar select{padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--ink);font-size:13px;}
+
+.rec-card{padding:22px 24px;margin-bottom:14px;}
+.rec-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:10px;}
+.rec-top h4{font-size:16px;margin-bottom:6px;}
+.rec-meta{display:flex;gap:8px;flex-wrap:wrap;}
+.rec-benefit{text-align:right;flex-shrink:0;}
+.rec-benefit .l{font-size:11px;color:var(--ink-soft);}
+.rec-benefit .v{font-family:var(--font-mono);font-size:19px;font-weight:700;color:var(--emerald-deep);}
+.rec-docs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;}
+.doc-chip{display:flex;align-items:center;gap:5px;font-size:11.5px;background:var(--surface-2);border:1px solid var(--border);padding:5px 10px;border-radius:8px;color:var(--ink-soft);}
+.rec-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px;}
+.office-box{background:var(--surface-2);border-radius:12px;padding:12px 14px;margin-top:12px;font-size:12.5px;color:var(--ink-soft);display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.office-box b{color:var(--ink);}
+.calc-panel{background:var(--sky-soft);border-radius:var(--radius-md);padding:20px;margin-top:8px;}
+.calc-panel .hd{font-size:12.5px;font-weight:700;color:var(--sky);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.calc-result-row{display:flex;gap:24px;margin-top:12px;}
+.calc-result-row .item .l{font-size:11.5px;color:var(--ink-soft);}
+.calc-result-row .item .v{font-family:var(--font-mono);font-size:21px;font-weight:700;color:var(--sky);}
+
+/* Weather */
+.weather-hero{background:linear-gradient(135deg,var(--sky),#1c5164);border-radius:var(--radius-lg);padding:28px;color:#fff;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-md);}
+.weather-hero .loc{font-family:var(--font-display);font-size:18px;display:flex;align-items:center;gap:7px;}
+.weather-hero .temp{font-family:var(--font-mono);font-size:48px;font-weight:700;}
+.weather-hero .meta-row{display:flex;gap:18px;font-size:12.5px;opacity:.9;margin-top:8px;}
+.fc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.fc-card{padding:16px;text-align:center;}
+.fc-card .day{font-size:12px;color:var(--ink-soft);margin-bottom:8px;}
+.fc-card .t{font-family:var(--font-mono);font-weight:700;font-size:14px;}
+.alert-card{border-radius:12px;padding:13px 16px;margin-bottom:10px;display:flex;gap:11px;align-items:flex-start;font-size:12.5px;}
+.alert-card.warn{background:var(--rust-soft);color:#7a3212;}
+.alert-card.info{background:var(--sky-soft);color:#16404e;}
+
+/* Machinery */
+.group-result-card{background:var(--light-green-soft);border-radius:var(--radius-md);padding:20px;margin-top:16px;}
+.group-farmer-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.group-farmer-row:last-child{border-bottom:none;}
+.cost-share-box{background:var(--surface);border-radius:11px;padding:14px 16px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;}
+
+/* Notifications */
+.notif-row{display:flex;gap:14px;padding:16px;border-radius:14px;margin-bottom:10px;align-items:flex-start;}
+.notif-row .n-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.notif-row .n-time{font-size:11px;color:var(--ink-faint);margin-top:3px;}
+
+/* Settings */
+.settings-row{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row .l h4{font-size:14px;margin-bottom:3px;}
+.settings-row .l p{font-size:12px;color:var(--ink-soft);margin:0;}
+.switch-toggle{width:42px;height:24px;border-radius:20px;background:var(--border);position:relative;cursor:pointer;transition:.2s;flex-shrink:0;}
+.switch-toggle.on{background:var(--emerald);}
+.switch-toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s;}
+.switch-toggle.on::after{left:21px;}
+
+@media(max-width:980px){
+.hero{flex-direction:column;padding:48px 24px;}
+.feature-strip{grid-template-columns:repeat(2,1fr);padding:0 24px;}
+.module-grid,.quick-stats,.fc-grid{grid-template-columns:repeat(2,1fr);}
+.sidebar{width:76px;padding:20px 10px;}
+.sidebar .brandmark span:not(.dot),.side-link .lbl,.side-foot{display:none;}
+.side-link{justify-content:center;}
+}
+</style>
+</head>
+<body>
+<!-- =========================================================
+LANDING PAGE
+========================================================= -->
+<div id="landingPage">
+<div class="land-nav">
+<div class="brandmark"><span class="dot"></span>Smart Uzhavar</div>
+<div class="land-nav-actions">
+<button class="btn btn-ghost btn-sm" onclick="toggleLangGlobal()"><i data-lucide="languages"></i><span id="langLabelLanding">தமிழ்</span></button>
+<button class="btn btn-ghost btn-sm" onclick="toggleThemeGlobal()"><i data-lucide="moon" id="themeIconLanding"></i></button>
+<button class="btn btn-primary btn-sm" onclick="goToAuth()">Get Started</button>
+</div>
+</div>
+<div class="hero">
+<div class="hero-copy">
+<div class="hero-eyebrow"><i data-lucide="sparkles" style="width:14px;height:14px;"></i> Personalized Farmer Decision Support</div>
+<h1>Smart farming starts<br>with <span class="accent">smart decisions</span></h1>
+<p class="sub">Helping farmers discover personalized subsidies, crop insurance, weather insights and machinery services — matched to your land, your crop, your block.</p>
+<div class="hero-actions">
+<button class="btn btn-primary btn-lg" onclick="goToAuth()"><i data-lucide="arrow-right"></i>Get Started</button>
+<button class="btn btn-ghost btn-lg" onclick="document.getElementById('featStrip').scrollIntoView({behavior:'smooth'})">Learn More</button>
+</div>
+</div>
+<div class="hero-illustration">
+<div class="plot">
+<div class="badge badge-green"><i data-lucide="trending-up" style="width:13px;height:13px;"></i> Match confidence 94%</div>
+<h4 style="margin-top:14px;font-size:15px;">Subsidy eligibility this season</h4>
+<div class="mini-chart">
+<div class="bar" style="height:40%;animation-delay:.05s;"></div>
+<div class="bar" style="height:65%;animation-delay:.1s;"></div>
+<div class="bar" style="height:52%;animation-delay:.15s;"></div>
+<div class="bar" style="height:88%;animation-delay:.2s;"></div>
+<div class="bar" style="height:70%;animation-delay:.25s;"></div>
+<div class="bar" style="height:95%;animation-delay:.3s;"></div>
+<div class="bar" style="height:60%;animation-delay:.35s;"></div>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:var(--ink-faint);"><span>Jan</span><span>Jul</span></div>
+</div>
+<div class="float-badge" style="top:-14px;right:10px;"><i data-lucide="cloud-rain" style="width:15px;height:15px;color:var(--sky);"></i> Rain in 18 hrs</div>
+<div class="float-badge" style="bottom:6px;left:-18px;animation-delay:1s;"><i data-lucide="tractor" style="width:15px;height:15px;color:var(--emerald-deep);"></i> 3 farmers grouped</div>
+</div>
+</div>
+<div class="feature-strip" id="featStrip">
+<div class="card hoverable feat-card"><div class="ic-wrap"><i data-lucide="hand-coins"></i></div><h4>Smart Subsidy Match</h4><p>See exactly which schemes you qualify for, with the documents and offices you need.</p></div>
+<div class="card hoverable feat-card"><div class="ic-wrap"><i data-lucide="shield-check"></i></div><h4>Crop Insurance Assistant</h4><p>Compare eligible plans and estimate your premium before you apply.</p></div>
+<div class="card hoverable feat-card"><div class="ic-wrap"><i data-lucide="cloud-sun"></i></div><h4>Hyperlocal Weather</h4><p>Forecasts and advisories built around your exact village, not just your district.</p></div>
+<div class="card hoverable feat-card"><div class="ic-wrap"><i data-lucide="users"></i></div><h4>Machinery Pooling</h4><p>Get grouped with nearby farmers so machinery becomes worth dispatching.</p></div>
+</div>
+<div class="land-footer">
+<div>© 2026 Smart Uzhavar. A decision-support tool — not a government portal.</div>
+<div class="cols">
+<div class="col"><h5>Official Resources</h5>
+<a href="#">Agriculture Department</a>
+<a href="#">Crop Insurance Portal (PMFBY)</a>
+<a href="#">India Meteorological Dept.</a>
+</div>
+<div class="col"><h5>Support</h5>
+<a href="#">Help Center</a>
+<a href="#">Contact</a>
+</div>
+</div>
+</div>
+</div>
+<!-- =========================================================
+AUTH: MOBILE + OTP + BASIC REGISTRATION
+========================================================= -->
+<div id="authPage" class="hidden">
+<div class="auth-card">
+<div class="brandmark"><span class="dot"></span>Smart Uzhavar</div>
+<div class="auth-sub" id="authSubText">Sign in with your mobile number — no email or password needed.</div>
+<div class="auth-step-dots">
+<span class="active" id="dotPhone"></span><span id="dotOtp"></span><span id="dotReg"></span>
+</div>
+<div id="stepPhone">
+<div class="field"><label>Mobile Number</label>
+<div class="phone-field"><span class="cc">+91</span><input id="phoneInput" placeholder="98765 43210" maxlength="10"></div>
+</div>
+<button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="sendOtp()">Send OTP</button>
+<div class="auth-foot-link">By continuing you agree to the Terms &amp; Privacy Policy</div>
+</div>
+<div id="stepOtp" class="hidden">
+<div class="field"><label>Enter the 6-digit OTP sent to +91 <span id="phoneShown"></span></label>
+<div class="otp-boxes">
+<input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1">
+</div>
+</div>
+<button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="verifyOtp()">Verify</button>
+<div class="auth-foot-link">Didn't get it? <span class="link" onclick="alert('OTP resent (demo)')">Resend OTP</span></div>
+</div>
+<div id="stepReg" class="hidden">
+<div class="field"><label>Your Name</label><input id="nameInput" placeholder="e.g. Manikandan R"></div>
+<button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="completeRegistration()">Create Account</button>
+</div>
+</div>
+</div>
+<!-- =========================================================
+APP SHELL
+========================================================= -->
+<div id="appShell" class="hidden">
+<div class="sidebar">
+<div class="brandmark"><span class="dot"></span><span>Smart Uzhavar</span></div>
+<div class="side-link active" data-page="dashboard" onclick="goTo('dashboard')"><i data-lucide="layout-dashboard"></i><span class="lbl">Dashboard</span></div>
+<div class="side-link" data-page="subsidy" onclick="goTo('subsidy')"><i data-lucide="hand-coins"></i><span class="lbl">Subsidy</span></div>
+<div class="side-link" data-page="insurance" onclick="goTo('insurance')"><i data-lucide="shield-check"></i><span class="lbl">Crop Insurance</span></div>
+<div class="side-link" data-page="weather" onclick="goTo('weather')"><i data-lucide="cloud-sun"></i><span class="lbl">Weather Advisory</span></div>
+<div class="side-link" data-page="machinery" onclick="goTo('machinery')"><i data-lucide="tractor"></i><span class="lbl">Machinery Rental</span></div>
+<div class="side-divider"></div>
+<div class="side-link" data-page="profile" onclick="goTo('profile')"><i data-lucide="user-round"></i><span class="lbl">Profile</span></div>
+<div class="side-link" data-page="notifications" onclick="goTo('notifications')"><i data-lucide="bell"></i><span class="lbl">Notifications</span><span class="badge-dot"></span></div>
+<div class="side-link" data-page="settings" onclick="goTo('settings')"><i data-lucide="settings"></i><span class="lbl">Settings</span></div>
+<div class="side-foot">Smart Uzhavar v2.0<br>Decision support only — not a government portal.</div>
+</div>
+<div class="main-area">
+<div class="topbar">
+<div class="topbar-left"><h3 id="topbarTitle">Dashboard</h3><p id="topbarSub">Your farm, at a glance</p></div>
+<div class="topbar-actions">
+<button class="icon-btn" onclick="toggleLangGlobal()" title="Language"><i data-lucide="languages"></i></button>
+<button class="icon-btn" onclick="toggleThemeGlobal()" title="Theme"><i data-lucide="moon" id="themeIconApp"></i></button>
+<button class="icon-btn" onclick="goTo('notifications')" title="Notifications"><i data-lucide="bell"></i><span class="dot-alert"></span></button>
+<div class="avatar-chip" onclick="goTo('profile')"><div class="av" id="avatarInitial">M</div><span id="topbarName">Manikandan</span></div>
+</div>
+</div>
+<div class="page-content">
+<!-- ============ DASHBOARD ============ -->
+<div class="page-view fade-in" id="page-dashboard">
+<div class="welcome-card">
+<div>
+<h2 id="welcomeName">Welcome back, Manikandan 👋</h2>
+<div id="welcomeSub" style="font-size:12.5px;opacity:.85;">Complete your profile to see your village, crop and land here.</div>
+<div class="stats-inline needs-profile-dash hidden" id="welcomeStatsRow">
+<div class="s-item"><div class="l">Village</div><div class="v">Kondiyur</div></div>
+<div class="s-item"><div class="l">Crop</div><div class="v">Paddy</div></div>
+<div class="s-item"><div class="l">Land</div><div class="v">2.5 ac</div></div>
+</div>
+</div>
+<div class="weather-mini"><div class="l" style="font-size:11px;opacity:.75;">Today</div><div class="t">31°C</div></div>
+</div>
+<div class="profile-cta-banner" id="profileCtaBanner">
+<div class="txt"><h3>Complete your Farmer Profile to unlock personalized recommendations</h3><p>Takes about a minute — district, block, crop, land size and irrigation type.</p></div>
+<button class="btn btn-primary btn-lg" onclick="goTo('profile')"><i data-lucide="user-plus"></i>Complete Profile</button>
+</div>
+<div class="module-grid">
+<div class="card hoverable module-card" onclick="goTo('subsidy')">
+<div class="m-ic" style="background:var(--light-green-soft);color:var(--emerald-deep);"><i data-lucide="hand-coins"></i></div>
+<h4>Smart Subsidy Recommendation</h4>
+<div class="m-detail">Schemes matched to your crop and district.</div>
+<div class="m-foot"><span class="badge badge-amber profile-required-badge">Profile Required</span><span class="m-num needs-profile-dash hidden">3</span><span class="btn-sm" style="color:var(--emerald-deep);font-weight:700;">View All →</span></div>
+</div>
+<div class="card hoverable module-card" onclick="goTo('insurance')">
+<div class="m-ic" style="background:var(--sky-soft);color:var(--sky);"><i data-lucide="shield-check"></i></div>
+<h4>Smart Crop Insurance</h4>
+<div class="m-detail">Plans and premium estimates for your acreage.</div>
+<div class="m-foot"><span class="badge badge-amber profile-required-badge">Profile Required</span><span class="m-num needs-profile-dash hidden">2</span><span class="btn-sm" style="color:var(--emerald-deep);font-weight:700;">View All →</span></div>
+</div>
+<div class="card hoverable module-card" onclick="goTo('weather')">
+<div class="m-ic" style="background:var(--amber-soft);color:var(--amber);"><i data-lucide="cloud-sun"></i></div>
+<h4>Hyperlocal Weather</h4>
+<div class="m-detail">Forecast and advisory for your exact village.</div>
+<div class="m-foot"><span class="badge badge-amber profile-required-badge">Profile Required</span><span class="m-num needs-profile-dash hidden">31°</span><span class="btn-sm" style="color:var(--emerald-deep);font-weight:700;">View All →</span></div>
+</div>
+<div class="card hoverable module-card" onclick="goTo('machinery')">
+<div class="m-ic" style="background:var(--rust-soft);color:var(--rust);"><i data-lucide="tractor"></i></div>
+<h4>Smart Machinery Rental</h4>
+<div class="m-detail">Get grouped with nearby farmers for faster booking.</div>
+<div class="m-foot"><span class="badge badge-amber profile-required-badge">Profile Required</span><span class="m-num needs-profile-dash hidden">1</span><span class="btn-sm" style="color:var(--emerald-deep);font-weight:700;">View All →</span></div>
+</div>
+</div>
+<div class="quick-stats needs-profile-dash hidden">
+<div class="card qs-card"><div class="l">Eligible Subsidies</div><div class="v">3</div><div class="trend" style="color:var(--emerald-deep);">↑ 1 new this month</div></div>
+<div class="card qs-card"><div class="l">Insurance Deadline</div><div class="v">14 days</div><div class="trend" style="color:var(--rust);">PMFBY window closing</div></div>
+<div class="card qs-card"><div class="l">Rain Probability</div><div class="v">70%</div><div class="trend" style="color:var(--sky);">Tomorrow, 2–5 PM</div></div>
+<div class="card qs-card"><div class="l">Machinery Group</div><div class="v">3/4</div><div class="trend" style="color:var(--amber);">1 more farmer needed</div></div>
+</div>
+</div>
+<!-- ============ PROFILE ============ -->
+<div class="page-view hidden" id="page-profile">
+<div class="page-hd"><h1>Farmer Profile</h1><p>Editable anytime — recommendations update automatically when you save.</p></div>
+<div class="card" style="padding:28px;max-width:680px;">
+<div class="field-row"><div class="field"><label>Name</label><input id="profName" value="Manikandan R"></div><div class="field"><label>Phone Number</label><input value="+91 98765 43210" disabled></div></div>
+<div class="field-row"><div class="field"><label>District</label><input value="Thanjavur"></div><div class="field"><label>Block</label><input value="Thiruvaiyaru"></div></div>
+<div class="field-row"><div class="field"><label>Village</label><input value="Kondiyur"></div><div class="field"><label>Farmer Category</label><select><option>Small</option><option selected>Marginal</option><option>Large</option></select></div></div>
+<div class="field-row"><div class="field"><label>Crop Type</label><input value="Paddy (Rice)"></div><div class="field"><label>Land Area (acres)</label><input value="2.5"></div></div>
+<div class="field-row"><div class="field"><label>Cultivation Season</label><input value="Kharif · Jun–Oct"></div><div class="field"><label>Irrigation Type</label><select><option selected>Canal</option><option>Borewell</option><option>Rain-fed</option></select></div></div>
+<button class="btn btn-primary btn-lg" onclick="completeProfile()"><i data-lucide="check"></i>Save Profile</button>
+</div>
+</div>
+<!-- ============ SUBSIDY ============ -->
+<div class="page-view hidden" id="page-subsidy">
+<div class="page-hd"><h1>Smart Subsidy Recommendation</h1><p>This tool only helps you identify eligible subsidies — it does not process applications.</p></div>
+<div class="no-profile-note-sub card" style="padding:16px 20px;margin-bottom:20px;background:var(--amber-soft);border-color:transparent;display:flex;gap:10px;align-items:center;font-size:13px;color:#6b4f10;">
+<i data-lucide="info" style="width:16px;height:16px;"></i> Profile not set up — showing the complete subsidy catalogue with no eligibility filter applied.
+</div>
+<h3 class="needs-profile-sub hidden" style="font-size:15px;margin-bottom:14px;">Recommended For You</h3>
+<div class="card rec-card">
+<div class="rec-top">
+<div><h4>PM-KISAN Samman Nidhi</h4><div class="rec-meta"><span class="badge badge-green sub-elig hidden">96% match</span><span class="badge badge-neutral">Income Support</span></div></div>
+<div class="rec-benefit"><div class="l">Est. Benefit</div><div class="v">₹6,000/yr</div></div>
+</div>
+<div class="rec-docs">
+<span class="doc-chip"><i data-lucide="file-text" style="width:13px;height:13px;"></i>Aadhaar</span>
+<span class="doc-chip"><i data-lucide="file-text" style="width:13px;height:13px;"></i>Land Record</span>
+<span class="doc-chip"><i data-lucide="file-text" style="width:13px;height:13px;"></i>Bank Passbook</span>
+</div>
+<div class="rec-actions">
+<button class="btn btn-primary btn-sm"><i data-lucide="external-link" style="width:13px;height:13px;"></i>Apply Online</button>
+<button class="btn btn-ghost btn-sm" onclick="toggleOffice('off1')"><i data-lucide="map-pin" style="width:13px;height:13px;"></i>Offline Apply</button>
+<button class="btn btn-ghost btn-sm">View Full Details</button>
+</div>
+<div class="office-box hidden" id="off1"><span><b>Thiruvaiyaru Block Agriculture Office</b> · Big Bazaar St, Thiruvaiyaru · 3.2 km</span><button class="btn btn-ghost btn-sm"><i data-lucide="map" style="width:13px;height:13px;"></i>Maps</button></div>
+</div>
+<div class="card rec-card">
+<div class="rec-top">
+<div><h4>Micro Irrigation Subsidy (Drip/Sprinkler)</h4><div class="rec-meta"><span class="badge badge-green sub-elig hidden">88% match</span><span class="badge badge-neutral">Up to 55% assistance</span></div></div>
+<div class="rec-benefit"><div class="l">Est. Benefit</div><div class="v">₹27,500</div></div>
+</div>
+<div class="rec-docs">
+<span class="doc-chip"><i data-lucide="file-text" style="width:13px;height:13px;"></i>Land Record</span>
+<span class="doc-chip"><i data-lucide="file-text" style="width:13px;height:13px;"></i>Water Source Proof</span>
+</div>
+<div class="rec-actions">
+<button class="btn btn-primary btn-sm"><i data-lucide="external-link" style="width:13px;height:13px;"></i>Apply Online</button>
+<button class="btn btn-ghost btn-sm" onclick="toggleOffice('off2')"><i data-lucide="map-pin" style="width:13px;height:13px;"></i>Offline Apply</button>
+<button class="btn btn-ghost btn-sm">View Full Details</button>
+</div>
+<div class="office-box hidden" id="off2"><span><b>Thanjavur District Collectorate — Agri Wing</b> · Medical College Rd · 8.6 km</span><button class="btn btn-ghost btn-sm"><i data-lucide="map" style="width:13px;height:13px;"></i>Maps</button></div>
+</div>
+<div class="card rec-card">
+<div class="rec-top">
+<div><h4>Seed Village Programme</h4><div class="rec-meta"><span class="badge badge-green sub-elig hidden">81% match</span><span class="badge badge-neutral">Certified seed, 50% cost</span></div></div>
+<div class="rec-benefit"><div class="l">Est. Benefit</div><div class="v">₹4,200</div></div>
+</div>
+<div class="rec-actions"><button class="btn btn-primary btn-sm"><i data-lucide="external-link" style="width:13px;height:13px;"></i>Apply Online</button><button class="btn btn-ghost btn-sm">View Full Details</button></div>
+</div>
+<div style="text-align:center;margin:20px 0;"><button class="btn btn-ghost" onclick="toggleAllSubsidy()" id="viewAllSubBtn">View All Subsidy Schemes (48) <i data-lucide="chevron-down" style="width:14px;height:14px;"></i></button></div>
+<div id="allSubsidyPanel" class="hidden">
+<div class="filter-bar">
+<div class="search"><i data-lucide="search"></i><input placeholder="Search schemes…"></div>
+<select><option>All Categories</option><option>Income Support</option><option>Irrigation</option><option>Seeds</option></select>
+<select><option>All Crops</option><option>Paddy</option><option>Sugarcane</option></select>
+<select><option>All Districts</option><option>Thanjavur</option></select>
+</div>
+<div class="card" style="padding:8px;">
+<div style="display:grid;grid-template-columns:1fr;">
+<div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;"><span>Soil Health Card Scheme</span><span class="badge badge-neutral">All Categories</span></div>
+<div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;"><span>Farm Mechanization Subsidy</span><span class="badge badge-neutral">Machinery</span></div>
+<div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;"><span>National Food Security Mission — Pulses</span><span class="badge badge-neutral">Seeds</span></div>
+<div style="padding:14px 18px;display:flex;justify-content:space-between;font-size:13px;"><span>Organic Farming Cluster Support</span><span class="badge badge-neutral">Sustainability</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- ============ INSURANCE ============ -->
+<div class="page-view hidden" id="page-insurance">
+<div class="page-hd"><h1>Smart Crop Insurance Assistant</h1><p>This tool helps you compare and estimate — it does not process insurance applications.</p></div>
+<div class="no-profile-note-sub card" style="padding:16px 20px;margin-bottom:20px;background:var(--amber-soft);border-color:transparent;display:flex;gap:10px;align-items:center;font-size:13px;color:#6b4f10;">
+<i data-lucide="info" style="width:16px;height:16px;"></i> Profile not set up — showing all insurance schemes with no eligibility filter applied.
+</div>
+<div class="card rec-card">
+<div class="rec-top">
+<div><h4>PMFBY — Paddy Coverage</h4><div class="rec-meta"><span class="badge badge-green sub-elig hidden">92% match</span><span class="badge badge-neutral">Agriculture Insurance Co. of India</span></div></div>
+<div class="rec-benefit"><div class="l">Sum Insured</div><div class="v">₹40,000/ac</div></div>
+</div>
+<div class="calc-panel">
+<div class="hd"><i data-lucide="calculator" style="width:14px;height:14px;"></i>Premium Calculator</div>
+<div class="field-row">
+<div class="field"><label>Crop</label><select><option>Paddy</option><option>Sugarcane</option></select></div>
+<div class="field"><label>Acres</label><input id="calcAcres" type="number" value="2.5" oninput="calcPremium()"></div>
+<div class="field"><label>Season</label><select><option>Kharif</option><option>Rabi</option></select></div>
+</div>
+<div class="calc-result-row">
+<div class="item"><div class="l">Estimated Premium</div><div class="v" id="premiumOut">₹2,000</div></div>
+<div class="item"><div class="l">Estimated Coverage</div><div class="v" id="coverageOut">₹1,000,000</div></div>
+</div>
+</div>
+<div class="rec-docs" style="margin-top:14px;">
+<span class="doc-chip"><i data-lucide="file-text" style="width:13px;height:13px;"></i>Land Record</span>
+<span class="doc-chip"><i data-lucide="file-text" style="width:13px;height:13px;"></i>Sowing Certificate</span>
+<span class="doc-chip"><i data-lucide="file-text" style="width:13px;height:13px;"></i>Bank Passbook</span>
+</div>
+<div class="rec-actions">
+<button class="btn btn-primary btn-sm"><i data-lucide="external-link" style="width:13px;height:13px;"></i>Apply Online</button>
+<button class="btn btn-ghost btn-sm" onclick="toggleOffice('off3')"><i data-lucide="map-pin" style="width:13px;height:13px;"></i>Offline Office</button>
+</div>
+<div class="office-box hidden" id="off3"><span><b>Thiruvaiyaru Agriculture Extension Office</b> · 3.2 km</span><button class="btn btn-ghost btn-sm"><i data-lucide="map" style="width:13px;height:13px;"></i>Maps</button></div>
+</div>
+<div class="card rec-card">
+<div class="rec-top"><div><h4>Restructured Weather-Based Crop Insurance</h4><div class="rec-meta"><span class="badge badge-neutral">Payout on rainfall trigger</span></div></div></div>
+<div class="rec-actions"><button class="btn btn-primary btn-sm"><i data-lucide="external-link" style="width:13px;height:13px;"></i>Apply Online</button></div>
+</div>
+<div style="text-align:center;margin:20px 0;"><button class="btn btn-ghost" onclick="toggleAllInsurance()" id="viewAllInsBtn">View All Insurance Schemes (12) <i data-lucide="chevron-down" style="width:14px;height:14px;"></i></button></div>
+<div id="allInsurancePanel" class="hidden">
+<div class="filter-bar">
+<div class="search"><i data-lucide="search"></i><input placeholder="Search insurance plans…"></div>
+<select><option>All Companies</option></select>
+<select><option>All Crops</option></select>
+</div>
+<div class="card" style="padding:8px;">
+<div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;"><span>Coconut Palm Insurance Scheme</span><span class="badge badge-neutral">Perennial</span></div>
+<div style="padding:14px 18px;display:flex;justify-content:space-between;font-size:13px;"><span>Unified Package Insurance Scheme</span><span class="badge badge-neutral">Multi-risk</span></div>
+</div>
+</div>
+</div>
+<!-- ============ WEATHER ============ -->
+<div class="page-view hidden" id="page-weather">
+<div class="page-hd"><h1>Hyperlocal Weather &amp; Crop Advisory</h1><p id="weatherPageSub">Detected automatically from your profile location.</p></div>
+<div class="no-profile-note-sub card" style="padding:16px 20px;margin-bottom:20px;background:var(--amber-soft);border-color:transparent;display:flex;gap:10px;align-items:center;font-size:13px;color:#6b4f10;">
+<i data-lucide="info" style="width:16px;height:16px;"></i> Profile not set up — select a district manually below.
+</div>
+<div class="weather-hero">
+<div>
+<div class="loc"><i data-lucide="map-pin" style="width:16px;height:16px;"></i><span id="weatherLocName">Select a district</span></div>
+<div class="meta-row"><span>Humidity 78%</span><span>Wind 11 km/h</span><span>Rain 70%</span></div>
+</div>
+<div class="temp">31°C</div>
+</div>
+<div class="fc-grid">
+<div class="card fc-card"><div class="day">Today</div><i data-lucide="cloud-sun"></i><div class="t">31° / 25°</div></div>
+<div class="card fc-card"><div class="day">Tomorrow</div><i data-lucide="cloud-rain"></i><div class="t">28° / 24°</div></div>
+<div class="card fc-card"><div class="day">Wed</div><i data-lucide="cloud-drizzle"></i><div class="t">29° / 24°</div></div>
+<div class="card fc-card"><div class="day">Thu</div><i data-lucide="sun"></i><div class="t">32° / 25°</div></div>
+</div>
+<h3 style="font-size:14.5px;margin-bottom:12px;">Weather Alerts &amp; Crop Advisory</h3>
+<div class="alert-card warn"><i data-lucide="triangle-alert" style="width:16px;height:16px;flex-shrink:0;"></i><div><b>Heavy rain expected tomorrow.</b> Avoid fertilizer application until conditions clear.</div></div>
+<div class="alert-card info"><i data-lucide="wind" style="width:16px;height:16px;flex-shrink:0;"></i><div><b>Strong wind alert, Thursday.</b> Delay any pesticide spraying planned for this window.</div></div>
+<div style="margin-top:20px;"><label style="font-size:12.5px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px;">View Weather for Other Districts</label>
+<select style="padding:10px 14px;border-radius:11px;border:1px solid var(--border);background:var(--surface);color:var(--ink);" onchange="pickDistrict(this.value)">
+<option value="">Choose a district…</option><option>Thanjavur</option><option>Thiruvarur</option><option>Nagapattinam</option><option>Trichy</option>
+</select>
+</div>
+</div>
+<!-- ============ MACHINERY ============ -->
+<div class="page-view hidden" id="page-machinery">
+<div class="page-hd"><h1>Smart Farm Machinery Rental Pool</h1><p>This tool only groups nearby farmers — it does not rent machinery directly.</p></div>
+<div class="card" style="padding:24px;">
+<h4 style="font-size:14.5px;margin-bottom:16px;">Request a Machine</h4>
+<div class="field-row">
+<div class="field"><label>Machine Type</label><select><option>Tractor</option><option>Harvester</option><option>Rotavator</option></select></div>
+<div class="field"><label>Required Date</label><input type="date" value="2026-08-15"></div>
+</div>
+<div class="field-row">
+<div class="field"><label>Village</label><input id="machVillage" placeholder="e.g. Kondiyur" value="Kondiyur"></div>
+<div class="field"><label>Acres</label><input value="2.5"></div>
+</div>
+<button class="btn btn-primary btn-lg" onclick="searchNearbyFarmers()"><i data-lucide="search"></i>Search Nearby Farmers</button>
+<div class="group-result-card hidden" id="groupResult">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+<h4 style="font-size:14px;">3 nearby farmers found in Thiruvaiyaru block</h4>
+<span class="badge badge-green">Combined 9.5 ac</span>
+</div>
+<div class="group-farmer-row"><span>Selvam K. — 3.0 acres</span><span class="badge badge-neutral">Same date</span></div>
+<div class="group-farmer-row"><span>Rajeshwari M. — 2.0 acres</span><span class="badge badge-neutral">Same date</span></div>
+<div class="group-farmer-row"><span>Palani S. — 2.0 acres</span><span class="badge badge-neutral">±1 day</span></div>
+<div class="cost-share-box">
+<span style="font-size:12.5px;color:var(--ink-soft);">Suggested group booking · estimated cost sharing</span>
+<span style="font-family:var(--font-mono);font-weight:700;color:var(--emerald-deep);">₹850 / farmer</span>
+</div>
+<button class="btn btn-primary" style="margin-top:14px;width:100%;justify-content:center;"><i data-lucide="users"></i>Join This Group</button>
+</div>
+</div>
+<h3 style="font-size:14.5px;margin:22px 0 12px 0;">Government Machinery Availability</h3>
+<div class="card" style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+<span style="font-size:13px;">2 tractors, 1 harvester available at Thiruvaiyaru Custom Hiring Centre</span>
+<span class="badge badge-green">Available</span>
+</div>
+<h3 style="font-size:14.5px;margin-bottom:12px;">Local Tractor Owners</h3>
+<div class="card" style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+<div><b style="font-size:13.5px;">Murugan Agro Services</b><div style="font-size:12px;color:var(--ink-soft);">Tractor + Rotavator · Thiruvaiyaru</div></div>
+<button class="btn btn-ghost btn-sm"><i data-lucide="phone" style="width:13px;height:13px;"></i>9876543210</button>
+</div>
+<div style="text-align:center;margin-top:16px;"><button class="btn btn-ghost">View All Machinery Services <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button></div>
+</div>
+<!-- ============ NOTIFICATIONS ============ -->
+<div class="page-view hidden" id="page-notifications">
+<div class="page-hd"><h1>Notifications</h1><p>Stay updated on subsidies, weather, insurance and machinery.</p></div>
+<div class="notif-row card"><div class="n-ic" style="background:var(--rust-soft);color:var(--rust);"><i data-lucide="triangle-alert"></i></div><div><b style="font-size:13.5px;">Heavy rain expected tomorrow in Thiruvaiyaru block</b><p style="margin:3px 0 0 0;font-size:12.5px;color:var(--ink-soft);">Avoid fertilizer application until conditions clear.</p><div class="n-time">2 hours ago</div></div></div>
+<div class="notif-row card"><div class="n-ic" style="background:var(--light-green-soft);color:var(--emerald-deep);"><i data-lucide="hand-coins"></i></div><div><b style="font-size:13.5px;">New subsidy scheme matches your profile</b><p style="margin:3px 0 0 0;font-size:12.5px;color:var(--ink-soft);">Farm Mechanization Subsidy is now open for Thanjavur district.</p><div class="n-time">Yesterday</div></div></div>
+<div class="notif-row card"><div class="n-ic" style="background:var(--sky-soft);color:var(--sky);"><i data-lucide="shield-check"></i></div><div><b style="font-size:13.5px;">Insurance enrollment deadline in 14 days</b><p style="margin:3px 0 0 0;font-size:12.5px;color:var(--ink-soft);">PMFBY Kharif window closes on 30 July.</p><div class="n-time">2 days ago</div></div></div>
+<div class="notif-row card"><div class="n-ic" style="background:var(--amber-soft);color:var(--amber);"><i data-lucide="tractor"></i></div><div><b style="font-size:13.5px;">A tractor is now available nearby</b><p style="margin:3px 0 0 0;font-size:12.5px;color:var(--ink-soft);">Your machinery group in Thiruvaiyaru reached its threshold.</p><div class="n-time">3 days ago</div></div></div>
+</div>
+<!-- ============ SETTINGS ============ -->
+<div class="page-view hidden" id="page-settings">
+<div class="page-hd"><h1>Settings</h1><p>Manage how Smart Uzhavar looks and works for you.</p></div>
+<div class="card">
+<div class="settings-row"><div class="l"><h4>Language</h4><p>Switch between English and தமிழ்</p></div><button class="btn btn-ghost btn-sm" onclick="toggleLangGlobal()"><i data-lucide="languages" style="width:14px;height:14px;"></i><span id="langLabelSettings">தமிழ்</span></button></div>
+<div class="settings-row"><div class="l"><h4>Theme</h4><p>Light or dark mode</p></div><div class="switch-toggle" id="themeSwitch" onclick="toggleThemeGlobal()"></div></div>
+<div class="settings-row"><div class="l"><h4>Profile</h4><p>Update your farm and personal details</p></div><button class="btn btn-ghost btn-sm" onclick="goTo('profile')">Edit</button></div>
+<div class="settings-row"><div class="l"><h4>Help</h4><p>Guides and frequently asked questions</p></div><button class="btn btn-ghost btn-sm">Open</button></div>
+<div class="settings-row"><div class="l"><h4>Privacy</h4><p>How your data is used</p></div><button class="btn btn-ghost btn-sm">Open</button></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+let profileComplete = false;
+let isDark = false;
+let isTamil = false;
+
+/* ---------- ICONS ---------- */
+function renderIcons(){ if(window.lucide) lucide.createIcons(); }
+document.addEventListener('DOMContentLoaded', renderIcons);
+
+/* ---------- AUTH FLOW ---------- */
+function goToAuth(){
+document.getElementById('landingPage').classList.add('hidden');
+document.getElementById('authPage').classList.remove('hidden');
+renderIcons();
+}
+function sendOtp(){
+const phone = document.getElementById('phoneInput').value || '98765 43210';
+document.getElementById('phoneShown').textContent = phone;
+document.getElementById('stepPhone').classList.add('hidden');
+document.getElementById('stepOtp').classList.remove('hidden');
+document.getElementById('dotOtp').classList.add('active');
+document.getElementById('authSubText').textContent = 'Enter the OTP we sent you.';
+document.querySelectorAll('.otp-boxes input')[0].focus();
+}
+document.addEventListener('input', (e)=>{
+if(e.target.closest && e.target.closest('.otp-boxes')){
+const boxes = [...document.querySelectorAll('.otp-boxes input')];
+const i = boxes.indexOf(e.target);
+if(e.target.value && boxes[i+1]) boxes[i+1].focus();
+}
+});
+function verifyOtp(){
+document.getElementById('stepOtp').classList.add('hidden');
+document.getElementById('stepReg').classList.remove('hidden');
+document.getElementById('dotReg').classList.add('active');
+document.getElementById('authSubText').textContent = "You're verified. Just your name to finish.";
+}
+function completeRegistration(){
+const name = document.getElementById('nameInput').value || 'Manikandan R';
+document.getElementById('authPage').classList.add('hidden');
+document.getElementById('appShell').classList.remove('hidden');
+document.getElementById('topbarName').textContent = name.split(' ')[0];
+document.getElementById('avatarInitial').textContent = name.trim()[0].toUpperCase();
+document.getElementById('welcomeName').textContent = 'Welcome, ' + name.split(' ')[0] + ' 👋';
+document.getElementById('profName').value = name;
+goTo('dashboard');
+renderIcons();
+}
+
+/* ---------- ROUTER ---------- */
+const pageMeta = {
+dashboard:{t:'Dashboard', s:'Your farm, at a glance'},
+subsidy:{t:'Subsidy', s:'Smart Subsidy Recommendation'},
+insurance:{t:'Crop Insurance', s:'Smart Crop Insurance Assistant'},
+weather:{t:'Weather Advisory', s:'Hyperlocal weather for your location'},
+machinery:{t:'Machinery Rental', s:'Group requests, faster allocation'},
+profile:{t:'Profile', s:'Editable anytime'},
+notifications:{t:'Notifications', s:'Alerts, subsidies, deadlines'},
+settings:{t:'Settings', s:'Language, theme and preferences'}
+};
+function goTo(page){
+document.querySelectorAll('.page-view').forEach(p=>p.classList.add('hidden'));
+document.getElementById('page-'+page).classList.remove('hidden');
+document.querySelectorAll('.side-link').forEach(l=>l.classList.remove('active'));
+const link = document.querySelector('.side-link[data-page="'+page+'"]');
+if(link) link.classList.add('active');
+document.getElementById('topbarTitle').textContent = pageMeta[page].t;
+document.getElementById('topbarSub').textContent = pageMeta[page].s;
+window.scrollTo(0,0);
+renderIcons();
+}
+
+/* ---------- PROFILE COMPLETION GATE ---------- */
+function completeProfile(){
+profileComplete = true;
+document.querySelectorAll('.needs-profile-dash').forEach(el=>el.classList.remove('hidden'));
+document.querySelectorAll('.no-profile-note-sub').forEach(el=>el.classList.add('hidden'));
+document.querySelectorAll('.profile-required-badge').forEach(el=>el.classList.add('hidden'));
+document.querySelectorAll('.sub-elig').forEach(el=>el.classList.remove('hidden'));
+document.getElementById('profileCtaBanner').classList.add('hidden');
+document.getElementById('welcomeSub').textContent = 'Kondiyur, Thiruvaiyaru · Paddy · 2.5 acres';
+document.getElementById('weatherLocName').textContent = 'Kondiyur, Thiruvaiyaru';
+document.getElementById('weatherPageSub').textContent = 'Detected automatically from your profile location.';
+document.getElementById('machVillage').value = 'Kondiyur';
+alert('Profile saved! Subsidy, Insurance, Weather and Machinery are now personalized to your farm.');
+goTo('dashboard');
+}
+
+/* ---------- SUBSIDY / INSURANCE INTERACTIONS ---------- */
+function toggleOffice(id){ document.getElementById(id).classList.toggle('hidden'); }
+function toggleAllSubsidy(){
+const panel = document.getElementById('allSubsidyPanel');
+panel.classList.toggle('hidden');
+document.getElementById('viewAllSubBtn').innerHTML = panel.classList.contains('hidden')
+? 'View All Subsidy Schemes (48) <i data-lucide="chevron-down" style="width:14px;height:14px;"></i>'
+: 'Hide Full Catalogue <i data-lucide="chevron-up" style="width:14px;height:14px;"></i>';
+renderIcons();
+}
+function toggleAllInsurance(){
+const panel = document.getElementById('allInsurancePanel');
+panel.classList.toggle('hidden');
+document.getElementById('viewAllInsBtn').innerHTML = panel.classList.contains('hidden')
+? 'View All Insurance Schemes (12) <i data-lucide="chevron-down" style="width:14px;height:14px;"></i>'
+: 'Hide Full Catalogue <i data-lucide="chevron-up" style="width:14px;height:14px;"></i>';
+renderIcons();
+}
+function calcPremium(){
+const acres = parseFloat(document.getElementById('calcAcres').value)||0;
+const sumPerAcre = 40000, rate = 0.02;
+const premium = acres*sumPerAcre*rate;
+const coverage = acres*sumPerAcre;
+document.getElementById('premiumOut').textContent = '₹'+Math.round(premium).toLocaleString('en-IN');
+document.getElementById('coverageOut').textContent = '₹'+Math.round(coverage).toLocaleString('en-IN');
+}
+
+/* ---------- WEATHER ---------- */
+function pickDistrict(val){
+if(!val) return;
+document.getElementById('weatherLocName').textContent = val + ' (selected)';
+document.getElementById('weatherPageSub').textContent = 'Showing weather for ' + val + '.';
+}
+
+/* ---------- MACHINERY ---------- */
+function searchNearbyFarmers(){
+document.getElementById('groupResult').classList.remove('hidden');
+document.getElementById('groupResult').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ---------- THEME ---------- */
+function toggleThemeGlobal(){
+isDark = !isDark;
+document.body.classList.toggle('dark', isDark);
+const iconName = isDark ? 'sun' : 'moon';
+['themeIconLanding','themeIconApp'].forEach(id=>{
+const el = document.getElementById(id);
+if(el){ el.setAttribute('data-lucide', iconName); }
+});
+const sw = document.getElementById('themeSwitch');
+if(sw) sw.classList.toggle('on', isDark);
+renderIcons();
+}
+
+/* ---------- LANGUAGE (EN / TA) demo toggle for key labels ---------- */
+const i18n = {
+navDashboard:{en:'Dashboard', ta:'முகப்பு'},
+navSubsidy:{en:'Subsidy', ta:'மானியம்'},
+navInsurance:{en:'Crop Insurance', ta:'பயிர் காப்பீடு'},
+navWeather:{en:'Weather Advisory', ta:'வானிலை அறிக்கை'},
+navMachinery:{en:'Machinery Rental', ta:'இயந்திர வாடகை'},
+navProfile:{en:'Profile', ta:'சுயவிவரம்'},
+navNotifications:{en:'Notifications', ta:'அறிவிப்புகள்'},
+navSettings:{en:'Settings', ta:'அமைப்புகள்'},
+heroH1:{en:'Smart farming starts<br>with <span class="accent">smart decisions</span>', ta:'ஸ்மார்ட் விவசாயம் தொடங்குகிறது<br><span class="accent">ஸ்மார்ட் முடிவுகளுடன்</span>'},
+heroSub:{en:'Helping farmers discover personalized subsidies, crop insurance, weather insights and machinery services — matched to your land, your crop, your block.', ta:'உங்கள் நிலம், பயிர், பகுதிக்கு ஏற்ற மானியங்கள், பயிர் காப்பீடு, வானிலை தகவல் மற்றும் இயந்திர சேவைகளை கண்டறிய உதவுகிறோம்.'},
+getStarted:{en:'Get Started', ta:'தொடங்குங்கள்'},
+learnMore:{en:'Learn More', ta:'மேலும் அறிய'}
+};
+function setText(id, en, ta){ const el=document.getElementById(id); if(el) el.innerHTML = isTamil ? ta : en; }
+function toggleLangGlobal(){
+isTamil = !isTamil;
+const navIds = ['navDashboard','navSubsidy','navInsurance','navWeather','navMachinery','navProfile','navNotifications','navSettings'];
+const navPages = ['dashboard','subsidy','insurance','weather','machinery','profile','notifications','settings'];
+navPages.forEach((p,i)=>{
+const link = document.querySelector('.side-link[data-page="'+p+'"] .lbl');
+if(link) link.textContent = isTamil ? i18n[navIds[i]].ta : i18n[navIds[i]].en;
+});
+const heroH1 = document.querySelector('.hero h1');
+if(heroH1) heroH1.innerHTML = isTamil ? i18n.heroH1.ta : i18n.heroH1.en;
+const heroSub = document.querySelector('.hero p.sub');
+if(heroSub) heroSub.textContent = isTamil ? i18n.heroSub.ta : i18n.heroSub.en;
+document.querySelectorAll('.hero-actions .btn-primary').forEach(b=>{ b.lastChild.textContent = isTamil ? i18n.getStarted.ta : i18n.getStarted.en; });
+const langLabelId = ['langLabelLanding','langLabelSettings'];
+langLabelId.forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent = isTamil ? 'English' : 'தமிழ்'; });
+renderIcons();
+}
+</script>
+</body>
+</html>

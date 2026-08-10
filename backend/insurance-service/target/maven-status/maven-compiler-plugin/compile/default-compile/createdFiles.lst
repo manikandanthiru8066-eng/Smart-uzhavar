@@ -23,4 +23,5 @@ com\smartuzhavar\insuranceservice\security\SecurityConfig.class
 com\smartuzhavar\insuranceservice\repository\FarmerProfileRepository.class
 com\smartuzhavar\insuranceservice\repository\InsuranceSchemeRepository.class
 com\smartuzhavar\insuranceservice\controller\AuthController.class
+com\smartuzhavar\insuranceservice\controller\DistrictController.class
 com\smartuzhavar\insuranceservice\InsuranceServiceApplication.class

@@ -15,14 +15,23 @@ public class InsuranceScheme {
     @Column(nullable = false, length = 150)
     private String name;
 
+    @Column(name = "name_ta", length = 255)
+    private String nameTa;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "description_ta", columnDefinition = "TEXT")
+    private String descriptionTa;
 
     @Column(name = "scheme_type", nullable = false, length = 50)
     private String schemeType; // WEATHER_BASED, YIELD_BASED, REVENUE_BASED
 
     @Column(name = "applicable_crops", nullable = false, length = 255)
     private String applicableCrops; // Comma-separated list of crops, or "All"
+
+    @Column(name = "applicable_crops_ta", length = 255)
+    private String applicableCropsTa;
 
     @Column(name = "premium_rate_percentage", nullable = false, precision = 5, scale = 2)
     private BigDecimal premiumRatePercentage;
@@ -72,6 +81,30 @@ public class InsuranceScheme {
 
     public void setSchemeType(String schemeType) {
         this.schemeType = schemeType;
+    }
+
+    public String getNameTa() {
+        return nameTa;
+    }
+
+    public void setNameTa(String nameTa) {
+        this.nameTa = nameTa;
+    }
+
+    public String getDescriptionTa() {
+        return descriptionTa;
+    }
+
+    public void setDescriptionTa(String descriptionTa) {
+        this.descriptionTa = descriptionTa;
+    }
+
+    public String getApplicableCropsTa() {
+        return applicableCropsTa;
+    }
+
+    public void setApplicableCropsTa(String applicableCropsTa) {
+        this.applicableCropsTa = applicableCropsTa;
     }
 
     public String getApplicableCrops() {

@@ -5,8 +5,11 @@ import java.time.Instant;
 public class RecommendedSubsidyResponse {
     private Long id;
     private String name;
+    private String nameTa;
     private String description;
+    private String descriptionTa;
     private String applicableCrops;
+    private String applicableCropsTa;
     private String applicableDistricts;
     private String subsidyAmount;
     private Instant createdAt;
@@ -14,13 +17,16 @@ public class RecommendedSubsidyResponse {
 
     public RecommendedSubsidyResponse() {}
 
-    public RecommendedSubsidyResponse(Long id, String name, String description, 
-                                      String applicableCrops, String applicableDistricts, 
-                                      String subsidyAmount, Instant createdAt, double matchScore) {
+    public RecommendedSubsidyResponse(Long id, String name, String nameTa, String description, String descriptionTa,
+                                       String applicableCrops, String applicableCropsTa, String applicableDistricts, 
+                                       String subsidyAmount, Instant createdAt, double matchScore) {
         this.id = id;
         this.name = name;
+        this.nameTa = nameTa;
         this.description = description;
+        this.descriptionTa = descriptionTa;
         this.applicableCrops = applicableCrops;
+        this.applicableCropsTa = applicableCropsTa;
         this.applicableDistricts = applicableDistricts;
         this.subsidyAmount = subsidyAmount;
         this.createdAt = createdAt;
@@ -43,6 +49,14 @@ public class RecommendedSubsidyResponse {
         this.name = name;
     }
 
+    public String getNameTa() {
+        return nameTa;
+    }
+
+    public void setNameTa(String nameTa) {
+        this.nameTa = nameTa;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -51,12 +65,28 @@ public class RecommendedSubsidyResponse {
         this.description = description;
     }
 
+    public String getDescriptionTa() {
+        return descriptionTa;
+    }
+
+    public void setDescriptionTa(String descriptionTa) {
+        this.descriptionTa = descriptionTa;
+    }
+
     public String getApplicableCrops() {
         return applicableCrops;
     }
 
     public void setApplicableCrops(String applicableCrops) {
         this.applicableCrops = applicableCrops;
+    }
+
+    public String getApplicableCropsTa() {
+        return applicableCropsTa;
+    }
+
+    public void setApplicableCropsTa(String applicableCropsTa) {
+        this.applicableCropsTa = applicableCropsTa;
     }
 
     public String getApplicableDistricts() {

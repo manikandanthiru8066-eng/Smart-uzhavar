@@ -14,11 +14,20 @@ public class SubsidyScheme {
     @Column(nullable = false, length = 150)
     private String name;
 
+    @Column(name = "name_ta", length = 255)
+    private String nameTa;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "description_ta", columnDefinition = "TEXT")
+    private String descriptionTa;
+
     @Column(name = "applicable_crops", length = 255)
     private String applicableCrops;
+
+    @Column(name = "applicable_crops_ta", length = 255)
+    private String applicableCropsTa;
 
     @Column(name = "applicable_districts", length = 255)
     private String applicableDistricts;
@@ -60,6 +69,30 @@ public class SubsidyScheme {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getNameTa() {
+        return nameTa;
+    }
+
+    public void setNameTa(String nameTa) {
+        this.nameTa = nameTa;
+    }
+
+    public String getDescriptionTa() {
+        return descriptionTa;
+    }
+
+    public void setDescriptionTa(String descriptionTa) {
+        this.descriptionTa = descriptionTa;
+    }
+
+    public String getApplicableCropsTa() {
+        return applicableCropsTa;
+    }
+
+    public void setApplicableCropsTa(String applicableCropsTa) {
+        this.applicableCropsTa = applicableCropsTa;
     }
 
     public String getApplicableCrops() {

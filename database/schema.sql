@@ -32,8 +32,11 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
 CREATE TABLE IF NOT EXISTS subsidy_schemes (
     id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
+    name_ta VARCHAR(255),
     description TEXT NOT NULL,
+    description_ta TEXT,
     applicable_crops VARCHAR(255), -- Comma-separated list of crops, or "All"
+    applicable_crops_ta VARCHAR(255),
     applicable_districts VARCHAR(255), -- Comma-separated list of district names, or "All"
     subsidy_amount VARCHAR(100),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -54,9 +57,12 @@ CREATE TABLE IF NOT EXISTS subsidy_applications (
 CREATE TABLE IF NOT EXISTS insurance_schemes (
     id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
+    name_ta VARCHAR(255),
     description TEXT NOT NULL,
+    description_ta TEXT,
     scheme_type VARCHAR(50) NOT NULL, -- WEATHER_BASED, YIELD_BASED, REVENUE_BASED
     applicable_crops VARCHAR(255) NOT NULL, -- Comma-separated list of crops, or "All"
+    applicable_crops_ta VARCHAR(255),
     premium_rate_percentage DECIMAL(5, 2) NOT NULL,
     sum_insured_per_acre DECIMAL(12, 2) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
