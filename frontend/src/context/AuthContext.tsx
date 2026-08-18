@@ -1,0 +1,144 @@
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { subsidyApi } from '../api/client';
+
+export interface FarmerProfileData {
+  username: string;
+  fullName: string;
+  email?: string;
+  phoneNumber?: string;
+  districtName?: string;
+  cropGrown?: string;
+  landSizeHectares?: number;
+}
+
+interface AuthContextType {
+  token: string | null;
+  username: string | null;
+  profile: FarmerProfileData | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  login: (u: string, p: string) => Promise<void>;
+  signup: (data: Record<string, any>) => Promise<void>;
+  logout: () => void;
+  refreshProfile: () => Promise<void>;
+  updateProfile: (data: Record<string, any>) => Promise<FarmerProfileData>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+  const [username, setUsername] = useState<string | null>(() => localStorage.getItem('username'));
+  const [profile, setProfile] = useState<FarmerProfileData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchProfile = async () => {
+    try {
+      const res = await subsidyApi.get<FarmerProfileData>('/api/profile');
+      setProfile(res.data);
+      if (res.data?.username) {
+        setUsername(res.data.username);
+        localStorage.setItem('username', res.data.username);
+      }
+    } catch (err: any) {
+      if (err?.response?.status === 401) {
+        logout();
+      }
+    }
+  };
+
+  useEffect(() => {
+    const initAuth = async () => {
+      if (token) {
+        await fetchProfile();
+      }
+      setLoading(false);
+    };
+    initAuth();
+  }, [token]);
+
+  const login = async (u: string, p: string) => {
+    const res = await subsidyApi.post('/api/auth/login', { username: u, password: p });
+    const newToken = res.data.token;
+    const returnedUser = res.data.username || u;
+
+    localStorage.setItem('token', newToken);
+    localStorage.setItem('username', returnedUser);
+    setToken(newToken);
+    setUsername(returnedUser);
+
+    try {
+      const profileRes = await subsidyApi.get<FarmerProfileData>('/api/profile', {
+        headers: { Authorization: `Bearer ${newToken}` },
+      });
+      setProfile(profileRes.data);
+    } catch {
+      // Fallback
+    }
+  };
+
+  const signup = async (data: Record<string, any>) => {
+    const res = await subsidyApi.post('/api/auth/signup', data);
+    const newToken = res.data.token;
+    const returnedUser = res.data.username || data.username;
+
+    localStorage.setItem('token', newToken);
+    localStorage.setItem('username', returnedUser);
+    setToken(newToken);
+    setUsername(returnedUser);
+
+    try {
+      const profileRes = await subsidyApi.get<FarmerProfileData>('/api/profile', {
+        headers: { Authorization: `Bearer ${newToken}` },
+      });
+      setProfile(profileRes.data);
+    } catch {
+      // Fallback
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    setToken(null);
+    setUsername(null);
+    setProfile(null);
+  };
+
+  const refreshProfile = async () => {
+    await fetchProfile();
+  };
+
+  const updateProfile = async (data: Record<string, any>) => {
+    const res = await subsidyApi.put<FarmerProfileData>('/api/profile', data);
+    setProfile(res.data);
+    return res.data;
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        token,
+        username,
+        profile,
+        isAuthenticated: !!token,
+        loading,
+        login,
+        signup,
+        logout,
+        refreshProfile,
+        updateProfile,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

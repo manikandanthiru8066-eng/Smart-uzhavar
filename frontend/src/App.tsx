@@ -1,6 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppShell } from './components/AppShell';
+import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { SubsidyPage } from './pages/SubsidyPage';
 import { InsurancePage } from './pages/InsurancePage';
@@ -12,20 +15,33 @@ import { SettingsPage } from './pages/SettingsPage';
 
 export const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <AppShell>
+    <AuthProvider>
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/subsidy" element={<SubsidyPage />} />
-          <Route path="/insurance" element={<InsurancePage />} />
-          <Route path="/weather" element={<WeatherPage />} />
-          <Route path="/machinery" element={<MachineryPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <AppShell>
+                  <Routes>
+                    <Route path="/" element={<DashboardPage />} />
+                    <Route path="/subsidy" element={<SubsidyPage />} />
+                    <Route path="/insurance" element={<InsurancePage />} />
+                    <Route path="/weather" element={<WeatherPage />} />
+                    <Route path="/machinery" element={<MachineryPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/notifications" element={<NotificationsPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                  </Routes>
+                </AppShell>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-      </AppShell>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   );
 };
 

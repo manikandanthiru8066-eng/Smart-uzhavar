@@ -56,10 +56,14 @@ public class InsuranceController {
 
         String farmerCrop = profile.getCropGrown();
         if (farmerCrop == null || farmerCrop.trim().isEmpty()) {
-            return ResponseEntity.ok(List.of());
+            return ResponseEntity.ok(insuranceSchemeRepository.findAll());
         }
 
-        return ResponseEntity.ok(insuranceSchemeRepository.findByCrop(farmerCrop));
+        List<InsuranceScheme> matched = insuranceSchemeRepository.findByCrop(farmerCrop);
+        if (matched.isEmpty()) {
+            return ResponseEntity.ok(insuranceSchemeRepository.findAll());
+        }
+        return ResponseEntity.ok(matched);
     }
 
     @PostMapping("/estimate")

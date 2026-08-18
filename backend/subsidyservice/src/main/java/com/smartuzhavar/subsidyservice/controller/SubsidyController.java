@@ -97,6 +97,24 @@ public class SubsidyController {
         // Sort descending by matchScore
         recommendations.sort(Comparator.comparingDouble(RecommendedSubsidyResponse::getMatchScore).reversed());
 
+        if (recommendations.isEmpty()) {
+            for (SubsidyScheme scheme : allSchemes) {
+                recommendations.add(new RecommendedSubsidyResponse(
+                        scheme.getId(),
+                        scheme.getName(),
+                        scheme.getNameTa(),
+                        scheme.getDescription(),
+                        scheme.getDescriptionTa(),
+                        scheme.getApplicableCrops(),
+                        scheme.getApplicableCropsTa(),
+                        scheme.getApplicableDistricts(),
+                        scheme.getSubsidyAmount(),
+                        scheme.getCreatedAt(),
+                        50.0
+                ));
+            }
+        }
+
         return ResponseEntity.ok(recommendations);
     }
 
