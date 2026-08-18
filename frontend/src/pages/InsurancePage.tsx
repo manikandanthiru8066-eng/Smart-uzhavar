@@ -75,11 +75,26 @@ export const InsurancePage: React.FC = () => {
     try {
       const res = await insuranceApi.get<InsuranceSchemeItem[]>('/api/insurance');
       if (Array.isArray(res.data) && res.data.length > 0) {
-        setRecommendedSchemes(res.data.slice(0, 1));
+        setRecommendedSchemes(res.data);
         calculateEstimate(res.data[0].id, acres, crop);
       }
     } catch {
-      // Fallback
+      const fallbackList: InsuranceSchemeItem[] = [
+        {
+          id: 1,
+          name: 'Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif',
+          nameTa: 'பிரதம மந்திரி பயிர் காப்பீட்டு திட்டம் (PMFBY) - கார்/காரீஃப்',
+          description: 'Yield-based crop insurance scheme covering crop loss due to non-preventable natural risks during Kharif season. Premium rate is 2% of sum insured.',
+          descriptionTa: 'காரீஃப் பருவத்தில் இயற்கையான இடர்பாடுகளால் ஏற்படும் பயிர் இழப்பை ஈடுசெய்யும் விளைச்சல் சார்ந்த காப்பீட்டுத் திட்டம். பிரீமியம் விகிதம் 2%.',
+          schemeType: 'YIELD_BASED',
+          applicableCrops: 'Paddy, Maize, Millets, Pulses',
+          applicableCropsTa: 'நெல், மக்காச்சோளம், சிறுதானியங்கள், பருப்பு வகைகள்',
+          premiumRatePercentage: 2.0,
+          sumInsuredPerAcre: 35000,
+        },
+      ];
+      setRecommendedSchemes(fallbackList);
+      calculateEstimate(1, acres, crop);
     }
   };
 
@@ -91,7 +106,49 @@ export const InsurancePage: React.FC = () => {
         setAllSchemes(res.data);
       }
     } catch {
-      // Fallback
+      // Fallback list
+      setAllSchemes([
+        {
+          id: 1,
+          name: 'Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif',
+          schemeType: 'YIELD_BASED',
+          applicableCrops: 'Paddy, Maize, Millets, Pulses',
+          premiumRatePercentage: 2.0,
+          sumInsuredPerAcre: 35000,
+        },
+        {
+          id: 2,
+          name: 'Pradhan Mantri Fasal Bima Yojana (PMFBY) - Rabi',
+          schemeType: 'YIELD_BASED',
+          applicableCrops: 'Wheat, Barley, Mustard, Pulses',
+          premiumRatePercentage: 1.5,
+          sumInsuredPerAcre: 30000,
+        },
+        {
+          id: 3,
+          name: 'Restructured Weather Based Crop Insurance Scheme (RWBCIS)',
+          schemeType: 'WEATHER_BASED',
+          applicableCrops: 'Cotton, Groundnut, Sugarcane',
+          premiumRatePercentage: 5.0,
+          sumInsuredPerAcre: 40000,
+        },
+        {
+          id: 4,
+          name: 'Unified Package Insurance Scheme (UPIS) - Revenue Guard',
+          schemeType: 'REVENUE_BASED',
+          applicableCrops: 'Banana, Mango, Turmeric, Potato, Ginger',
+          premiumRatePercentage: 4.5,
+          sumInsuredPerAcre: 55000,
+        },
+        {
+          id: 5,
+          name: 'Coconut Palm Insurance Scheme (CPIS)',
+          schemeType: 'YIELD_BASED',
+          applicableCrops: 'Coconut',
+          premiumRatePercentage: 3.5,
+          sumInsuredPerAcre: 50000,
+        },
+      ]);
     }
   };
 
@@ -251,7 +308,9 @@ export const InsurancePage: React.FC = () => {
       {/* View All Panel Toggle */}
       <div className="text-center my-5">
         <button className="btn btn-ghost" onClick={() => setShowAll(!showAll)}>
-          {showAll ? t('hideCatalogueBtn') : t('viewAllInsuranceBtn')}{' '}
+          {showAll
+            ? t('hideCatalogueBtn')
+            : (isTa ? `அனைத்து காப்பீட்டு திட்டங்களையும் காண்க (${allSchemes.length})` : `View All Insurance Schemes (${allSchemes.length})`)}{' '}
           {showAll ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
       </div>

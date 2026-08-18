@@ -22,6 +22,10 @@ export const ProfilePage: React.FC = () => {
   const [districtName, setDistrictName] = useState(profile?.districtName || '');
   const [block, setBlock] = useState('Thiruvaiyaru');
   const [cropGrown, setCropGrown] = useState(profile?.cropGrown || 'Paddy');
+  const [cropDurationMonths, setCropDurationMonths] = useState(
+    profile?.cropDurationMonths ? String(profile.cropDurationMonths) : '4'
+  );
+  const [season, setSeason] = useState(profile?.season || 'Kharif');
   const [landSizeHectares, setLandSizeHectares] = useState(
     profile?.landSizeHectares ? String(profile.landSizeHectares) : '1.0'
   );
@@ -42,6 +46,8 @@ export const ProfilePage: React.FC = () => {
       setPhoneNumber(profile.phoneNumber || '');
       setDistrictName(profile.districtName || '');
       setCropGrown(profile.cropGrown || 'Paddy');
+      setCropDurationMonths(profile.cropDurationMonths ? String(profile.cropDurationMonths) : '4');
+      setSeason(profile.season || 'Kharif');
       setLandSizeHectares(profile.landSizeHectares ? String(profile.landSizeHectares) : '1.0');
     }
   }, [profile]);
@@ -76,6 +82,8 @@ export const ProfilePage: React.FC = () => {
         phoneNumber: phoneNumber.trim() || undefined,
         districtName: districtName || undefined,
         cropGrown: cropGrown || undefined,
+        cropDurationMonths: parseInt(cropDurationMonths, 10) || 4,
+        season: season || 'Kharif',
         landSizeHectares: parseFloat(landSizeHectares) || 1.0,
       });
       setSaved(true);
@@ -201,7 +209,7 @@ export const ProfilePage: React.FC = () => {
               </select>
             </div>
             <div className="field">
-              <label>Land Size (Hectares / Acres)</label>
+              <label>Land Size (Hectares)</label>
               <input
                 type="number"
                 step="0.1"
@@ -209,6 +217,32 @@ export const ProfilePage: React.FC = () => {
                 onChange={(e) => setLandSizeHectares(e.target.value)}
                 required
               />
+            </div>
+          </div>
+
+          {/* New Profile Fields: Crop Duration & Season */}
+          <div className="field-row">
+            <div className="field">
+              <label>Crop Duration (months)</label>
+              <input
+                type="number"
+                min="1"
+                max="36"
+                value={cropDurationMonths}
+                onChange={(e) => setCropDurationMonths(e.target.value)}
+                placeholder="e.g. 4"
+              />
+            </div>
+            <div className="field">
+              <label>Season</label>
+              <select
+                value={season}
+                onChange={(e) => setSeason(e.target.value)}
+              >
+                <option value="Kharif">Kharif (Monsoon / June–Oct)</option>
+                <option value="Rabi">Rabi (Winter / Oct–March)</option>
+                <option value="Zaid">Zaid (Summer / March–June)</option>
+              </select>
             </div>
           </div>
 

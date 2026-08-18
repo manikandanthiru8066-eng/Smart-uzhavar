@@ -70,6 +70,12 @@ public class ProfileController {
         if (updateRequest.getCropGrown() != null) {
             profile.setCropGrown(updateRequest.getCropGrown());
         }
+        if (updateRequest.getCropDurationMonths() != null) {
+            profile.setCropDurationMonths(updateRequest.getCropDurationMonths());
+        }
+        if (updateRequest.getSeason() != null) {
+            profile.setSeason(updateRequest.getSeason());
+        }
         if (updateRequest.getLandSizeHectares() != null) {
             profile.setLandSizeHectares(updateRequest.getLandSizeHectares());
         }

@@ -63,20 +63,27 @@ public class SubsidyController {
     @GetMapping("/recommended")
     public ResponseEntity<List<RecommendedSubsidyResponse>> getRecommendedSubsidies() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Farmer farmer = farmerRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Farmer not found"));
+        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
+                .orElseGet(() -> farmerRepository.findByUsername(username).orElse(null));
 
-        FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found for farmer: " + username));
+        String farmerCrop = null;
+        String farmerDistrict = null;
+        String farmerSeason = null;
 
-        String farmerCrop = profile.getCropGrown();
-        String farmerDistrict = profile.getDistrict() != null ? profile.getDistrict().getName() : null;
+        if (farmer != null) {
+            FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer).orElse(null);
+            if (profile != null) {
+                farmerCrop = profile.getCropGrown();
+                farmerDistrict = profile.getDistrict() != null ? profile.getDistrict().getName() : null;
+                farmerSeason = profile.getSeason();
+            }
+        }
 
         List<SubsidyScheme> allSchemes = subsidySchemeRepository.findAll();
         List<RecommendedSubsidyResponse> recommendations = new ArrayList<>();
 
         for (SubsidyScheme scheme : allSchemes) {
-            double score = calculateMatchScore(farmerCrop, farmerDistrict, scheme);
+            double score = calculateMatchScore(farmerCrop, farmerDistrict, farmerSeason, scheme);
             if (score > 0.0) {
                 recommendations.add(new RecommendedSubsidyResponse(
                         scheme.getId(),
@@ -134,9 +141,10 @@ public class SubsidyController {
         return false;
     }
 
-    private double calculateMatchScore(String farmerCrop, String farmerDistrict, SubsidyScheme scheme) {
+    private double calculateMatchScore(String farmerCrop, String farmerDistrict, String farmerSeason, SubsidyScheme scheme) {
         boolean cropMatches = false;
         boolean districtMatches = false;
+        boolean seasonMatches = false;
 
         if (farmerCrop != null && !farmerCrop.trim().isEmpty()) {
             cropMatches = matchesValue(farmerCrop, scheme.getApplicableCrops());
@@ -146,12 +154,19 @@ public class SubsidyController {
             districtMatches = matchesValue(farmerDistrict, scheme.getApplicableDistricts());
         }
 
+        if (farmerSeason != null && !farmerSeason.trim().isEmpty()) {
+            String text = (scheme.getName() + " " + scheme.getDescription()).toLowerCase();
+            if (text.contains(farmerSeason.trim().toLowerCase())) {
+                seasonMatches = true;
+            }
+        }
+
         if (cropMatches && districtMatches) {
-            return 100.0; // Perfect match (both crop and district match)
+            return seasonMatches ? 100.0 : 95.0; // Perfect match
         } else if (cropMatches) {
-            return 60.0; // Crop matches, but district doesn't
+            return seasonMatches ? 75.0 : 60.0;
         } else if (districtMatches) {
-            return 40.0; // District matches, but crop doesn't
+            return seasonMatches ? 50.0 : 40.0;
         }
 
         return 0.0;

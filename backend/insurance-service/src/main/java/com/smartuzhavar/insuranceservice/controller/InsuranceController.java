@@ -48,22 +48,75 @@ public class InsuranceController {
     @GetMapping("/recommended")
     public ResponseEntity<List<InsuranceScheme>> getRecommendedSchemes() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Farmer farmer = farmerRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Farmer not found"));
+        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
+                .orElseGet(() -> farmerRepository.findByUsername(username).orElse(null));
 
-        FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found for farmer: " + username));
+        String farmerCrop = null;
+        String farmerSeason = null;
 
-        String farmerCrop = profile.getCropGrown();
+        if (farmer != null) {
+            FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer).orElse(null);
+            if (profile != null) {
+                farmerCrop = profile.getCropGrown();
+                farmerSeason = profile.getSeason();
+            }
+        }
+
+        List<InsuranceScheme> allSchemes = insuranceSchemeRepository.findAll();
+        if (allSchemes.isEmpty()) {
+            return ResponseEntity.ok(allSchemes);
+        }
+
         if (farmerCrop == null || farmerCrop.trim().isEmpty()) {
-            return ResponseEntity.ok(insuranceSchemeRepository.findAll());
+            return ResponseEntity.ok(allSchemes);
         }
 
-        List<InsuranceScheme> matched = insuranceSchemeRepository.findByCrop(farmerCrop);
+        String finalCrop = farmerCrop.trim();
+        String finalSeason = (farmerSeason != null && !farmerSeason.trim().isEmpty()) ? farmerSeason.trim() : null;
+
+        // Filter schemes matching crop & optionally season
+        List<InsuranceScheme> matched = allSchemes.stream()
+                .filter(scheme -> {
+                    boolean cropMatches = matchesValue(finalCrop, scheme.getApplicableCrops());
+                    if (!cropMatches) {
+                        return false;
+                    }
+                    if (finalSeason != null) {
+                        String text = (scheme.getName() + " " + scheme.getDescription()).toLowerCase();
+                        if (text.contains("kharif") || text.contains("rabi") || text.contains("zaid")) {
+                            return text.contains(finalSeason.toLowerCase());
+                        }
+                    }
+                    return true;
+                })
+                .toList();
+
         if (matched.isEmpty()) {
-            return ResponseEntity.ok(insuranceSchemeRepository.findAll());
+            // Fallback: match by crop only
+            matched = insuranceSchemeRepository.findByCrop(finalCrop);
         }
+
+        if (matched.isEmpty()) {
+            return ResponseEntity.ok(allSchemes);
+        }
+
         return ResponseEntity.ok(matched);
+    }
+
+    private boolean matchesValue(String value, String commaSeparatedTargets) {
+        if (commaSeparatedTargets == null || commaSeparatedTargets.trim().isEmpty()) {
+            return false;
+        }
+        if (commaSeparatedTargets.equalsIgnoreCase("All")) {
+            return true;
+        }
+        String[] targets = commaSeparatedTargets.split(",");
+        for (String target : targets) {
+            if (target.trim().equalsIgnoreCase(value.trim())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @PostMapping("/estimate")
