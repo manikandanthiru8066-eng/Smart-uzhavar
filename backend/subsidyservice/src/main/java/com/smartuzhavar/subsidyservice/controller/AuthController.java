@@ -52,6 +52,13 @@ public class AuthController {
             throw new IllegalArgumentException("Password is required");
         }
 
+        // Password strength: min 8 chars, at least 1 uppercase, 1 lowercase, 1 digit
+        String pwd = signupRequest.getPassword();
+        if (pwd.length() < 8 || !pwd.matches(".*[A-Z].*") || !pwd.matches(".*[a-z].*") || !pwd.matches(".*\\d.*")) {
+            throw new IllegalArgumentException(
+                "Password must be at least 8 characters and include uppercase, lowercase, and a number.");
+        }
+
         if (farmerRepository.existsByUsername(signupRequest.getUsername())) {
             throw new IllegalArgumentException("Username is already taken!");
         }
@@ -60,6 +67,11 @@ public class AuthController {
                 ? signupRequest.getEmail().trim() : null;
         String cleanPhone = (signupRequest.getPhoneNumber() != null && !signupRequest.getPhoneNumber().trim().isEmpty())
                 ? signupRequest.getPhoneNumber().trim() : null;
+
+        // Phone number: must be exactly 10 digits
+        if (cleanPhone != null && !cleanPhone.matches("^\\d{10}$")) {
+            throw new IllegalArgumentException("Phone number must be exactly 10 digits.");
+        }
 
         if (cleanEmail != null && farmerRepository.existsByEmail(cleanEmail)) {
             throw new IllegalArgumentException("Email is already in use!");

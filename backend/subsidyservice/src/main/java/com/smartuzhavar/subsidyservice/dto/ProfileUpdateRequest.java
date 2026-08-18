@@ -8,6 +8,8 @@ public class ProfileUpdateRequest {
     private String phoneNumber;
     private String districtName;
     private String cropGrown;
+    private Integer cropDurationMonths;
+    private String season;
     private BigDecimal landSizeHectares;
 
     public ProfileUpdateRequest() {}
@@ -52,6 +54,22 @@ public class ProfileUpdateRequest {
         this.cropGrown = cropGrown;
     }
 
+    public Integer getCropDurationMonths() {
+        return cropDurationMonths;
+    }
+
+    public void setCropDurationMonths(Integer cropDurationMonths) {
+        this.cropDurationMonths = cropDurationMonths;
+    }
+
+    public String getSeason() {
+        return season;
+    }
+
+    public void setSeason(String season) {
+        this.season = season;
+    }
+
     public BigDecimal getLandSizeHectares() {
         return landSizeHectares;
     }
@@ -60,3 +78,4 @@ public class ProfileUpdateRequest {
         this.landSizeHectares = landSizeHectares;
     }
 }
+

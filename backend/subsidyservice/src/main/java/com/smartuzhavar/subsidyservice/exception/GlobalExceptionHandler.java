@@ -61,6 +61,26 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(errors));
     }
 
+    // Catch DB-level unique constraint violations (username / email / phone already exists)
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+            org.springframework.dao.DataIntegrityViolationException ex) {
+        String msg = "Username, email, or phone number is already in use.";
+        String cause = ex.getMostSpecificCause().getMessage();
+        if (cause != null) {
+            if (cause.contains("farmers_email_key") || cause.contains("email")) {
+                msg = "Email address is already in use.";
+            } else if (cause.contains("farmers_phone_number_key") || cause.contains("phone_number")) {
+                msg = "Phone number is already in use.";
+            } else if (cause.contains("farmers_username_key") || cause.contains("username")) {
+                msg = "Username is already taken.";
+            }
+        }
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(msg));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
         return ResponseEntity

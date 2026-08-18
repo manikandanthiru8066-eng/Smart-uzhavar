@@ -9,18 +9,23 @@ public class ProfileResponse {
     private String phoneNumber;
     private String districtName;
     private String cropGrown;
+    private Integer cropDurationMonths;
+    private String season;
     private BigDecimal landSizeHectares;
 
     public ProfileResponse() {}
 
     public ProfileResponse(String username, String fullName, String email, String phoneNumber, 
-                           String districtName, String cropGrown, BigDecimal landSizeHectares) {
+                           String districtName, String cropGrown, Integer cropDurationMonths,
+                           String season, BigDecimal landSizeHectares) {
         this.username = username;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.districtName = districtName;
         this.cropGrown = cropGrown;
+        this.cropDurationMonths = cropDurationMonths;
+        this.season = season;
         this.landSizeHectares = landSizeHectares;
     }
 
@@ -72,6 +77,22 @@ public class ProfileResponse {
         this.cropGrown = cropGrown;
     }
 
+    public Integer getCropDurationMonths() {
+        return cropDurationMonths;
+    }
+
+    public void setCropDurationMonths(Integer cropDurationMonths) {
+        this.cropDurationMonths = cropDurationMonths;
+    }
+
+    public String getSeason() {
+        return season;
+    }
+
+    public void setSeason(String season) {
+        this.season = season;
+    }
+
     public BigDecimal getLandSizeHectares() {
         return landSizeHectares;
     }
@@ -80,3 +101,4 @@ public class ProfileResponse {
         this.landSizeHectares = landSizeHectares;
     }
 }
+

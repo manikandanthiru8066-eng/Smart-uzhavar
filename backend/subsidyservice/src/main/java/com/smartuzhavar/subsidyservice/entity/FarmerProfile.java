@@ -26,6 +26,12 @@ public class FarmerProfile {
     @Column(name = "crop_grown", length = 100)
     private String cropGrown;
 
+    @Column(name = "crop_duration_months")
+    private Integer cropDurationMonths;
+
+    @Column(name = "season", length = 50)
+    private String season;
+
     @Column(name = "land_size_hectares", precision = 10, scale = 2)
     private BigDecimal landSizeHectares;
 
@@ -87,6 +93,22 @@ public class FarmerProfile {
 
     public void setCropGrown(String cropGrown) {
         this.cropGrown = cropGrown;
+    }
+
+    public Integer getCropDurationMonths() {
+        return cropDurationMonths;
+    }
+
+    public void setCropDurationMonths(Integer cropDurationMonths) {
+        this.cropDurationMonths = cropDurationMonths;
+    }
+
+    public String getSeason() {
+        return season;
+    }
+
+    public void setSeason(String season) {
+        this.season = season;
     }
 
     public BigDecimal getLandSizeHectares() {

@@ -39,9 +39,14 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedDistricts() {
-        if (districtRepository.count() > 0) {
-            log.info("Districts table already seeded.");
+        long existing = districtRepository.count();
+        if (existing >= 38) {
+            log.info("Districts table already has {} districts — skipping seed.", existing);
             return;
+        }
+        if (existing > 0) {
+            log.info("Districts table has only {} entries — re-seeding from tn_districts.json.", existing);
+            districtRepository.deleteAll();
         }
 
         File file = findFile("database/tn_districts.json");
