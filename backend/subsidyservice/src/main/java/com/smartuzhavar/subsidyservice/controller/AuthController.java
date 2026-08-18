@@ -59,8 +59,9 @@ public class AuthController {
                 "Password must be at least 8 characters and include uppercase, lowercase, and a number.");
         }
 
-        if (farmerRepository.existsByUsername(signupRequest.getUsername())) {
-            throw new IllegalArgumentException("Username is already taken!");
+        String username = signupRequest.getUsername().trim();
+        if (farmerRepository.existsByUsernameIgnoreCase(username)) {
+            throw new IllegalArgumentException("Username '" + username + "' is already taken. Please choose another username.");
         }
 
         String cleanEmail = (signupRequest.getEmail() != null && !signupRequest.getEmail().trim().isEmpty())
@@ -73,12 +74,12 @@ public class AuthController {
             throw new IllegalArgumentException("Phone number must be exactly 10 digits.");
         }
 
-        if (cleanEmail != null && farmerRepository.existsByEmail(cleanEmail)) {
-            throw new IllegalArgumentException("Email is already in use!");
+        if (cleanEmail != null && farmerRepository.existsByEmailIgnoreCase(cleanEmail)) {
+            throw new IllegalArgumentException("Email address '" + cleanEmail + "' is already in use.");
         }
 
         if (cleanPhone != null && farmerRepository.existsByPhoneNumber(cleanPhone)) {
-            throw new IllegalArgumentException("Phone number is already in use!");
+            throw new IllegalArgumentException("Phone number '" + cleanPhone + "' is already in use.");
         }
 
         // Creating farmer account
