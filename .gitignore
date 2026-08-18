@@ -141,3 +141,18 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Maven / Java build output
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+
+# Maven wrapper
+!.mvn/wrapper/maven-wrapper.jar
+
+# Spring Boot
+spring-shell.log
