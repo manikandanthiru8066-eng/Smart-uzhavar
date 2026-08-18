@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
     full_name VARCHAR(100) NOT NULL,
     district_id INTEGER REFERENCES districts(id) ON DELETE SET NULL,
     crop_grown VARCHAR(100),
+    crop_duration_months INTEGER,
+    season VARCHAR(50),
     land_size_hectares DECIMAL(10, 2),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

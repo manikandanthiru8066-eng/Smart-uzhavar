@@ -1,15 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { subsidyApi } from '../api/client';
-import { Sprout, LogIn, UserPlus, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Sprout, LogIn, UserPlus, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface DistrictItem {
   id: number;
   name: string;
 }
 
+// Generate username suggestion from full name
+// e.g. "Manikandan T" → "manikandant", "Ramesh Kumar" → "rameshk"
+function generateUsername(fullName: string): string {
+  return fullName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim()
+    .split(/\s+/)
+    .map((word, idx) => (idx === 0 ? word : word.charAt(0)))
+    .join('')
+    .slice(0, 20);
+}
+
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+const PHONE_REGEX = /^\d{10}$/;
+
 export const LoginPage: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [isSignup, setIsSignup] = useState(false);
   const [districts, setDistricts] = useState<DistrictItem[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +50,13 @@ export const LoginPage: React.FC = () => {
   const [cropGrown, setCropGrown] = useState('Paddy');
   const [landSizeHectares, setLandSizeHectares] = useState('1.0');
 
+  // Inline validation errors
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  // Track if user manually edited username (stop auto-filling if so)
+  const usernameManuallyEdited = useRef(false);
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/', { replace: true });
@@ -42,25 +67,68 @@ export const LoginPage: React.FC = () => {
     const loadDistricts = async () => {
       try {
         const res = await subsidyApi.get<DistrictItem[]>('/api/districts');
-        if (Array.isArray(res.data)) {
+        if (Array.isArray(res.data) && res.data.length > 0) {
           setDistricts(res.data);
-          if (res.data.length > 0) {
-            setDistrictName(res.data[0].name);
+          setDistrictName(res.data[0].name);
+          if (res.data.length < 10) {
+            console.warn('[LoginPage] Only', res.data.length, 'districts returned — expected 38.');
           }
         }
-      } catch {
-        // Fallback default districts
-        setDistricts([
+      } catch (err) {
+        console.error('[LoginPage] Failed to load districts from API:', err);
+        const fallback = [
           { id: 1, name: 'Thanjavur' },
           { id: 2, name: 'Thiruvarur' },
           { id: 3, name: 'Nagapattinam' },
-          { id: 4, name: 'Trichy' },
-        ]);
-        setDistrictName('Thanjavur');
+          { id: 4, name: 'Tiruchirappalli' },
+        ];
+        setDistricts(fallback);
+        setDistrictName(fallback[0].name);
       }
     };
     loadDistricts();
   }, []);
+
+  // Auto-generate username as user types full name
+  const handleFullNameChange = (val: string) => {
+    setFullName(val);
+    if (!usernameManuallyEdited.current) {
+      setSignupUsername(generateUsername(val));
+    }
+  };
+
+  const handleUsernameChange = (val: string) => {
+    usernameManuallyEdited.current = true;
+    setSignupUsername(val);
+  };
+
+  // Phone: only digits, max 10
+  const handlePhoneChange = (val: string) => {
+    const digits = val.replace(/\D/g, '').slice(0, 10);
+    setPhoneNumber(digits);
+    if (digits.length > 0 && !PHONE_REGEX.test(digits)) {
+      setPhoneError(t('signupPhoneError'));
+    } else {
+      setPhoneError(null);
+    }
+  };
+
+  // Password: validate strength on change
+  const handlePasswordChange = (val: string) => {
+    setSignupPassword(val);
+    if (val.length > 0 && !PASSWORD_REGEX.test(val)) {
+      setPasswordError(t('signupPasswordError'));
+    } else {
+      setPasswordError(null);
+    }
+  };
+
+  const handleTabSwitch = (toSignup: boolean) => {
+    setIsSignup(toSignup);
+    setError(null);
+    setPhoneError(null);
+    setPasswordError(null);
+  };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,10 +139,12 @@ export const LoginPage: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      await login(loginUsername, loginPassword);
+      await login(loginUsername.trim(), loginPassword);
       navigate('/', { replace: true });
     } catch (err: any) {
-      setError(err?.response?.data?.message || err?.response?.data?.error || 'Invalid credentials. Please try again.');
+      console.error('[LoginPage] Login error — status:', err?.response?.status, 'body:', err?.response?.data);
+      const backendMsg = err?.response?.data?.message || err?.response?.data?.error;
+      setError(backendMsg || t('loginErrorFallback'));
     } finally {
       setSubmitting(false);
     }
@@ -83,10 +153,22 @@ export const LoginPage: React.FC = () => {
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
     if (!signupUsername.trim() || !signupPassword.trim() || !fullName.trim()) {
-      setError('Username, Password, and Full Name are required.');
+      setError(t('signupRequiredError'));
       return;
     }
+    if (phoneNumber && !PHONE_REGEX.test(phoneNumber)) {
+      setPhoneError(t('signupPhoneError'));
+      setError(t('signupPhoneError'));
+      return;
+    }
+    if (!PASSWORD_REGEX.test(signupPassword)) {
+      setPasswordError(t('signupPasswordError'));
+      setError(t('signupPasswordError'));
+      return;
+    }
+
     setSubmitting(true);
     try {
       await signup({
@@ -94,68 +176,82 @@ export const LoginPage: React.FC = () => {
         password: signupPassword,
         fullName: fullName.trim(),
         email: email.trim() || undefined,
-        phoneNumber: phoneNumber.trim() || undefined,
+        phoneNumber: phoneNumber || undefined,
         districtName,
         cropGrown,
         landSizeHectares: parseFloat(landSizeHectares) || 1.0,
       });
       navigate('/', { replace: true });
     } catch (err: any) {
-      setError(err?.response?.data?.message || err?.response?.data?.error || 'Registration failed. Username, email, or phone may already exist.');
+      console.error('[LoginPage] Signup error — status:', err?.response?.status, 'body:', err?.response?.data);
+      const backendMsg = err?.response?.data?.message || err?.response?.data?.error;
+      setError(backendMsg || t('signupErrorFallback'));
     } finally {
       setSubmitting(false);
     }
   };
 
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'ta' : 'en');
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-emerald-50/50">
+      {/* Language toggle */}
+      <div className="absolute top-4 right-4">
+        <button
+          id="lang-toggle-btn"
+          onClick={toggleLanguage}
+          className="px-3 py-1.5 text-xs font-semibold bg-white border border-emerald-200 text-emerald-700 rounded-xl shadow-sm hover:bg-emerald-50 transition-colors"
+        >
+          {i18n.language === 'en' ? 'தமிழ்' : 'English'}
+        </button>
+      </div>
+
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-emerald-100 p-8 space-y-6">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center space-y-2">
           <div className="w-14 h-14 bg-emerald-600 text-white rounded-2xl flex items-center justify-center shadow-md">
             <Sprout size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Smart Uzhavar</h1>
-          <p className="text-xs text-gray-500">
-            Personalized Farmer Decision Support Portal
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('brandName')}</h1>
+          <p className="text-xs text-gray-500">{t('loginBrandSub')}</p>
         </div>
 
         {/* Tab Toggle */}
         <div className="flex bg-gray-100 p-1 rounded-2xl">
           <button
             type="button"
+            id="login-tab-btn"
             className={`flex-1 py-2.5 text-xs font-semibold rounded-xl transition-all ${
               !isSignup
                 ? 'bg-white text-emerald-800 shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
-            onClick={() => {
-              setIsSignup(false);
-              setError(null);
-            }}
+            onClick={() => handleTabSwitch(false)}
           >
-            Log In
+            {t('loginTabLabel')}
           </button>
           <button
             type="button"
+            id="signup-tab-btn"
             className={`flex-1 py-2.5 text-xs font-semibold rounded-xl transition-all ${
               isSignup
                 ? 'bg-white text-emerald-800 shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
-            onClick={() => {
-              setIsSignup(true);
-              setError(null);
-            }}
+            onClick={() => handleTabSwitch(true)}
           >
-            New Farmer Sign Up
+            {t('signupTabLabel')}
           </button>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-start gap-2">
+          <div
+            id="form-error-msg"
+            className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-start gap-2"
+          >
             <AlertCircle size={16} className="shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
@@ -163,125 +259,168 @@ export const LoginPage: React.FC = () => {
 
         {/* Login Form */}
         {!isSignup ? (
-          <form onSubmit={handleLoginSubmit} className="space-y-4">
+          <form id="login-form" onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Username
+                {t('loginUsernameLabel')}
               </label>
               <input
+                id="login-username"
                 type="text"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                placeholder="Enter your username"
+                placeholder={t('loginUsernamePlaceholder')}
                 value={loginUsername}
                 onChange={(e) => setLoginUsername(e.target.value)}
                 required
+                autoComplete="username"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Password
+                {t('loginPasswordLabel')}
               </label>
               <input
+                id="login-password"
                 type="password"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                placeholder="Enter password"
+                placeholder={t('loginPasswordPlaceholder')}
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
             </div>
 
             <button
+              id="login-submit-btn"
               type="submit"
               disabled={submitting}
               className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
               <LogIn size={18} />
-              {submitting ? 'Logging in...' : 'Sign In to Dashboard'}
+              {submitting ? t('loginSubmitting') : t('loginSubmitBtn')}
             </button>
           </form>
         ) : (
-          /* Signup Form */
-          <form onSubmit={handleSignupSubmit} className="space-y-3">
+          <form id="signup-form" onSubmit={handleSignupSubmit} className="space-y-3">
+            {/* Full Name */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Full Name *
+                {t('signupFullNameLabel')} *
               </label>
               <input
+                id="signup-fullname"
                 type="text"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                placeholder="e.g. Ramesh Kumar"
+                placeholder={t('signupFullNamePlaceholder')}
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e) => handleFullNameChange(e.target.value)}
                 required
               />
             </div>
 
+            {/* Username + Password */}
             <div className="grid grid-cols-2 gap-2.5">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Username *
+                  {t('signupUsernameLabel')} *
+                  <span className="ml-1 font-normal text-gray-400">(auto-filled)</span>
                 </label>
                 <input
+                  id="signup-username"
                   type="text"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="ramesh123"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50/40 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder={t('signupUsernamePlaceholder')}
                   value={signupUsername}
-                  onChange={(e) => setSignupUsername(e.target.value)}
+                  onChange={(e) => handleUsernameChange(e.target.value)}
                   required
+                  autoComplete="username"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Password *
+                  {t('signupPasswordLabel')} *
                 </label>
                 <input
+                  id="signup-password"
                   type="password"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                    passwordError ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                  }`}
                   placeholder="••••••••"
                   value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
                   required
+                  autoComplete="new-password"
                 />
+                {signupPassword && !passwordError && (
+                  <p className="mt-1 text-xs text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 size={11} /> Strong ✓
+                  </p>
+                )}
+                {passwordError ? (
+                  <p id="password-error" className="mt-1 text-xs text-red-600 leading-tight">{passwordError}</p>
+                ) : (
+                  !signupPassword && (
+                    <p className="mt-1 text-xs text-gray-400 leading-tight">{t('signupPasswordHint')}</p>
+                  )
+                )}
               </div>
             </div>
 
+            {/* Phone + Email */}
             <div className="grid grid-cols-2 gap-2.5">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Phone Number
+                  {t('signupPhoneLabel')}
                 </label>
                 <input
-                  type="text"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="9876543210"
+                  id="signup-phone"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                    phoneError ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                  }`}
+                  placeholder={t('signupPhonePlaceholder')}
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
                 />
+                {phoneError && (
+                  <p id="phone-error" className="mt-1 text-xs text-red-600">{phoneError}</p>
+                )}
+                {!phoneError && phoneNumber.length === 10 && (
+                  <p className="mt-1 text-xs text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 size={11} /> Valid ✓
+                  </p>
+                )}
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Email Address
+                  {t('signupEmailLabel')}
                 </label>
                 <input
+                  id="signup-email"
                   type="email"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="ramesh@gmail.com"
+                  placeholder={t('signupEmailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
 
+            {/* District + Crop + Land */}
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  District
+                  {t('signupDistrictLabel')}
                 </label>
                 <select
+                  id="signup-district"
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                   value={districtName}
                   onChange={(e) => setDistrictName(e.target.value)}
@@ -296,9 +435,10 @@ export const LoginPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Crop Grown
+                  {t('signupCropLabel')}
                 </label>
                 <select
+                  id="signup-crop"
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                   value={cropGrown}
                   onChange={(e) => setCropGrown(e.target.value)}
@@ -314,11 +454,13 @@ export const LoginPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Land (Ha)
+                  {t('signupLandLabel')}
                 </label>
                 <input
+                  id="signup-land"
                   type="number"
                   step="0.1"
+                  min="0.1"
                   className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   placeholder="1.0"
                   value={landSizeHectares}
@@ -328,12 +470,13 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <button
+              id="signup-submit-btn"
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !!phoneError || !!passwordError}
               className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
             >
               <UserPlus size={18} />
-              {submitting ? 'Creating Profile...' : 'Complete Sign Up'}
+              {submitting ? t('signupSubmitting') : t('signupSubmitBtn')}
             </button>
           </form>
         )}
