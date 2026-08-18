@@ -32,11 +32,17 @@ public class ProfileController {
     @GetMapping
     public ResponseEntity<ProfileResponse> getProfile() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Farmer farmer = farmerRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Farmer not found"));
+        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
+                .orElseGet(() -> farmerRepository.findByUsername(username)
+                        .orElseThrow(() -> new ResourceNotFoundException("Farmer not found")));
 
         FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found for farmer: " + username));
+                .orElseGet(() -> {
+                    FarmerProfile p = new FarmerProfile();
+                    p.setFarmer(farmer);
+                    p.setFullName(farmer.getUsername());
+                    return farmerProfileRepository.save(p);
+                });
 
         return ResponseEntity.ok(convertToProfileResponse(farmer, profile));
     }
@@ -44,13 +50,16 @@ public class ProfileController {
     @PutMapping
     public ResponseEntity<ProfileResponse> updateProfile(@RequestBody ProfileUpdateRequest updateRequest) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Farmer farmer = farmerRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Farmer not found"));
+        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
+                .orElseGet(() -> farmerRepository.findByUsername(username)
+                        .orElseThrow(() -> new ResourceNotFoundException("Farmer not found")));
 
         FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer)
                 .orElseGet(() -> {
                     FarmerProfile p = new FarmerProfile();
                     p.setFarmer(farmer);
+                    p.setFullName(updateRequest.getFullName() != null && !updateRequest.getFullName().trim().isEmpty() 
+                            ? updateRequest.getFullName().trim() : farmer.getUsername());
                     return p;
                 });
 
@@ -106,6 +115,8 @@ public class ProfileController {
                 farmer.getPhoneNumber(),
                 profile.getDistrict() != null ? profile.getDistrict().getName() : null,
                 profile.getCropGrown(),
+                profile.getCropDurationMonths(),
+                profile.getSeason(),
                 profile.getLandSizeHectares()
         );
     }
