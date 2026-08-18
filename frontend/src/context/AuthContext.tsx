@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       setProfile(profileRes.data);
     } catch {
-      // Fallback
+      setProfile({ username: returnedUser, fullName: returnedUser });
     }
   };
 
@@ -93,7 +93,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       setProfile(profileRes.data);
     } catch {
-      // Fallback
+      setProfile({
+        username: returnedUser,
+        fullName: data.fullName || returnedUser,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        districtName: data.districtName,
+        cropGrown: data.cropGrown,
+        landSizeHectares: data.landSizeHectares,
+      });
     }
   };
 

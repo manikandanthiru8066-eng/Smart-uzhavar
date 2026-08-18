@@ -13,7 +13,7 @@ interface DistrictItem {
 export const ProfilePage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { profile, updateProfile } = useAuth();
+  const { profile, updateProfile, refreshProfile } = useAuth();
 
   const [districts, setDistricts] = useState<DistrictItem[]>([]);
   const [fullName, setFullName] = useState(profile?.fullName || '');
@@ -32,8 +32,12 @@ export const ProfilePage: React.FC = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    refreshProfile();
+  }, []);
+
+  useEffect(() => {
     if (profile) {
-      setFullName(profile.fullName || '');
+      setFullName(profile.fullName || profile.username || '');
       setEmail(profile.email || '');
       setPhoneNumber(profile.phoneNumber || '');
       setDistrictName(profile.districtName || '');
