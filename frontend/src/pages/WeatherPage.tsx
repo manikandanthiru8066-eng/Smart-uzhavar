@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { insuranceApi, subsidyApi } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import {
   MapPin,
   CloudSun,
@@ -12,7 +13,7 @@ import {
   Info,
 } from 'lucide-react';
 
-interface District {
+interface DistrictItem {
   id: number;
   name: string;
 }
@@ -30,41 +31,40 @@ interface WeatherData {
 export const WeatherPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isTa = i18n.language === 'ta';
+  const { profile } = useAuth();
 
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [selectedDistrict, setSelectedDistrict] = useState<string>('Thanjavur');
+  const [districts, setDistricts] = useState<DistrictItem[]>([]);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(profile?.districtName || 'Thanjavur');
   const [weather, setWeather] = useState<WeatherData>({
-    district: 'Thanjavur',
-    temperatureCelsius: 31,
-    humidityPercentage: 78,
+    district: profile?.districtName || 'Thanjavur',
+    temperatureCelsius: 32.5,
+    humidityPercentage: 65.0,
     rainfallMm: 15.2,
     condition: 'Scattered Showers',
     conditionTa: 'சிதறிய மழை',
-    windSpeedKmph: 11,
+    windSpeedKmph: 12.8,
   });
 
   useEffect(() => {
+    if (profile?.districtName) {
+      setSelectedDistrict(profile.districtName);
+      fetchWeather(profile.districtName);
+    } else {
+      fetchWeather('Thanjavur');
+    }
     fetchDistricts();
-    fetchWeather('Thanjavur');
-  }, []);
+  }, [profile]);
 
   const fetchDistricts = async () => {
     try {
       let res;
       try {
-        res = await insuranceApi.get('/api/districts');
+        res = await subsidyApi.get<DistrictItem[]>('/api/districts');
       } catch {
-        res = await subsidyApi.get('/api/districts');
+        res = await insuranceApi.get<DistrictItem[]>('/api/districts');
       }
       if (Array.isArray(res.data) && res.data.length > 0) {
         setDistricts(res.data);
-      } else {
-        setDistricts([
-          { id: 1, name: 'Thanjavur' },
-          { id: 2, name: 'Thiruvarur' },
-          { id: 3, name: 'Nagapattinam' },
-          { id: 4, name: 'Trichy' },
-        ]);
       }
     } catch {
       setDistricts([
@@ -84,23 +84,23 @@ export const WeatherPage: React.FC = () => {
       if (res.data) {
         setWeather({
           district: res.data.district || districtName,
-          temperatureCelsius: res.data.temperatureCelsius ?? 31,
-          humidityPercentage: res.data.humidityPercentage ?? 78,
+          temperatureCelsius: res.data.temperatureCelsius ?? 32.5,
+          humidityPercentage: res.data.humidityPercentage ?? 65.0,
           rainfallMm: res.data.rainfallMm ?? 15.2,
           condition: res.data.condition || 'Scattered Showers',
           conditionTa: res.data.conditionTa || 'சிதறிய மழை',
-          windSpeedKmph: res.data.windSpeedKmph ?? 11,
+          windSpeedKmph: res.data.windSpeedKmph ?? 12.8,
         });
       }
     } catch {
       setWeather({
         district: districtName,
-        temperatureCelsius: 31,
-        humidityPercentage: 78,
+        temperatureCelsius: 32.5,
+        humidityPercentage: 65.0,
         rainfallMm: 15.2,
         condition: 'Scattered Showers',
         conditionTa: 'சிதறிய மழை',
-        windSpeedKmph: 11,
+        windSpeedKmph: 12.8,
       });
     }
   };
@@ -130,7 +130,9 @@ export const WeatherPage: React.FC = () => {
         }}
       >
         <Info size={16} className="shrink-0" />
-        <span>{t('noProfileNoteWeather')}</span>
+        <span>
+          Real-time weather advisory for <b>{selectedDistrict}</b> district.
+        </span>
       </div>
 
       {/* Weather Hero Banner */}
@@ -143,6 +145,7 @@ export const WeatherPage: React.FC = () => {
           <div className="meta-row">
             <span>{t('humidityLabel')} {weather.humidityPercentage}%</span>
             <span>{t('windLabel')} {weather.windSpeedKmph} km/h</span>
+            <span>Rainfall: {weather.rainfallMm} mm</span>
             <span>{t('conditionLabel')}: {(isTa && weather.conditionTa) ? weather.conditionTa : weather.condition}</span>
           </div>
         </div>

@@ -36,8 +36,11 @@ CREATE TABLE farmer_profiles (
 CREATE TABLE subsidy_schemes (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
+    name_ta VARCHAR(255),
     description TEXT NOT NULL,
+    description_ta TEXT,
     applicable_crops VARCHAR(255), -- Comma-separated list of crops, or "All"
+    applicable_crops_ta VARCHAR(255),
     applicable_districts VARCHAR(255), -- Comma-separated list of district names, or "All"
     subsidy_amount VARCHAR(100),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

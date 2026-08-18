@@ -56,22 +56,25 @@ public class AuthController {
             throw new IllegalArgumentException("Username is already taken!");
         }
 
-        if (signupRequest.getEmail() != null && !signupRequest.getEmail().trim().isEmpty() &&
-                farmerRepository.existsByEmail(signupRequest.getEmail())) {
+        String cleanEmail = (signupRequest.getEmail() != null && !signupRequest.getEmail().trim().isEmpty())
+                ? signupRequest.getEmail().trim() : null;
+        String cleanPhone = (signupRequest.getPhoneNumber() != null && !signupRequest.getPhoneNumber().trim().isEmpty())
+                ? signupRequest.getPhoneNumber().trim() : null;
+
+        if (cleanEmail != null && farmerRepository.existsByEmail(cleanEmail)) {
             throw new IllegalArgumentException("Email is already in use!");
         }
 
-        if (signupRequest.getPhoneNumber() != null && !signupRequest.getPhoneNumber().trim().isEmpty() &&
-                farmerRepository.existsByPhoneNumber(signupRequest.getPhoneNumber())) {
+        if (cleanPhone != null && farmerRepository.existsByPhoneNumber(cleanPhone)) {
             throw new IllegalArgumentException("Phone number is already in use!");
         }
 
         // Creating farmer account
         Farmer farmer = new Farmer();
-        farmer.setUsername(signupRequest.getUsername());
+        farmer.setUsername(signupRequest.getUsername().trim());
         farmer.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        farmer.setEmail(signupRequest.getEmail());
-        farmer.setPhoneNumber(signupRequest.getPhoneNumber());
+        farmer.setEmail(cleanEmail);
+        farmer.setPhoneNumber(cleanPhone);
 
         Farmer savedFarmer = farmerRepository.save(farmer);
 
@@ -79,13 +82,17 @@ public class AuthController {
         FarmerProfile profile = new FarmerProfile();
         profile.setFarmer(savedFarmer);
         profile.setFullName(signupRequest.getFullName() != null && !signupRequest.getFullName().trim().isEmpty() 
-                ? signupRequest.getFullName() : signupRequest.getUsername());
+                ? signupRequest.getFullName().trim() : signupRequest.getUsername().trim());
         profile.setCropGrown(signupRequest.getCropGrown());
         profile.setLandSizeHectares(signupRequest.getLandSizeHectares());
 
         if (signupRequest.getDistrictName() != null && !signupRequest.getDistrictName().trim().isEmpty()) {
-            District district = districtRepository.findByName(signupRequest.getDistrictName())
-                    .orElseThrow(() -> new IllegalArgumentException("District not found: " + signupRequest.getDistrictName()));
+            String targetDist = signupRequest.getDistrictName().trim();
+            District district = districtRepository.findByNameIgnoreCase(targetDist)
+                    .orElseGet(() -> districtRepository.findAll().stream()
+                            .filter(d -> d.getName().equalsIgnoreCase(targetDist))
+                            .findFirst()
+                            .orElse(null));
             profile.setDistrict(district);
         }
 

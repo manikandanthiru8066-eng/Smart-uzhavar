@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface DistrictRepository extends JpaRepository<District, Long> {
     Optional<District> findByName(String name);
+    Optional<District> findByNameIgnoreCase(String name);
 }

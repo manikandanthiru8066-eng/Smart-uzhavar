@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { insuranceApi } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import { TranslatedText } from '../components/TranslatedText';
 import { Search, Users, Phone, ChevronRight } from 'lucide-react';
 
@@ -20,28 +21,41 @@ interface NearbyMachineryItem {
 
 export const MachineryPage: React.FC = () => {
   const { t } = useTranslation();
+  const { profile } = useAuth();
+
   const [machineType, setMachineType] = useState('Tractor');
   const [requiredDate, setRequiredDate] = useState('2026-08-15');
   const [village, setVillage] = useState('Kondiyur');
   const [acres, setAcres] = useState('2.5');
-  const [district] = useState('Thanjavur');
-  const [block] = useState('Thiruvaiyaru');
+  const [district, setDistrict] = useState(profile?.districtName || 'Thanjavur');
+  const [block, setBlock] = useState('Thiruvaiyaru');
 
   const [showGroupResult, setShowGroupResult] = useState(false);
   const [apiNearbyList, setApiNearbyList] = useState<NearbyMachineryItem[]>([]);
 
-  const handleSearchNearby = async () => {
-    setShowGroupResult(true);
+  useEffect(() => {
+    if (profile?.districtName) {
+      setDistrict(profile.districtName);
+    }
+    fetchNearbyMachinery(profile?.districtName || 'Thanjavur', 'Thiruvaiyaru');
+  }, [profile]);
+
+  const fetchNearbyMachinery = async (districtName: string, blockName: string) => {
     try {
       const res = await insuranceApi.get('/api/machinery/nearby', {
-        params: { district, block },
+        params: { district: districtName, block: blockName },
       });
       if (Array.isArray(res.data)) {
         setApiNearbyList(res.data);
       }
     } catch {
-      // Fallback API error handler
+      // Fallback
     }
+  };
+
+  const handleSearchNearby = async () => {
+    setShowGroupResult(true);
+    await fetchNearbyMachinery(district, block);
   };
 
   return (
@@ -110,7 +124,7 @@ export const MachineryPage: React.FC = () => {
           <div className="group-result-card fade-in mt-4">
             <div className="flex justify-between items-center mb-2.5">
               <h4 className="text-sm font-semibold">
-                <TranslatedText text="3 nearby farmers found in Thiruvaiyaru block" />
+                <TranslatedText text={`3 nearby farmers found in ${block} block`} />
               </h4>
               <span className="badge badge-green">{t('combinedAcresBadge')}</span>
             </div>
@@ -154,7 +168,7 @@ export const MachineryPage: React.FC = () => {
       </h3>
       <div className="card p-4 flex justify-between items-center mb-5">
         <span className="text-sm">
-          <TranslatedText text="2 tractors, 1 harvester available at Thiruvaiyaru Custom Hiring Centre" />
+          <TranslatedText text={`Tractors and harvesters available at ${district} Custom Hiring Centre`} />
         </span>
         <span className="badge badge-green">{t('availableBadge')}</span>
       </div>
@@ -185,7 +199,7 @@ export const MachineryPage: React.FC = () => {
           <div>
             <b className="text-sm"><TranslatedText text="Murugan Agro Services" /></b>
             <div className="text-xs text-gray-500">
-              <TranslatedText text="Tractor + Rotavator · Thiruvaiyaru" />
+              <TranslatedText text="Tractor + Rotavator · Custom Hiring" />
             </div>
           </div>
           <button className="btn btn-ghost btn-sm">

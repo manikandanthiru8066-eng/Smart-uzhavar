@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard,
   HandCoins,
@@ -13,6 +14,7 @@ import {
   Languages,
   Moon,
   Sun,
+  LogOut,
 } from 'lucide-react';
 
 interface AppShellProps {
@@ -33,7 +35,17 @@ const pageTitles: Record<string, { titleKey: string; subKey: string }> = {
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { profile, username, logout } = useAuth();
   const [isDark, setIsDark] = useState(false);
+
+  const displayName = profile?.fullName || profile?.username || username || 'Farmer';
+  const initialLetter = displayName.charAt(0).toUpperCase();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   const currentPath = location.pathname;
   const currentMeta = pageTitles[currentPath] || { titleKey: 'brandName', subKey: 'subDashboard' };
@@ -187,9 +199,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             </button>
 
             <div className="avatar-chip">
-              <div className="av">M</div>
-              <span>{t('userNavName')}</span>
+              <div className="av">{initialLetter}</div>
+              <span>{displayName}</span>
             </div>
+
+            <button className="icon-btn" title="Logout" onClick={handleLogout}>
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
 
