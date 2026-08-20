@@ -143,6 +143,10 @@ const resources = {
       // Profile Page
       profilePageTitle: 'Farmer Profile',
       profilePageSub: 'Editable anytime — recommendations update automatically when you save.',
+      completeProfileTitle: 'Complete Your Farmer Profile',
+      completeProfileSub: 'Manage your identity and cultivated crop profiles for personalized recommendations.',
+      usernameLabel: 'Username',
+      fullNameLabel: 'Full Name',
       nameLabel: 'Name',
       phoneLabel: 'Phone Number',
       districtLabel: 'District',
@@ -153,6 +157,7 @@ const resources = {
       irrigationLabel: 'Irrigation Type',
       saveProfileBtn: 'Save Profile',
       savedSuccessBtn: 'Saved Successfully!',
+
 
       // Notifications Page
       notificationsPageTitle: 'Notifications',
@@ -349,6 +354,10 @@ const resources = {
       // Profile Page
       profilePageTitle: 'விவசாயி சுயவிவரம்',
       profilePageSub: 'எப்போது வேண்டுமானாலும் திருத்தலாம் — சேமிக்கும் போது பரிந்துரைகள் புதுப்பிக்கப்படும்.',
+      completeProfileTitle: 'உங்கள் விவசாயி சுயவிவரத்தை பூர்த்தி செய்யுங்கள்',
+      completeProfileSub: 'தனிப்பயனாக்கப்பட்ட பரிந்துரைகளுக்கு உங்கள் விவரங்கள் மற்றும் பயிர் சுயவிவரங்களை நிர்வகிக்கவும்.',
+      usernameLabel: 'பயனர் பெயர்',
+      fullNameLabel: 'முழு பெயர்',
       nameLabel: 'பெயர்',
       phoneLabel: 'தொலைபேசி எண்',
       districtLabel: 'மாவட்டம்',
@@ -359,6 +368,7 @@ const resources = {
       irrigationLabel: 'பாசன வகை',
       saveProfileBtn: 'சுயவிவரத்தை சேமி',
       savedSuccessBtn: 'வெற்றிகரமாக சேமிக்கப்பட்டது!',
+
 
       // Notifications Page
       notificationsPageTitle: 'அறிவிப்புகள்',

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { insuranceApi } from '../api/client';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, FarmerCropItem } from '../context/AuthContext';
 import {
   Info,
   Calculator,
   FileText,
   ExternalLink,
   MapPin,
-  ChevronDown,
-  ChevronUp,
   Search,
+  Sprout,
 } from 'lucide-react';
 
 interface InsuranceSchemeItem {
@@ -24,6 +23,14 @@ interface InsuranceSchemeItem {
   applicableCropsTa?: string;
   premiumRatePercentage?: number;
   sumInsuredPerAcre?: number;
+  matchScore?: number;
+  matchReasons?: string[];
+}
+
+
+interface CropInsuranceGroup {
+  cropProfile: FarmerCropItem;
+  schemes: InsuranceSchemeItem[];
 }
 
 export const InsurancePage: React.FC = () => {
@@ -31,62 +38,95 @@ export const InsurancePage: React.FC = () => {
   const isTa = i18n.language === 'ta';
   const { profile } = useAuth();
 
-  const [recommendedSchemes, setRecommendedSchemes] = useState<InsuranceSchemeItem[]>([]);
+  const [cropGroups, setCropGroups] = useState<CropInsuranceGroup[]>([]);
+  const [fallbackSchemes, setFallbackSchemes] = useState<InsuranceSchemeItem[]>([]);
   const [allSchemes, setAllSchemes] = useState<InsuranceSchemeItem[]>([]);
   const [showAll, setShowAll] = useState(false);
   const [searchCrop, setSearchCrop] = useState('');
   const [showOffice, setShowOffice] = useState(false);
 
   // Form states for calculator
-  const [crop, setCrop] = useState(profile?.cropGrown || 'Paddy');
-  const [acres, setAcres] = useState<number>(profile?.landSizeHectares ? profile.landSizeHectares * 2.47 : 2.5);
+  const [selectedSchemeId, setSelectedSchemeId] = useState<number>(1);
+  const [calcAcres, setCalcAcres] = useState<number>(2.5);
+  const [calcCrop, setCalcCrop] = useState<string>('Paddy');
   const [estimatedPremium, setEstimatedPremium] = useState<number>(2000);
   const [estimatedCoverage, setEstimatedCoverage] = useState<number>(100000);
 
   useEffect(() => {
-    if (profile?.cropGrown) {
-      setCrop(profile.cropGrown);
-    }
-    if (profile?.landSizeHectares) {
-      setAcres(profile.landSizeHectares * 2.47);
-    }
+    fetchGroupedInsurance();
+    fetchAllSchemes();
   }, [profile]);
 
-  useEffect(() => {
-    fetchRecommended();
-    fetchAllSchemes();
-  }, []);
+  const fetchGroupedInsurance = async () => {
+    const crops: FarmerCropItem[] = Array.isArray(profile?.crops) ? profile.crops : [];
 
-  const fetchRecommended = async () => {
+    if (crops.length > 0) {
+      try {
+        const groups: CropInsuranceGroup[] = [];
+        for (const cropItem of crops) {
+          if (cropItem.id) {
+            const res = await insuranceApi.get<InsuranceSchemeItem[]>(`/api/insurance/recommended?cropProfileId=${cropItem.id}`);
+            if (Array.isArray(res.data) && res.data.length > 0) {
+              groups.push({
+                cropProfile: cropItem,
+                schemes: res.data,
+              });
+            }
+          }
+        }
+        if (groups.length > 0) {
+          setCropGroups(groups);
+          const firstCrop = crops[0];
+          setCalcCrop(firstCrop.cropGrown || 'Paddy');
+          setCalcAcres(firstCrop.landSizeAcres || 2.5);
+          if (groups[0].schemes.length > 0) {
+            calculateEstimate(groups[0].schemes[0].id, firstCrop.landSizeAcres || 2.5, firstCrop.cropGrown || 'Paddy');
+          }
+          return;
+        }
+      } catch (err) {
+        console.error('[InsurancePage] Error fetching per-crop insurance recommendations:', err);
+      }
+    }
+
+    fetchFallbackRecommended();
+  };
+
+  const fetchFallbackRecommended = async () => {
     try {
       const res = await insuranceApi.get<InsuranceSchemeItem[]>('/api/insurance/recommended');
       if (Array.isArray(res.data) && res.data.length > 0) {
-        setRecommendedSchemes(res.data);
-        calculateEstimate(res.data[0].id, acres, crop);
+        setFallbackSchemes(res.data);
+        calculateEstimate(res.data[0].id, calcAcres, calcCrop);
       } else {
-        fetchAllFallback();
+        const allRes = await insuranceApi.get<InsuranceSchemeItem[]>('/api/insurance');
+        if (Array.isArray(allRes.data) && allRes.data.length > 0) {
+          setFallbackSchemes(allRes.data);
+          calculateEstimate(allRes.data[0].id, calcAcres, calcCrop);
+        }
       }
     } catch {
-      fetchAllFallback();
+      const fallbackList: InsuranceSchemeItem[] = [
+        {
+          id: 1,
+          name: 'Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif',
+          nameTa: 'பிரதம மந்திரி பயிர் காப்பீட்டு திட்டம் (PMFBY) - காரீஃப்',
+          description: 'Yield-based crop insurance scheme covering crop loss due to non-preventable natural risks during Kharif season. Premium rate is 2% of sum insured.',
+          descriptionTa: 'காரீஃப் பருவத்தில் இயற்கையான இடர்பாடுகளால் ஏற்படும் பயிர் இழப்பை ஈடுசெய்யும் விளைச்சல் சார்ந்த காப்பீட்டுத் திட்டம்.',
+          schemeType: 'YIELD_BASED',
+          applicableCrops: 'Paddy, Maize, Millets, Pulses',
+          premiumRatePercentage: 2.0,
+          sumInsuredPerAcre: 35000,
+        },
+      ];
+      setFallbackSchemes(fallbackList);
+      calculateEstimate(1, calcAcres, calcCrop);
     }
   };
 
-  const fetchAllFallback = async () => {
+  const fetchAllSchemes = async () => {
     try {
       const res = await insuranceApi.get<InsuranceSchemeItem[]>('/api/insurance');
-      if (Array.isArray(res.data) && res.data.length > 0) {
-        setRecommendedSchemes(res.data.slice(0, 1));
-        calculateEstimate(res.data[0].id, acres, crop);
-      }
-    } catch {
-      // Fallback
-    }
-  };
-
-  const fetchAllSchemes = async (filterCrop?: string) => {
-    try {
-      const params = filterCrop ? { crop: filterCrop } : {};
-      const res = await insuranceApi.get<InsuranceSchemeItem[]>('/api/insurance', { params });
       if (Array.isArray(res.data)) {
         setAllSchemes(res.data);
       }
@@ -95,47 +135,29 @@ export const InsurancePage: React.FC = () => {
     }
   };
 
-  const calculateEstimate = async (schemeId: number, landAcres: number, cropName: string) => {
-    try {
-      const res = await insuranceApi.post('/api/insurance/estimate', {
-        schemeId,
-        landSizeAcres: landAcres,
-        crop: cropName,
-      });
-      if (res.data) {
-        setEstimatedCoverage(res.data.sumInsured);
-        setEstimatedPremium(res.data.premiumEstimate);
-      }
-    } catch {
-      // Fallback client calculation if backend estimate endpoint fails
-      const currentScheme = recommendedSchemes.find((s) => s.id === schemeId) || recommendedSchemes[0];
-      const sumPerAcre = currentScheme?.sumInsuredPerAcre || 40000;
-      const rate = (currentScheme?.premiumRatePercentage || 2.0) / 100;
-      const cov = landAcres * sumPerAcre;
-      setEstimatedCoverage(cov);
-      setEstimatedPremium(cov * rate);
-    }
+  const calculateEstimate = (schemeId: number, numAcres: number, cropName: string) => {
+    const scheme = [...allSchemes, ...fallbackSchemes].find((s) => s.id === schemeId) || {
+      premiumRatePercentage: 2.0,
+      sumInsuredPerAcre: 35000,
+    };
+    const rate = scheme.premiumRatePercentage || 2.0;
+    const sumPerAcre = scheme.sumInsuredPerAcre || 35000;
+    const coverage = numAcres * sumPerAcre;
+    const premium = (coverage * rate) / 100;
+
+    setEstimatedCoverage(coverage);
+    setEstimatedPremium(premium);
   };
 
-  const handleAcresChange = (newAcres: number) => {
-    setAcres(newAcres);
-    const targetSchemeId = recommendedSchemes[0]?.id || 1;
-    calculateEstimate(targetSchemeId, newAcres, crop);
+  const handleAcresChange = (val: number) => {
+    setCalcAcres(val);
+    calculateEstimate(selectedSchemeId, val, calcCrop);
   };
 
-  const handleCropChange = (newCrop: string) => {
-    setCrop(newCrop);
-    const targetSchemeId = recommendedSchemes[0]?.id || 1;
-    calculateEstimate(targetSchemeId, acres, newCrop);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setSearchCrop(val);
-    fetchAllSchemes(val);
-  };
-
-  const primaryScheme = recommendedSchemes[0];
+  const filteredCatalogue = allSchemes.filter((item) => {
+    if (!searchCrop) return true;
+    return item.applicableCrops?.toLowerCase().includes(searchCrop.toLowerCase());
+  });
 
   return (
     <div className="page-view fade-in">
@@ -148,142 +170,177 @@ export const InsurancePage: React.FC = () => {
         <div
           className="card p-4 mb-5 flex items-center gap-3 text-xs font-medium"
           style={{
-            background: 'var(--sky-soft)',
-            borderColor: 'var(--sky)',
-            color: '#084b66',
+            background: 'var(--light-green-soft)',
+            borderColor: 'var(--emerald)',
+            color: 'var(--emerald-deep)',
           }}
         >
           <Info size={16} className="shrink-0" />
           <span>
-            Insurance tailored for <b>{profile.fullName || profile.username}</b> ({profile.cropGrown || 'Paddy'}, {profile.landSizeHectares || 1.0} Ha registered)
+            Matched for <b>{profile.fullName || profile.username}</b> ({cropGroups.length} Active Cultivated Crop Profiles)
           </span>
         </div>
       )}
 
-      {/* Primary Recommended Scheme Card */}
-      {primaryScheme ? (
-        <div className="card rec-card">
-          <div className="rec-top">
-            <div>
-              <h4>{(isTa && primaryScheme.nameTa) ? primaryScheme.nameTa : primaryScheme.name}</h4>
-              <div className="rec-meta">
-                <span className="badge badge-green">Recommended</span>
-                <span className="badge badge-neutral">{primaryScheme.schemeType || 'YIELD_BASED'}</span>
+      {/* Render Grouped Recommendations per Crop Profile */}
+      {cropGroups.length > 0 ? (
+        cropGroups.map((group, groupIdx) => {
+          const cropItem = group.cropProfile;
+          const cropAcres = cropItem.landSizeAcres || 2.5;
+
+          return (
+            <div key={cropItem.id || groupIdx} className="mb-8 border-b border-gray-200 pb-6">
+              <div className="flex items-center gap-2 mb-3 bg-emerald-50/80 p-3 rounded-2xl border border-emerald-200">
+                <Sprout className="text-emerald-700 shrink-0" size={20} />
+                <h3 className="text-sm font-bold text-emerald-950">
+                  Insurance Recommendations for {cropItem.cropGrown || 'Crop'} ({cropItem.districtName || 'District'} - {cropAcres} Acres)
+                </h3>
+                <span className="ml-auto text-xs font-semibold px-2.5 py-1 bg-emerald-700 text-white rounded-full">
+                  Crop Profile #{groupIdx + 1}
+                </span>
               </div>
+
+              {group.schemes.map((scheme, idx) => (
+                <div key={scheme.id || idx} className="card ins-card mb-4">
+                  <div className="ins-top">
+                    <div>
+                      <h4>{(isTa && scheme.nameTa) ? scheme.nameTa : scheme.name}</h4>
+                      <div className="ins-meta">
+                        <span className="badge badge-sky">{scheme.schemeType || 'YIELD_BASED'}</span>
+                        <span className="badge badge-amber">{cropItem.districtName || 'District'}</span>
+                        <span className="badge badge-green">{cropItem.cropGrown || 'Crop'}</span>
+                      </div>
+                      {scheme.matchReasons && scheme.matchReasons.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {scheme.matchReasons.map((reason, rIdx) => (
+                            <span key={rIdx} className="px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg flex items-center gap-1">
+                              ✓ {reason}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="ins-desc">{(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}</p>
+                </div>
+              ))}
             </div>
-            <div className="rec-benefit">
-              <div className="l">{t('sumInsuredLabel')}</div>
-              <div className="v">₹{primaryScheme.sumInsuredPerAcre?.toLocaleString('en-IN') || '40,000'}/ac</div>
-            </div>
-          </div>
-
-          <p className="text-xs text-gray-600 mb-3">
-            {(isTa && primaryScheme.descriptionTa) ? primaryScheme.descriptionTa : primaryScheme.description}
-          </p>
-
-          {/* Premium Calculator Panel */}
-          <div className="calc-panel">
-            <div className="hd">
-              <Calculator size={14} />
-              <span>{t('premiumCalculatorTitle')}</span>
-            </div>
-
-            <div className="field-row">
-              <div className="field">
-                <label>{t('cropLabel')}</label>
-                <select value={crop} onChange={(e) => handleCropChange(e.target.value)}>
-                  <option value="Paddy">Paddy</option>
-                  <option value="Sugarcane">Sugarcane</option>
-                  <option value="Cotton">Cotton</option>
-                  <option value="Banana">Banana</option>
-                </select>
-              </div>
-              <div className="field">
-                <label>Land (Acres)</label>
-                <input
-                  type="number"
-                  value={acres}
-                  step="0.5"
-                  onChange={(e) => handleAcresChange(parseFloat(e.target.value) || 0)}
-                />
-              </div>
-            </div>
-
-            <div className="calc-result-row">
-              <div className="item">
-                <div className="l">{t('estimatedPremiumLabel')}</div>
-                <div className="v">₹{Math.round(estimatedPremium).toLocaleString('en-IN')}</div>
-              </div>
-              <div className="item">
-                <div className="l">{t('estimatedCoverageLabel')}</div>
-                <div className="v">₹{Math.round(estimatedCoverage).toLocaleString('en-IN')}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Required Documents */}
-          <div className="rec-docs mt-3.5">
-            <span className="doc-chip"><FileText size={13} />{t('docLandRecord')}</span>
-            <span className="doc-chip"><FileText size={13} />{t('docSowingCert')}</span>
-            <span className="doc-chip"><FileText size={13} />{t('docBankPassbook')}</span>
-          </div>
-
-          {/* Actions */}
-          <div className="rec-actions">
-            <button className="btn btn-primary btn-sm"><ExternalLink size={13} />{t('applyOnlineBtn')}</button>
-            <button className="btn btn-ghost btn-sm" onClick={() => setShowOffice(!showOffice)}>
-              <MapPin size={13} />{t('offlineOfficeBtn')}
-            </button>
-          </div>
-
-          {showOffice && (
-            <div className="office-box">
-              <span><b>{profile?.districtName || 'District'} Agriculture Extension Office</b> · Custom Hiring & Insurance Cell</span>
-            </div>
-          )}
-        </div>
+          );
+        })
       ) : (
-        <div className="card p-6 text-center text-sm text-gray-500">
-          Loading insurance recommendations...
+        /* Fallback single list if zero crops */
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold mb-3">Recommended Insurance Schemes</h3>
+          {fallbackSchemes.map((scheme, idx) => (
+            <div key={scheme.id || idx} className="card ins-card mb-4">
+              <div className="ins-top">
+                <div>
+                  <h4>{(isTa && scheme.nameTa) ? scheme.nameTa : scheme.name}</h4>
+                  <div className="ins-meta">
+                    <span className="badge badge-sky">{scheme.schemeType || 'YIELD_BASED'}</span>
+                  </div>
+                </div>
+              </div>
+              <p className="ins-desc">{(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}</p>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* View All Panel Toggle */}
-      <div className="text-center my-5">
-        <button className="btn btn-ghost" onClick={() => setShowAll(!showAll)}>
-          {showAll ? t('hideCatalogueBtn') : t('viewAllInsuranceBtn')}{' '}
-          {showAll ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+      {/* Premium Calculator Card */}
+      <div className="card calc-card mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Calculator className="text-emerald-700" size={20} />
+          <h3 className="text-sm font-bold text-gray-900">{t('premiumCalculatorTitle')}</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">{t('cropLabel')}</label>
+            <select
+              value={calcCrop}
+              onChange={(e) => setCalcCrop(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <option value="Paddy">Paddy</option>
+              <option value="Sugarcane">Sugarcane</option>
+              <option value="Cotton">Cotton</option>
+              <option value="Banana">Banana</option>
+              <option value="Groundnut">Groundnut</option>
+              <option value="Maize">Maize</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">{t('acresLabel')}</label>
+            <input
+              type="number"
+              step="0.5"
+              min="0.5"
+              value={calcAcres}
+              onChange={(e) => handleAcresChange(parseFloat(e.target.value) || 1)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Select Scheme</label>
+            <select
+              value={selectedSchemeId}
+              onChange={(e) => {
+                const sid = parseInt(e.target.value);
+                setSelectedSchemeId(sid);
+                calculateEstimate(sid, calcAcres, calcCrop);
+              }}
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              {allSchemes.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+          <div>
+            <div className="text-xs font-semibold text-emerald-800">{t('estimatedPremiumLabel')}</div>
+            <div className="text-xl font-bold text-emerald-950">₹{estimatedPremium.toLocaleString('en-IN')}</div>
+            <div className="text-xs text-gray-500">2.0% Farmer Premium Rate</div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-emerald-800">{t('estimatedCoverageLabel')}</div>
+            <div className="text-xl font-bold text-emerald-950">₹{estimatedCoverage.toLocaleString('en-IN')}</div>
+            <div className="text-xs text-gray-500">Total Sum Insured</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Catalogue toggle */}
+      <div className="text-center my-6">
+        <button className="btn btn-primary btn-md cursor-pointer" onClick={() => setShowAll(!showAll)}>
+          {showAll ? 'Hide Full Catalogue' : `${t('viewAllInsuranceBtn')}`}
         </button>
       </div>
 
+      {/* Full Catalogue Section */}
       {showAll && (
-        <div className="fade-in space-y-3">
-          <div className="filter-bar">
-            <div className="search">
-              <Search size={16} />
-              <input
-                placeholder={t('searchInsurancePlaceholder')}
-                value={searchCrop}
-                onChange={handleSearchChange}
-              />
-            </div>
-          </div>
-
-          <div className="card p-2">
-            {allSchemes.map((scheme, idx) => (
-              <div
-                key={scheme.id || idx}
-                className="py-3 px-4 flex justify-between items-center text-sm border-b last:border-b-0"
-              >
-                <div>
-                  <div className="font-semibold">{(isTa && scheme.nameTa) ? scheme.nameTa : scheme.name}</div>
-                  <div className="text-xs text-gray-500">{(isTa && scheme.applicableCropsTa) ? scheme.applicableCropsTa : scheme.applicableCrops}</div>
+        <div className="mt-6 card p-5 fade-in">
+          <h3 className="text-base font-bold mb-3">Complete Insurance Policy Catalogue</h3>
+          <div className="space-y-3">
+            {filteredCatalogue.map((scheme) => (
+              <div key={scheme.id} className="p-4 border border-gray-100 rounded-xl hover:border-emerald-200 transition-colors">
+                <div className="flex justify-between items-start mb-1">
+                  <h4 className="text-sm font-bold text-gray-900">{(isTa && scheme.nameTa) ? scheme.nameTa : scheme.name}</h4>
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                    {scheme.premiumRatePercentage}% Premium Rate
+                  </span>
                 </div>
-                <div className="text-right">
-                  <span className="badge badge-neutral font-bold">{scheme.schemeType}</span>
-                  <div className="text-xs text-emerald-700 font-semibold mt-1">
-                    Premium: {scheme.premiumRatePercentage}%
-                  </div>
+                <p className="text-xs text-gray-600 mb-2">{(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}</p>
+                <div className="text-xs text-gray-500">
+                  <span>🌾 {scheme.applicableCrops || 'All Crops'}</span>
                 </div>
               </div>
             ))}

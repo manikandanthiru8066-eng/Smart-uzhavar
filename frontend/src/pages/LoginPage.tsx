@@ -177,10 +177,8 @@ export const LoginPage: React.FC = () => {
         fullName: fullName.trim(),
         email: email.trim() || undefined,
         phoneNumber: phoneNumber || undefined,
-        districtName,
-        cropGrown,
-        landSizeHectares: parseFloat(landSizeHectares) || 1.0,
       });
+
       navigate('/', { replace: true });
     } catch (err: any) {
       console.error('[LoginPage] Signup error — status:', err?.response?.status, 'body:', err?.response?.data);
@@ -413,71 +411,16 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
 
-            {/* District + Crop + Land */}
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  {t('signupDistrictLabel')}
-                </label>
-                <select
-                  id="signup-district"
-                  className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
-                  value={districtName}
-                  onChange={(e) => setDistrictName(e.target.value)}
-                >
-                  {districts.map((d) => (
-                    <option key={d.id || d.name} value={d.name}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  {t('signupCropLabel')}
-                </label>
-                <select
-                  id="signup-crop"
-                  className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
-                  value={cropGrown}
-                  onChange={(e) => setCropGrown(e.target.value)}
-                >
-                  <option value="Paddy">Paddy</option>
-                  <option value="Sugarcane">Sugarcane</option>
-                  <option value="Cotton">Cotton</option>
-                  <option value="Banana">Banana</option>
-                  <option value="Groundnut">Groundnut</option>
-                  <option value="Maize">Maize</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  {t('signupLandLabel')}
-                </label>
-                <input
-                  id="signup-land"
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  className="w-full px-2.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="1.0"
-                  value={landSizeHectares}
-                  onChange={(e) => setLandSizeHectares(e.target.value)}
-                />
-              </div>
-            </div>
-
             <button
               id="signup-submit-btn"
               type="submit"
               disabled={submitting || !!phoneError || !!passwordError}
-              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
+              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-4"
             >
               <UserPlus size={18} />
               {submitting ? t('signupSubmitting') : t('signupSubmitBtn')}
             </button>
+
           </form>
         )}
       </div>

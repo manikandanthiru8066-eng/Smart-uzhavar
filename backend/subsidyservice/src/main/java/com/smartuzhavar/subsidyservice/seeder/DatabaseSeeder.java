@@ -39,28 +39,28 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedDistricts() {
-        long existing = districtRepository.count();
-        if (existing >= 38) {
-            log.info("Districts table already has {} districts — skipping seed.", existing);
-            return;
-        }
-        if (existing > 0) {
-            log.info("Districts table has only {} entries — re-seeding from tn_districts.json.", existing);
-            districtRepository.deleteAll();
-        }
-
-        File file = findFile("database/tn_districts.json");
-        if (file == null || !file.exists()) {
-            log.error("Could not find tn_districts.json file for seeding!");
-            return;
-        }
-
         try {
+            long existing = districtRepository.count();
+            if (existing >= 38) {
+                log.info("Districts table already has {} districts — skipping seed.", existing);
+                return;
+            }
+            if (existing > 0) {
+                log.info("Districts table has only {} entries — re-seeding from tn_districts.json.", existing);
+                districtRepository.deleteAll();
+            }
+
+            File file = findFile("database/tn_districts.json");
+            if (file == null || !file.exists()) {
+                log.error("Could not find tn_districts.json file for seeding!");
+                return;
+            }
+
             List<District> districts = objectMapper.readValue(file, new TypeReference<List<District>>() {});
             districtRepository.saveAll(districts);
             log.info("Successfully seeded {} districts.", districts.size());
-        } catch (IOException e) {
-            log.error("Error reading or seeding districts: {}", e.getMessage(), e);
+        } catch (Exception e) {
+            log.warn("District seeding skipped or completed by parallel service: {}", e.getMessage());
         }
     }
 

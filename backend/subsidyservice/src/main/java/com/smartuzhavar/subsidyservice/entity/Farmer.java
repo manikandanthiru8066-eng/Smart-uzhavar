@@ -17,11 +17,15 @@ public class Farmer {
     @Column(nullable = false, length = 100)
     private String password;
 
+    @Column(name = "full_name", length = 100)
+    private String fullName;
+
     @Column(unique = true, length = 100)
     private String email;
 
     @Column(name = "phone_number", unique = true, length = 20)
     private String phoneNumber;
+
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
@@ -51,9 +55,18 @@ public class Farmer {
         this.username = username;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public String getPassword() {
         return password;
     }
+
 
     public void setPassword(String password) {
         this.password = password;

@@ -59,8 +59,9 @@ public class AuthController {
                 "Password must be at least 8 characters and include uppercase, lowercase, and a number.");
         }
 
-        if (farmerRepository.existsByUsername(signupRequest.getUsername())) {
-            throw new IllegalArgumentException("Username is already taken!");
+        String username = signupRequest.getUsername().trim();
+        if (farmerRepository.existsByUsernameIgnoreCase(username)) {
+            throw new IllegalArgumentException("Username '" + username + "' is already taken. Please choose another username.");
         }
 
         String cleanEmail = (signupRequest.getEmail() != null && !signupRequest.getEmail().trim().isEmpty())
@@ -73,47 +74,30 @@ public class AuthController {
             throw new IllegalArgumentException("Phone number must be exactly 10 digits.");
         }
 
-        if (cleanEmail != null && farmerRepository.existsByEmail(cleanEmail)) {
-            throw new IllegalArgumentException("Email is already in use!");
+        if (cleanEmail != null && farmerRepository.existsByEmailIgnoreCase(cleanEmail)) {
+            throw new IllegalArgumentException("Email address '" + cleanEmail + "' is already in use.");
         }
 
         if (cleanPhone != null && farmerRepository.existsByPhoneNumber(cleanPhone)) {
-            throw new IllegalArgumentException("Phone number is already in use!");
+            throw new IllegalArgumentException("Phone number '" + cleanPhone + "' is already in use.");
         }
 
-        // Creating farmer account
+        // Creating farmer account (Identity details ONLY, no crop profiles created during signup)
         Farmer farmer = new Farmer();
         farmer.setUsername(signupRequest.getUsername().trim());
         farmer.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        farmer.setFullName(signupRequest.getFullName() != null && !signupRequest.getFullName().trim().isEmpty() 
+                ? signupRequest.getFullName().trim() : signupRequest.getUsername().trim());
         farmer.setEmail(cleanEmail);
         farmer.setPhoneNumber(cleanPhone);
 
         Farmer savedFarmer = farmerRepository.save(farmer);
 
-        // Creating farmer profile
-        FarmerProfile profile = new FarmerProfile();
-        profile.setFarmer(savedFarmer);
-        profile.setFullName(signupRequest.getFullName() != null && !signupRequest.getFullName().trim().isEmpty() 
-                ? signupRequest.getFullName().trim() : signupRequest.getUsername().trim());
-        profile.setCropGrown(signupRequest.getCropGrown());
-        profile.setLandSizeHectares(signupRequest.getLandSizeHectares());
-
-        if (signupRequest.getDistrictName() != null && !signupRequest.getDistrictName().trim().isEmpty()) {
-            String targetDist = signupRequest.getDistrictName().trim();
-            District district = districtRepository.findByNameIgnoreCase(targetDist)
-                    .orElseGet(() -> districtRepository.findAll().stream()
-                            .filter(d -> d.getName().equalsIgnoreCase(targetDist))
-                            .findFirst()
-                            .orElse(null));
-            profile.setDistrict(district);
-        }
-
-        farmerProfileRepository.save(profile);
-
         // Generate token
         String jwt = tokenProvider.generateToken(savedFarmer.getUsername());
         return ResponseEntity.ok(new AuthResponse(jwt, savedFarmer.getUsername()));
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateFarmer(@RequestBody LoginRequest loginRequest) {

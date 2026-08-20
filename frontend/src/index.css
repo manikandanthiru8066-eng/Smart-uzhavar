@@ -92,10 +92,10 @@ SHARED COMPONENTS
 
 .ribbon{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--emerald),var(--emerald-bright));width:56px;}
 
-.field label{font-size:12.5px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px;}
 .field input,.field select{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--ink);font-size:13.5px;outline:none;transition:.15s;}
-.field input:focus,.field select:focus{border-color:var(--emerald);box-shadow:0 0 0 3px color-mix(in srgb, var(--emerald) 15%, transparent);}
-.field{margin-bottom:16px;}
+.field input.has-icon,.field input.pl-10{padding-left:38px !important;}
+.field:focus-within svg{color:var(--emerald-deep);}
+
 .field-row{display:flex;gap:14px;}
 .field-row .field{flex:1;}
 

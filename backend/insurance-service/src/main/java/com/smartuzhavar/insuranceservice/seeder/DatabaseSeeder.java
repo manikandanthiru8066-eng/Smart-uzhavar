@@ -40,20 +40,24 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedDistricts() {
-        if (districtRepository.count() == 0) {
-            List<String> defaultDistricts = List.of(
-                "Thanjavur", "Thiruvarur", "Nagapattinam", "Trichy", "Ariyalur", "Karur",
-                "Pudukkottai", "Madurai", "Coimbatore", "Chennai", "Cuddalore", "Dharmapuri",
-                "Dindigul", "Erode", "Kanchipuram", "Kanyakumari", "Krishnagiri", "Namakkal",
-                "Perambalur", "Ramanathapuram", "Salem", "Sivaganga", "Tenkasi", "Theni",
-                "Thoothukudi", "Tirunelveli", "Tiruppur", "Tiruvallur", "Tiruvannamalai",
-                "Vellore", "Viluppuram", "Virudhunagar"
-            );
-            List<com.smartuzhavar.insuranceservice.entity.District> districts = defaultDistricts.stream()
-                .map(com.smartuzhavar.insuranceservice.entity.District::new)
-                .toList();
-            districtRepository.saveAll(districts);
-            log.info("Successfully seeded {} districts in insurance-service.", districts.size());
+        try {
+            if (districtRepository.count() == 0) {
+                List<String> defaultDistricts = List.of(
+                    "Thanjavur", "Thiruvarur", "Nagapattinam", "Trichy", "Ariyalur", "Karur",
+                    "Pudukkottai", "Madurai", "Coimbatore", "Chennai", "Cuddalore", "Dharmapuri",
+                    "Dindigul", "Erode", "Kanchipuram", "Kanyakumari", "Krishnagiri", "Namakkal",
+                    "Perambalur", "Ramanathapuram", "Salem", "Sivaganga", "Tenkasi", "Theni",
+                    "Thoothukudi", "Tirunelveli", "Tiruppur", "Tiruvallur", "Tiruvannamalai",
+                    "Vellore", "Viluppuram", "Virudhunagar"
+                );
+                List<com.smartuzhavar.insuranceservice.entity.District> districts = defaultDistricts.stream()
+                    .map(com.smartuzhavar.insuranceservice.entity.District::new)
+                    .toList();
+                districtRepository.saveAll(districts);
+                log.info("Successfully seeded {} districts in insurance-service.", districts.size());
+            }
+        } catch (Exception e) {
+            log.warn("District seeding skipped or completed by parallel service: {}", e.getMessage());
         }
     }
 

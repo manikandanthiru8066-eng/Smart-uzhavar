@@ -21,8 +21,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Farmer farmer = farmerRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Farmer not found with username: " + username));
+        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
+                .orElseGet(() -> farmerRepository.findByUsername(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("Farmer not found with username: " + username)));
 
         return new User(farmer.getUsername(), farmer.getPassword(), new ArrayList<>());
     }

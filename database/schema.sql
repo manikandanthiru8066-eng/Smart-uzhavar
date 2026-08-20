@@ -11,24 +11,30 @@ CREATE TABLE IF NOT EXISTS farmers (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
+    full_name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     phone_number VARCHAR(20) UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. Farmer Profiles table
+
+-- 3. Farmer Profiles table (One farmer can have MULTIPLE crop profiles)
 CREATE TABLE IF NOT EXISTS farmer_profiles (
     id SERIAL PRIMARY KEY,
-    farmer_id INTEGER UNIQUE NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
-    full_name VARCHAR(100) NOT NULL,
+    farmer_id INTEGER NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
+    full_name VARCHAR(100),
     district_id INTEGER REFERENCES districts(id) ON DELETE SET NULL,
+    block VARCHAR(100),
     crop_grown VARCHAR(100),
     crop_duration_months INTEGER,
     season VARCHAR(50),
+    irrigation_type VARCHAR(50),
+    land_size_acres DECIMAL(10, 2),
     land_size_hectares DECIMAL(10, 2),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- 4. Subsidy Schemes table
 CREATE TABLE IF NOT EXISTS subsidy_schemes (

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { insuranceApi, subsidyApi } from '../api/client';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, FarmerCropItem } from '../context/AuthContext';
+
 import {
   MapPin,
   CloudSun,
@@ -33,10 +34,19 @@ export const WeatherPage: React.FC = () => {
   const isTa = i18n.language === 'ta';
   const { profile } = useAuth();
 
+  const registeredCrops: FarmerCropItem[] = Array.isArray(profile?.crops) && profile.crops.length > 0
+    ? profile.crops
+    : profile?.districtName
+    ? [{ cropGrown: profile.cropGrown || 'Paddy', districtName: profile.districtName }]
+    : [];
+
+
+  const firstCropDistrict = registeredCrops[0]?.districtName || '';
+
   const [districts, setDistricts] = useState<DistrictItem[]>([]);
-  const [selectedDistrict, setSelectedDistrict] = useState<string>(profile?.districtName || 'Thanjavur');
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(firstCropDistrict || 'Thanjavur');
   const [weather, setWeather] = useState<WeatherData>({
-    district: profile?.districtName || 'Thanjavur',
+    district: firstCropDistrict || 'Thanjavur',
     temperatureCelsius: 32.5,
     humidityPercentage: 65.0,
     rainfallMm: 15.2,
@@ -46,14 +56,13 @@ export const WeatherPage: React.FC = () => {
   });
 
   useEffect(() => {
-    if (profile?.districtName) {
-      setSelectedDistrict(profile.districtName);
-      fetchWeather(profile.districtName);
-    } else {
-      fetchWeather('Thanjavur');
-    }
+    const primaryDist = registeredCrops[0]?.districtName || 'Thanjavur';
+    setSelectedDistrict(primaryDist);
+    fetchWeather(primaryDist);
     fetchDistricts();
   }, [profile]);
+
+
 
   const fetchDistricts = async () => {
     try {

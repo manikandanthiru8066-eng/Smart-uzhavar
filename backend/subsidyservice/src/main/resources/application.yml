@@ -18,13 +18,10 @@ spring:
       continue-on-error: true
 
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
 
 app:
   jwt:

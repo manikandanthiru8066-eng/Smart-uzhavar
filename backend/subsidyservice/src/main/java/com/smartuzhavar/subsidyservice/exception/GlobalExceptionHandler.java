@@ -65,15 +65,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
             org.springframework.dao.DataIntegrityViolationException ex) {
-        String msg = "Username, email, or phone number is already in use.";
-        String cause = ex.getMostSpecificCause().getMessage();
+        String msg = "A database constraint failure occurred. Please verify your details.";
+        String cause = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : null;
         if (cause != null) {
-            if (cause.contains("farmers_email_key") || cause.contains("email")) {
+            String lower = cause.toLowerCase();
+            if (lower.contains("farmers_email_key") || lower.contains("email")) {
                 msg = "Email address is already in use.";
-            } else if (cause.contains("farmers_phone_number_key") || cause.contains("phone_number")) {
+            } else if (lower.contains("farmers_phone_number_key") || lower.contains("phone_number")) {
                 msg = "Phone number is already in use.";
-            } else if (cause.contains("farmers_username_key") || cause.contains("username")) {
-                msg = "Username is already taken.";
+            } else if (lower.contains("farmers_username_key") || lower.contains("username")) {
+                msg = "Username is already taken. Please choose another username.";
+            } else {
+                msg = "Database error: " + cause;
             }
         }
         return ResponseEntity
