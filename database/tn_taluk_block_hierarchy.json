@@ -1,0 +1,364 @@
+[
+  {
+    "district": "Ariyalur",
+    "taluks": [
+      { "name": "Ariyalur", "blocks": ["Ariyalur", "Thirumanur"] },
+      { "name": "Udayarpalayam", "blocks": ["Jayamkondam", "T.Palur"] },
+      { "name": "Sendurai", "blocks": ["Sendurai"] }
+    ]
+  },
+  {
+    "district": "Chengalpattu",
+    "taluks": [
+      { "name": "Chengalpattu", "blocks": ["Kattankulathur", "St. Thomas Mount"] },
+      { "name": "Tambaram", "blocks": ["Tambaram"] },
+      { "name": "Maduranthakam", "blocks": ["Maduranthakam", "Acharapakkam"] },
+      { "name": "Cheyyur", "blocks": ["Cheyyur", "Lathur"] },
+      { "name": "Tiruporur", "blocks": ["Tiruporur"] }
+    ]
+  },
+  {
+    "district": "Chennai",
+    "taluks": [
+      { "name": "Egmore", "blocks": ["Zone 9 Egmore"] },
+      { "name": "Mylapore", "blocks": ["Zone 10 Mylapore"] },
+      { "name": "Tondiarpet", "blocks": ["Zone 4 Tondiarpet"] },
+      { "name": "Ambattur", "blocks": ["Zone 7 Ambattur"] }
+    ]
+  },
+  {
+    "district": "Coimbatore",
+    "taluks": [
+      { "name": "Coimbatore North", "blocks": ["Periyanaickenpalayam", "Sarcarsamakulam"] },
+      { "name": "Coimbatore South", "blocks": ["Thondamuthur", "Madukkarai"] },
+      { "name": "Pollachi", "blocks": ["Pollachi North", "Pollachi South"] },
+      { "name": "Mettupalayam", "blocks": ["Karamadai"] },
+      { "name": "Sulur", "blocks": ["Sulur"] },
+      { "name": "Valparai", "blocks": ["Valparai"] }
+    ]
+  },
+  {
+    "district": "Cuddalore",
+    "taluks": [
+      { "name": "Cuddalore", "blocks": ["Cuddalore", "Kurinjipadi"] },
+      { "name": "Chidambaram", "blocks": ["Chidambaram", "Keerapalayam"] },
+      { "name": "Panruti", "blocks": ["Panruti", "Annagramam"] },
+      { "name": "Vriddhachalam", "blocks": ["Vriddhachalam", "Nallur", "Kammapuram"] },
+      { "name": "Kattumannarkoil", "blocks": ["Kattumannarkoil", "Kumaratchi"] }
+    ]
+  },
+  {
+    "district": "Dharmapuri",
+    "taluks": [
+      { "name": "Dharmapuri", "blocks": ["Dharmapuri", "Nallampalli"] },
+      { "name": "Harur", "blocks": ["Harur", "Morappur"] },
+      { "name": "Pappireddipatti", "blocks": ["Pappireddipatti"] },
+      { "name": "Pennagaram", "blocks": ["Pennagaram", "Eriyur"] },
+      { "name": "Palacode", "blocks": ["Palacode", "Karimangalam"] }
+    ]
+  },
+  {
+    "district": "Dindigul",
+    "taluks": [
+      { "name": "Dindigul East", "blocks": ["Dindigul", "Shanarpatti"] },
+      { "name": "Dindigul West", "blocks": ["Reddiyarchatram"] },
+      { "name": "Palani", "blocks": ["Palani", "Thoppampatti"] },
+      { "name": "Kodaikanal", "blocks": ["Kodaikanal"] },
+      { "name": "Nilakottai", "blocks": ["Nilakottai", "Vattalagundu"] },
+      { "name": "Nattam", "blocks": ["Nattam"] }
+    ]
+  },
+  {
+    "district": "Erode",
+    "taluks": [
+      { "name": "Erode", "blocks": ["Erode", "Modakkurichi"] },
+      { "name": "Gobichettipalayam", "blocks": ["Gobichettipalayam", "T.N.Palayam"] },
+      { "name": "Bhavani", "blocks": ["Bhavani", "Ammapettai"] },
+      { "name": "Perundurai", "blocks": ["Perundurai", "Chennimalai"] },
+      { "name": "Sathyamangalam", "blocks": ["Sathyamangalam", "Bhavanisagar"] },
+      { "name": "Kodumudi", "blocks": ["Kodumudi"] }
+    ]
+  },
+  {
+    "district": "Kallakurichi",
+    "taluks": [
+      { "name": "Kallakurichi", "blocks": ["Kallakurichi", "Thyagadurgam"] },
+      { "name": "Sankarapuram", "blocks": ["Sankarapuram", "Kalrayan Hills"] },
+      { "name": "Tirukoilur", "blocks": ["Tirukoilur", "Mugaiyur"] },
+      { "name": "Ulundurpet", "blocks": ["Ulundurpet", "Thirunavalur"] }
+    ]
+  },
+  {
+    "district": "Kanchipuram",
+    "taluks": [
+      { "name": "Kanchipuram", "blocks": ["Kanchipuram", "Walajabad"] },
+      { "name": "Sriperumbudur", "blocks": ["Sriperumbudur"] },
+      { "name": "Uthiramerur", "blocks": ["Uthiramerur"] }
+    ]
+  },
+  {
+    "district": "Kanyakumari",
+    "taluks": [
+      { "name": "Agastheeswaram", "blocks": ["Agastheeswaram", "Rajakkamangalam"] },
+      { "name": "Thovalai", "blocks": ["Thovalai"] },
+      { "name": "Kalkulam", "blocks": ["Kurunthencode", "Thuckalay"] },
+      { "name": "Vilavancode", "blocks": ["Killiyoor", "Munchirai"] }
+    ]
+  },
+  {
+    "district": "Karur",
+    "taluks": [
+      { "name": "Karur", "blocks": ["Karur", "Thanthoni"] },
+      { "name": "Aravakurichi", "blocks": ["Aravakurichi", "K.Paramathi"] },
+      { "name": "Kulithalai", "blocks": ["Kulithalai", "Krishnarayapuram"] },
+      { "name": "Manmangalam", "blocks": ["Manmangalam"] }
+    ]
+  },
+  {
+    "district": "Krishnagiri",
+    "taluks": [
+      { "name": "Krishnagiri", "blocks": ["Krishnagiri", "Bargur"] },
+      { "name": "Hosur", "blocks": ["Hosur", "Shoolagiri"] },
+      { "name": "Denkanikottai", "blocks": ["Thally", "Kelamangalam"] },
+      { "name": "Pochampalli", "blocks": ["Pochampalli", "Kaveripattinam"] },
+      { "name": "Uthangarai", "blocks": ["Uthangarai", "Mathur"] }
+    ]
+  },
+  {
+    "district": "Madurai",
+    "taluks": [
+      { "name": "Madurai North", "blocks": ["Madurai East"] },
+      { "name": "Madurai South", "blocks": ["Madurai West", "Thiruparankundram"] },
+      { "name": "Melur", "blocks": ["Melur", "Kottampatti"] },
+      { "name": "Tirumangalam", "blocks": ["Tirumangalam", "Kalligudi"] },
+      { "name": "Usilampatti", "blocks": ["Usilampatti", "Sedapatti"] }
+    ]
+  },
+  {
+    "district": "Mayiladuthurai",
+    "taluks": [
+      { "name": "Mayiladuthurai", "blocks": ["Mayiladuthurai", "Kuthalam"] },
+      { "name": "Sirkazhi", "blocks": ["Sirkazhi", "Kollidam"] },
+      { "name": "Tharangambadi", "blocks": ["Sembanarkoil"] }
+    ]
+  },
+  {
+    "district": "Nagapattinam",
+    "taluks": [
+      { "name": "Nagapattinam", "blocks": ["Nagapattinam", "Thirukuvalai"] },
+      { "name": "Kilvelur", "blocks": ["Kilvelur"] },
+      { "name": "Vedaranyam", "blocks": ["Vedaranyam", "Thalainayar"] }
+    ]
+  },
+  {
+    "district": "Namakkal",
+    "taluks": [
+      { "name": "Namakkal", "blocks": ["Namakkal", "Mohanur", "Erumaipatti"] },
+      { "name": "Rasipuram", "blocks": ["Rasipuram", "Vennandur", "Namagiripettai"] },
+      { "name": "Tiruchengodu", "blocks": ["Tiruchengodu", "Elaichipalayam", "Mallasamudram"] },
+      { "name": "Paramathi Velur", "blocks": ["Paramathi", "Kabilarmalai"] }
+    ]
+  },
+  {
+    "district": "Nilgiris",
+    "taluks": [
+      { "name": "Udhagamandalam", "blocks": ["Udhagamandalam"] },
+      { "name": "Coonoor", "blocks": ["Coonoor"] },
+      { "name": "Kotagiri", "blocks": ["Kotagiri"] },
+      { "name": "Gudalur", "blocks": ["Gudalur"] }
+    ]
+  },
+  {
+    "district": "Perambalur",
+    "taluks": [
+      { "name": "Perambalur", "blocks": ["Perambalur"] },
+      { "name": "Kunnam", "blocks": ["Veppur", "Kunnam"] },
+      { "name": "Veppanthattai", "blocks": ["Veppanthattai"] }
+    ]
+  },
+  {
+    "district": "Pudukkottai",
+    "taluks": [
+      { "name": "Pudukkottai", "blocks": ["Pudukkottai", "Annavasal"] },
+      { "name": "Aranthangi", "blocks": ["Aranthangi", "Avudiyarkoil"] },
+      { "name": "Alangudi", "blocks": ["Alangudi", "Thiruvarankulam"] },
+      { "name": "Gandarvakkottai", "blocks": ["Gandarvakkottai"] },
+      { "name": "Thirumayam", "blocks": ["Thirumayam", "Ponnamaravathi"] }
+    ]
+  },
+  {
+    "district": "Ramanathapuram",
+    "taluks": [
+      { "name": "Ramanathapuram", "blocks": ["Ramanathapuram", "Tiruppullani"] },
+      { "name": "Paramakudi", "blocks": ["Paramakudi", "Bogalur"] },
+      { "name": "Kadaladi", "blocks": ["Kadaladi", "Sayalgudi"] },
+      { "name": "Mudukulathur", "blocks": ["Mudukulathur"] },
+      { "name": "Tiruvadanai", "blocks": ["Tiruvadanai", "RS Mangalam"] }
+    ]
+  },
+  {
+    "district": "Ranipet",
+    "taluks": [
+      { "name": "Walajah", "blocks": ["Walajah"] },
+      { "name": "Arcot", "blocks": ["Arcot", "Timiri"] },
+      { "name": "Arakkonam", "blocks": ["Arakkonam", "Nemili"] },
+      { "name": "Sholinghur", "blocks": ["Sholinghur"] }
+    ]
+  },
+  {
+    "district": "Salem",
+    "taluks": [
+      { "name": "Salem", "blocks": ["Salem", "Veerapandi"] },
+      { "name": "Attur", "blocks": ["Attur", "Thalaivasal", "Peddanaickenpalayam"] },
+      { "name": "Mettur", "blocks": ["Mecheri", "Kolasanam"] },
+      { "name": "Omalur", "blocks": ["Omalur", "Kadayampatti"] },
+      { "name": "Sankari", "blocks": ["Sankari", "Magudanchavadi"] },
+      { "name": "Yercaud", "blocks": ["Yercaud"] }
+    ]
+  },
+  {
+    "district": "Sivaganga",
+    "taluks": [
+      { "name": "Sivaganga", "blocks": ["Sivaganga", "Kalayarkoil"] },
+      { "name": "Karaikudi", "blocks": ["Sakkottai", "Kannankudi"] },
+      { "name": "Devakottai", "blocks": ["Devakottai"] },
+      { "name": "Manamadurai", "blocks": ["Manamadurai", "Thirupuvanam"] }
+    ]
+  },
+  {
+    "district": "Tenkasi",
+    "taluks": [
+      { "name": "Tenkasi", "blocks": ["Tenkasi", "Kadayam"] },
+      { "name": "Sankarankovil", "blocks": ["Sankarankovil", "Melaneelithanallur"] },
+      { "name": "Kadayanallur", "blocks": ["Kadayanallur"] },
+      { "name": "Shenkottai", "blocks": ["Shenkottai"] },
+      { "name": "Alangulam", "blocks": ["Alangulam", "Keelapavoor"] }
+    ]
+  },
+  {
+    "district": "Thanjavur",
+    "taluks": [
+      { "name": "Thiruvaiyaru", "blocks": ["Thiruvaiyaru", "Budalur"] },
+      { "name": "Thanjavur", "blocks": ["Thanjavur", "Orathanadu"] },
+      { "name": "Papanasam", "blocks": ["Papanasam", "Ammapettai"] },
+      { "name": "Kumbakonam", "blocks": ["Kumbakonam", "Thirupanandal"] },
+      { "name": "Pattukkottai", "blocks": ["Pattukkottai", "Peravurani"] }
+    ]
+  },
+  {
+    "district": "Theni",
+    "taluks": [
+      { "name": "Theni", "blocks": ["Theni"] },
+      { "name": "Periyakulam", "blocks": ["Periyakulam"] },
+      { "name": "Uthamapalayam", "blocks": ["Uthamapalayam", "Cumbum"] },
+      { "name": "Andipatti", "blocks": ["Andipatti", "Kadamalaikundu"] }
+    ]
+  },
+  {
+    "district": "Thoothukudi",
+    "taluks": [
+      { "name": "Thoothukudi", "blocks": ["Thoothukudi"] },
+      { "name": "Tiruchendur", "blocks": ["Tiruchendur", "Udangudi"] },
+      { "name": "Kovilpatti", "blocks": ["Kovilpatti", "Kayathar"] },
+      { "name": "Ettayapuram", "blocks": ["Ettayapuram"] },
+      { "name": "Srivaikuntam", "blocks": ["Srivaikuntam", "Karungulam"] }
+    ]
+  },
+  {
+    "district": "Tiruchirappalli",
+    "taluks": [
+      { "name": "Tiruchirappalli East", "blocks": ["Tiruchirappalli"] },
+      { "name": "Tiruchirappalli West", "blocks": ["Andanallur"] },
+      { "name": "Lalgudi", "blocks": ["Lalgudi", "Pullambadi"] },
+      { "name": "Musiri", "blocks": ["Musiri", "Thottiyam"] },
+      { "name": "Thuraiyur", "blocks": ["Thuraiyur", "Uppiliapuram"] },
+      { "name": "Manapparai", "blocks": ["Manapparai", "Marungapuri"] }
+    ]
+  },
+  {
+    "district": "Tirunelveli",
+    "taluks": [
+      { "name": "Tirunelveli", "blocks": ["Palayamkottai", "Manur"] },
+      { "name": "Ambasamudram", "blocks": ["Ambasamudram", "Cheranmahadevi"] },
+      { "name": "Nanguneri", "blocks": ["Nanguneri", "Kalakadu"] },
+      { "name": "Radhapuram", "blocks": ["Radhapuram", "Valliyoor"] }
+    ]
+  },
+  {
+    "district": "Tirupathur",
+    "taluks": [
+      { "name": "Tirupathur", "blocks": ["Tirupathur", "Jolarpet"] },
+      { "name": "Vaniyambadi", "blocks": ["Vaniyambadi", "Alangayam"] },
+      { "name": "Ambur", "blocks": ["Ambur"] },
+      { "name": "Natrampalli", "blocks": ["Natrampalli"] }
+    ]
+  },
+  {
+    "district": "Tiruppur",
+    "taluks": [
+      { "name": "Tiruppur North", "blocks": ["Tiruppur"] },
+      { "name": "Tiruppur South", "blocks": ["Pongalur"] },
+      { "name": "Avinashi", "blocks": ["Avinashi"] },
+      { "name": "Dharapuram", "blocks": ["Dharapuram", "Kundadam"] },
+      { "name": "Udumalaipettai", "blocks": ["Udumalaipettai", "Madathukulam"] },
+      { "name": "Palladam", "blocks": ["Palladam"] }
+    ]
+  },
+  {
+    "district": "Tiruvallur",
+    "taluks": [
+      { "name": "Tiruvallur", "blocks": ["Tiruvallur", "Poondamallee"] },
+      { "name": "Ponneri", "blocks": ["Ponneri", "Gummidipoondi"] },
+      { "name": "Tirutani", "blocks": ["Tirutani", "Tiruvalangadu"] },
+      { "name": "Avadi", "blocks": ["Punamallee"] }
+    ]
+  },
+  {
+    "district": "Tiruvannamalai",
+    "taluks": [
+      { "name": "Tiruvannamalai", "blocks": ["Tiruvannamalai", "Turinjapuram"] },
+      { "name": "Arani", "blocks": ["Arani East", "Arani West"] },
+      { "name": "Cheyyar", "blocks": ["Cheyyar", "Anakkavoor"] },
+      { "name": "Polur", "blocks": ["Polur", "Chetpet"] },
+      { "name": "Chengam", "blocks": ["Chengam", "Pudupalayam"] }
+    ]
+  },
+  {
+    "district": "Tiruvarur",
+    "taluks": [
+      { "name": "Tiruvarur", "blocks": ["Tiruvarur", "Koradacheri"] },
+      { "name": "Mannargudi", "blocks": ["Mannargudi", "Needamangalam"] },
+      { "name": "Nannilam", "blocks": ["Nannilam", "Kudavasal"] },
+      { "name": "Thiruthuraipoondi", "blocks": ["Thiruthuraipoondi", "Muthupet"] },
+      { "name": "Valangaiman", "blocks": ["Valangaiman"] }
+    ]
+  },
+  {
+    "district": "Vellore",
+    "taluks": [
+      { "name": "Vellore", "blocks": ["Vellore", "Vellore Rural"] },
+      { "name": "Katpadi", "blocks": ["Katpadi"] },
+      { "name": "Gudiyatham", "blocks": ["Gudiyatham"] },
+      { "name": "Anaicut", "blocks": ["Anaicut"] }
+    ]
+  },
+  {
+    "district": "Viluppuram",
+    "taluks": [
+      { "name": "Viluppuram", "blocks": ["Viluppuram", "Koliyanur", "Vikkravandi"] },
+      { "name": "Tindivanam", "blocks": ["Tindivanam", "Marakkanam"] },
+      { "name": "Gingee", "blocks": ["Gingee", "Melmalayanur"] },
+      { "name": "Vanur", "blocks": ["Vanur"] }
+    ]
+  },
+  {
+    "district": "Virudhunagar",
+    "taluks": [
+      { "name": "Virudhunagar", "blocks": ["Virudhunagar"] },
+      { "name": "Sivakasi", "blocks": ["Sivakasi"] },
+      { "name": "Rajapalayam", "blocks": ["Rajapalayam"] },
+      { "name": "Aruppukottai", "blocks": ["Aruppukottai", "Tiruchuli"] },
+      { "name": "Sattur", "blocks": ["Sattur"] }
+    ]
+  }
+]

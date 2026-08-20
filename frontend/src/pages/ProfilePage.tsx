@@ -9,6 +9,16 @@ interface DistrictItem {
   name: string;
 }
 
+interface TalukItem {
+  id: number;
+  name: string;
+}
+
+interface BlockItem {
+  id: number;
+  name: string;
+}
+
 export const ProfilePage: React.FC = () => {
   const { t } = useTranslation();
   const { profile, username, updateProfile, addCropProfile, updateCropProfile, deleteCropProfile } = useAuth();
@@ -21,16 +31,24 @@ export const ProfilePage: React.FC = () => {
   const [accountSuccessMsg, setAccountSuccessMsg] = useState('');
   const [accountErrMsg, setAccountErrMsg] = useState('');
 
-  // District options
+  // District options & Cascading Taluk/Block options
   const [districts, setDistricts] = useState<DistrictItem[]>([]);
+  const [taluks, setTaluks] = useState<TalukItem[]>([]);
+  const [blocks, setBlocks] = useState<BlockItem[]>([]);
+  const [loadingTaluks, setLoadingTaluks] = useState(false);
+  const [loadingBlocks, setLoadingBlocks] = useState(false);
 
   // Add / Edit Crop Modal State
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCropId, setEditingCropId] = useState<number | null>(null);
 
-  // New / Edit Crop Form State - INITIALIZED BLANK
+  // New / Edit Crop Form State
   const [cropGrown, setCropGrown] = useState('');
   const [districtName, setDistrictName] = useState('');
+  const [selectedTalukId, setSelectedTalukId] = useState('');
+  const [selectedTalukName, setSelectedTalukName] = useState('');
+  const [selectedBlockId, setSelectedBlockId] = useState('');
+  const [selectedBlockName, setSelectedBlockName] = useState('');
   const [block, setBlock] = useState('');
   const [landSizeAcres, setLandSizeAcres] = useState('');
   const [irrigationType, setIrrigationType] = useState('');
@@ -71,6 +89,72 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  const fetchTaluksForDistrict = async (distName: string) => {
+    if (!distName) {
+      setTaluks([]);
+      return;
+    }
+    setLoadingTaluks(true);
+    try {
+      const res = await subsidyApi.get<TalukItem[]>(`/api/districts/name/${encodeURIComponent(distName)}/taluks`);
+      setTaluks(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setTaluks([]);
+    } finally {
+      setLoadingTaluks(false);
+    }
+  };
+
+  const fetchBlocksForTaluk = async (talukIdStr: string) => {
+    if (!talukIdStr) {
+      setBlocks([]);
+      return;
+    }
+    setLoadingBlocks(true);
+    try {
+      const res = await subsidyApi.get<BlockItem[]>(`/api/taluks/${talukIdStr}/blocks`);
+      setBlocks(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setBlocks([]);
+    } finally {
+      setLoadingBlocks(false);
+    }
+  };
+
+  const handleDistrictChange = (distName: string) => {
+    setDistrictName(distName);
+    setSelectedTalukId('');
+    setSelectedTalukName('');
+    setSelectedBlockId('');
+    setSelectedBlockName('');
+    setBlock('');
+    setBlocks([]);
+    fetchTaluksForDistrict(distName);
+  };
+
+  const handleTalukChange = (talukIdStr: string) => {
+    setSelectedTalukId(talukIdStr);
+    const foundTaluk = taluks.find(t => String(t.id) === talukIdStr);
+    const tName = foundTaluk ? foundTaluk.name : '';
+    setSelectedTalukName(tName);
+    setSelectedBlockId('');
+    setSelectedBlockName('');
+    setBlock('');
+    if (talukIdStr) {
+      fetchBlocksForTaluk(talukIdStr);
+    } else {
+      setBlocks([]);
+    }
+  };
+
+  const handleBlockChange = (blockIdStr: string) => {
+    setSelectedBlockId(blockIdStr);
+    const foundBlock = blocks.find(b => String(b.id) === blockIdStr);
+    const bName = foundBlock ? foundBlock.name : '';
+    setSelectedBlockName(bName);
+    setBlock(bName);
+  };
+
   // Save Core Personal Account Details
   const handleSaveAccount = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +181,13 @@ export const ProfilePage: React.FC = () => {
     setEditingCropId(null);
     setCropGrown('');
     setDistrictName('');
+    setSelectedTalukId('');
+    setSelectedTalukName('');
+    setSelectedBlockId('');
+    setSelectedBlockName('');
     setBlock('');
+    setTaluks([]);
+    setBlocks([]);
     setLandSizeAcres('');
     setIrrigationType('');
     setCropDurationMonths('');
@@ -107,17 +197,42 @@ export const ProfilePage: React.FC = () => {
   };
 
   // Open Form to EDIT existing Crop
-  const handleOpenEditCrop = (cropItem: FarmerCropItem) => {
+  const handleOpenEditCrop = async (cropItem: FarmerCropItem) => {
     if (!cropItem.id) return;
     setEditingCropId(cropItem.id);
     setCropGrown(cropItem.cropGrown || '');
-    setDistrictName(cropItem.districtName || '');
-    setBlock(cropItem.block || '');
+    const dist = cropItem.districtName || '';
+    setDistrictName(dist);
     setLandSizeAcres(cropItem.landSizeAcres ? String(cropItem.landSizeAcres) : '');
     setIrrigationType(cropItem.irrigationType || '');
     setCropDurationMonths(cropItem.cropDurationMonths ? String(cropItem.cropDurationMonths) : '');
     setSeason(cropItem.season || '');
     setCropErrMsg('');
+
+    if (dist) {
+      await fetchTaluksForDistrict(dist);
+    }
+
+    if (cropItem.talukId) {
+      const tId = String(cropItem.talukId);
+      setSelectedTalukId(tId);
+      setSelectedTalukName(cropItem.talukName || '');
+      await fetchBlocksForTaluk(tId);
+    } else {
+      setSelectedTalukId('');
+      setSelectedTalukName(cropItem.talukName || '');
+    }
+
+    if (cropItem.blockId) {
+      setSelectedBlockId(String(cropItem.blockId));
+      setSelectedBlockName(cropItem.block || '');
+      setBlock(cropItem.block || '');
+    } else {
+      setSelectedBlockId('');
+      setSelectedBlockName(cropItem.block || '');
+      setBlock(cropItem.block || '');
+    }
+
     setShowAddForm(true);
   };
 
@@ -127,8 +242,10 @@ export const ProfilePage: React.FC = () => {
     setCropSaving(true);
     setCropErrMsg('');
 
-    if (!cropGrown || !districtName || !block || !landSizeAcres || !irrigationType || !cropDurationMonths || !season) {
-      setCropErrMsg('Please complete all crop profile fields before saving.');
+    const finalBlockName = selectedBlockName || block;
+
+    if (!cropGrown || !districtName || !selectedTalukId || !finalBlockName || !landSizeAcres || !irrigationType || !cropDurationMonths || !season) {
+      setCropErrMsg('Please select your District, Taluk, and Block from the cascading dropdowns.');
       setCropSaving(false);
       return;
     }
@@ -136,7 +253,10 @@ export const ProfilePage: React.FC = () => {
     const payload = {
       cropGrown,
       districtName,
-      block,
+      talukId: selectedTalukId ? parseInt(selectedTalukId) : undefined,
+      talukName: selectedTalukName,
+      blockId: selectedBlockId ? parseInt(selectedBlockId) : undefined,
+      block: finalBlockName,
       landSizeAcres: parseFloat(landSizeAcres) || 1.0,
       irrigationType,
       cropDurationMonths: parseInt(cropDurationMonths) || 4,
@@ -257,15 +377,13 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-
-
           <button
             type="submit"
             disabled={savingAccount}
-            className="btn btn-emerald btn-md flex items-center gap-2 cursor-pointer"
+            className="btn btn-primary btn-md flex items-center gap-2 cursor-pointer"
           >
             <Save size={16} />
-            {savingAccount ? 'Saving...' : 'Update Account Info'}
+            {savingAccount ? 'Saving...' : 'Save Personal Details'}
           </button>
         </form>
       </div>
@@ -280,21 +398,23 @@ export const ProfilePage: React.FC = () => {
             </h3>
           </div>
 
-          <button
-            onClick={handleOpenAddCrop}
-            className="btn btn-primary btn-sm flex items-center gap-1.5 cursor-pointer font-bold"
-          >
-            <Plus size={16} /> + Add Crop
-          </button>
+          {!showAddForm && (
+            <button
+              onClick={handleOpenAddCrop}
+              className="btn btn-primary btn-sm flex items-center gap-1 cursor-pointer font-bold"
+            >
+              <Plus size={16} /> Add Crop Profile
+            </button>
+          )}
         </div>
 
         {/* Form Modal / Inline Card for adding or editing a crop profile */}
         {showAddForm && (
-          <div className="mb-6 p-5 bg-emerald-50/70 border-2 border-emerald-300 rounded-2xl fade-in">
-            <div className="flex items-center justify-between mb-4 border-b border-emerald-200 pb-2">
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
               <h4 className="text-sm font-bold text-emerald-950 flex items-center gap-2">
-                <Sprout size={16} className="text-emerald-600" />
-                {editingCropId !== null ? `Edit Crop Profile (ID: ${editingCropId})` : 'Add New Crop Profile'}
+                <Sprout size={16} className="text-emerald-700" />
+                {editingCropId !== null ? 'Edit Crop Profile' : 'Add New Crop Profile'}
               </h4>
               <button
                 onClick={() => setShowAddForm(false)}
@@ -329,6 +449,8 @@ export const ProfilePage: React.FC = () => {
                     <option value="Maize">Maize</option>
                     <option value="Pulses">Pulses / Grams</option>
                     <option value="Vegetables">Vegetables</option>
+                    <option value="Coconut">Coconut</option>
+                    <option value="Turmeric">Turmeric</option>
                   </select>
                 </div>
 
@@ -336,7 +458,7 @@ export const ProfilePage: React.FC = () => {
                   <label className="block text-xs font-semibold text-gray-700 mb-1">{t('districtLabel')} *</label>
                   <select
                     value={districtName}
-                    onChange={(e) => setDistrictName(e.target.value)}
+                    onChange={(e) => handleDistrictChange(e.target.value)}
                     className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     required
                   >
@@ -350,19 +472,54 @@ export const ProfilePage: React.FC = () => {
                 </div>
               </div>
 
+              {/* CASCADING TALUK & BLOCK DROPDOWNS */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="field">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Taluk / Block *</label>
-                  <input
-                    type="text"
-                    value={block}
-                    onChange={(e) => setBlock(e.target.value)}
-                    placeholder="e.g. Thiruvaiyaru / Central Block"
-                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Taluk * {loadingTaluks && <span className="text-emerald-600 animate-pulse">(Loading...)</span>}
+                  </label>
+                  <select
+                    value={selectedTalukId}
+                    onChange={(e) => handleTalukChange(e.target.value)}
+                    disabled={!districtName || loadingTaluks}
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     required
-                  />
+                  >
+                    <option value="" disabled>
+                      {!districtName ? '-- Select District First --' : loadingTaluks ? '-- Loading Taluks... --' : '-- Select Taluk --'}
+                    </option>
+                    {taluks.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
+                <div className="field">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Block * {loadingBlocks && <span className="text-emerald-600 animate-pulse">(Loading...)</span>}
+                  </label>
+                  <select
+                    value={selectedBlockId}
+                    onChange={(e) => handleBlockChange(e.target.value)}
+                    disabled={!selectedTalukId || loadingBlocks}
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    required
+                  >
+                    <option value="" disabled>
+                      {!selectedTalukId ? '-- Select Taluk First --' : loadingBlocks ? '-- Loading Blocks... --' : '-- Select Block --'}
+                    </option>
+                    {blocks.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="field">
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Land Size (Acres) *</label>
                   <input
@@ -376,9 +533,7 @@ export const ProfilePage: React.FC = () => {
                     required
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="field">
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Irrigation Type *</label>
                   <select
@@ -396,7 +551,7 @@ export const ProfilePage: React.FC = () => {
                 </div>
 
                 <div className="field">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Crop Duration (Months) *</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Duration (Months) *</label>
                   <input
                     type="number"
                     min="1"
@@ -432,7 +587,7 @@ export const ProfilePage: React.FC = () => {
                   className="btn btn-emerald btn-md flex items-center gap-2 cursor-pointer"
                 >
                   <Save size={16} />
-                  {cropSaving ? 'Saving Crop Profile...' : editingCropId !== null ? 'Update Crop Profile' : 'Save Crop Profile'}
+                  {cropSaving ? 'Saving...' : editingCropId !== null ? 'Update Crop' : 'Save Crop Profile'}
                 </button>
                 <button
                   type="button"

@@ -6,6 +6,9 @@ public class CropProfileDto {
     private Long id;
     private String cropGrown;
     private String districtName;
+    private Long talukId;
+    private String talukName;
+    private Long blockId;
     private String block;
     private BigDecimal landSizeAcres;
     private BigDecimal landSizeHectares;
@@ -15,12 +18,15 @@ public class CropProfileDto {
 
     public CropProfileDto() {}
 
-    public CropProfileDto(Long id, String cropGrown, String districtName, String block, 
-                          BigDecimal landSizeAcres, BigDecimal landSizeHectares, 
+    public CropProfileDto(Long id, String cropGrown, String districtName, Long talukId, String talukName,
+                          Long blockId, String block, BigDecimal landSizeAcres, BigDecimal landSizeHectares, 
                           String irrigationType, Integer cropDurationMonths, String season) {
         this.id = id;
         this.cropGrown = cropGrown;
         this.districtName = districtName;
+        this.talukId = talukId;
+        this.talukName = talukName;
+        this.blockId = blockId;
         this.block = block;
         this.landSizeAcres = landSizeAcres;
         this.landSizeHectares = landSizeHectares;
@@ -51,6 +57,30 @@ public class CropProfileDto {
 
     public void setDistrictName(String districtName) {
         this.districtName = districtName;
+    }
+
+    public Long getTalukId() {
+        return talukId;
+    }
+
+    public void setTalukId(Long talukId) {
+        this.talukId = talukId;
+    }
+
+    public String getTalukName() {
+        return talukName;
+    }
+
+    public void setTalukName(String talukName) {
+        this.talukName = talukName;
+    }
+
+    public Long getBlockId() {
+        return blockId;
+    }
+
+    public void setBlockId(Long blockId) {
+        this.blockId = blockId;
     }
 
     public String getBlock() {
