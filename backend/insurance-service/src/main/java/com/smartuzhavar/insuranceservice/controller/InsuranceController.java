@@ -46,62 +46,113 @@ public class InsuranceController {
     }
 
     @GetMapping("/recommended")
-    public ResponseEntity<List<InsuranceScheme>> getRecommendedSchemes() {
+    public ResponseEntity<List<com.smartuzhavar.insuranceservice.dto.RecommendedInsuranceResponse>> getRecommendedSchemes(
+            @RequestParam(required = false) Long cropProfileId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
                 .orElseGet(() -> farmerRepository.findByUsername(username).orElse(null));
 
-        String farmerCrop = null;
-        String farmerSeason = null;
-
+        List<FarmerProfile> farmerProfiles = new java.util.ArrayList<>();
         if (farmer != null) {
-            FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer).orElse(null);
-            if (profile != null) {
-                farmerCrop = profile.getCropGrown();
-                farmerSeason = profile.getSeason();
+            if (cropProfileId != null) {
+                farmerProfileRepository.findById(cropProfileId)
+                        .filter(p -> p.getFarmer().getId().equals(farmer.getId()))
+                        .ifPresent(farmerProfiles::add);
+            }
+            if (farmerProfiles.isEmpty()) {
+                farmerProfiles = farmerProfileRepository.findByFarmer(farmer);
             }
         }
 
         List<InsuranceScheme> allSchemes = insuranceSchemeRepository.findAll();
-        if (allSchemes.isEmpty()) {
-            return ResponseEntity.ok(allSchemes);
-        }
+        List<com.smartuzhavar.insuranceservice.dto.RecommendedInsuranceResponse> recommendations = new java.util.ArrayList<>();
 
-        if (farmerCrop == null || farmerCrop.trim().isEmpty()) {
-            return ResponseEntity.ok(allSchemes);
-        }
+        if (!farmerProfiles.isEmpty()) {
+            for (FarmerProfile profile : farmerProfiles) {
+                String farmerCrop = profile.getCropGrown();
+                String farmerSeason = profile.getSeason();
+                String farmerDistrict = profile.getDistrict() != null ? profile.getDistrict().getName() : null;
+                String farmerIrrigation = profile.getIrrigationType();
 
-        String finalCrop = farmerCrop.trim();
-        String finalSeason = (farmerSeason != null && !farmerSeason.trim().isEmpty()) ? farmerSeason.trim() : null;
+                for (InsuranceScheme scheme : allSchemes) {
+                    List<String> reasons = new java.util.ArrayList<>();
+                    double score = 0.0;
 
-        // Filter schemes matching crop & optionally season
-        List<InsuranceScheme> matched = allSchemes.stream()
-                .filter(scheme -> {
-                    boolean cropMatches = matchesValue(finalCrop, scheme.getApplicableCrops());
-                    if (!cropMatches) {
-                        return false;
+                    // 1. Crop Match (+40 pts)
+                    if (farmerCrop != null && !farmerCrop.trim().isEmpty() && matchesValue(farmerCrop, scheme.getApplicableCrops())) {
+                        score += 40.0;
+                        reasons.add("Matches your crop: " + farmerCrop.trim());
                     }
-                    if (finalSeason != null) {
+
+                    // 2. Season Match (+25 pts)
+                    if (farmerSeason != null && !farmerSeason.trim().isEmpty()) {
                         String text = (scheme.getName() + " " + scheme.getDescription()).toLowerCase();
-                        if (text.contains("kharif") || text.contains("rabi") || text.contains("zaid")) {
-                            return text.contains(finalSeason.toLowerCase());
+                        if (text.contains(farmerSeason.trim().toLowerCase())) {
+                            score += 25.0;
+                            reasons.add("Matches your season: " + farmerSeason.trim());
                         }
                     }
-                    return true;
-                })
-                .toList();
 
-        if (matched.isEmpty()) {
-            // Fallback: match by crop only
-            matched = insuranceSchemeRepository.findByCrop(finalCrop);
+                    // 3. District Match (+20 pts)
+                    if (farmerDistrict != null && !farmerDistrict.trim().isEmpty()) {
+                        score += 20.0;
+                        reasons.add("Applicable for your district: " + farmerDistrict.trim());
+                    }
+
+                    // 4. Irrigation/Risk relevance (+15 pts)
+                    if (farmerIrrigation != null && (farmerIrrigation.equalsIgnoreCase("Rainfed") || farmerIrrigation.equalsIgnoreCase("Canal"))) {
+                        score += 15.0;
+                        reasons.add("Protects against drought/weather risks for " + farmerIrrigation + " farming");
+                    }
+
+                    if (score > 0.0) {
+                        recommendations.add(new com.smartuzhavar.insuranceservice.dto.RecommendedInsuranceResponse(
+                                scheme.getId(),
+                                scheme.getName(),
+                                scheme.getNameTa(),
+                                scheme.getDescription(),
+                                scheme.getDescriptionTa(),
+                                scheme.getSchemeType(),
+                                scheme.getApplicableCrops(),
+                                scheme.getApplicableCropsTa(),
+                                scheme.getPremiumRatePercentage(),
+                                scheme.getSumInsuredPerAcre(),
+                                score,
+                                reasons
+                        ));
+                    }
+                }
+            }
         }
 
-        if (matched.isEmpty()) {
-            return ResponseEntity.ok(allSchemes);
+        // Sort descending by matchScore
+        recommendations.sort(java.util.Comparator.comparingDouble(com.smartuzhavar.insuranceservice.dto.RecommendedInsuranceResponse::getMatchScore).reversed());
+
+        if (recommendations.isEmpty()) {
+            for (InsuranceScheme scheme : allSchemes) {
+                List<String> defaultReasons = new java.util.ArrayList<>();
+                defaultReasons.add("Government Insurance Scheme");
+                recommendations.add(new com.smartuzhavar.insuranceservice.dto.RecommendedInsuranceResponse(
+                        scheme.getId(),
+                        scheme.getName(),
+                        scheme.getNameTa(),
+                        scheme.getDescription(),
+                        scheme.getDescriptionTa(),
+                        scheme.getSchemeType(),
+                        scheme.getApplicableCrops(),
+                        scheme.getApplicableCropsTa(),
+                        scheme.getPremiumRatePercentage(),
+                        scheme.getSumInsuredPerAcre(),
+                        50.0,
+                        defaultReasons
+                ));
+            }
         }
 
-        return ResponseEntity.ok(matched);
+        return ResponseEntity.ok(recommendations);
     }
+
+
 
     private boolean matchesValue(String value, String commaSeparatedTargets) {
         if (commaSeparatedTargets == null || commaSeparatedTargets.trim().isEmpty()) {

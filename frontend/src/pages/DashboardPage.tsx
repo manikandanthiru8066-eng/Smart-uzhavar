@@ -21,18 +21,47 @@ export const DashboardPage: React.FC = () => {
   const [insuranceCount, setInsuranceCount] = useState<number>(0);
 
   const farmerName = profile?.fullName || profile?.username || username || 'Farmer';
-  const district = profile?.districtName || 'Thanjavur';
-  const crop = profile?.cropGrown || 'Paddy';
-  const landSize = profile?.landSizeHectares ? `${profile.landSizeHectares} ha` : '1.0 ha';
+  const cropsList = Array.isArray(profile?.crops) && profile.crops.length > 0 ? profile.crops : [];
+  
+  // Default to FIRST crop profile created (earliest in crops array)
+  const firstCrop = cropsList[0];
+  const defaultDistrict = firstCrop?.districtName || '';
 
+  const [selectedWeatherDistrict, setSelectedWeatherDistrict] = useState<string>(defaultDistrict);
+
+  // Sync default weather district whenever profile updates
   useEffect(() => {
-    fetchDashboardData();
+    const primaryDist = cropsList[0]?.districtName || '';
+    setSelectedWeatherDistrict(primaryDist);
   }, [profile]);
 
-  const fetchDashboardData = async () => {
-    // 1. Fetch weather
+  const cropSummary = cropsList.length > 0
+    ? cropsList.map(c => c.cropGrown).filter(Boolean).join(', ')
+    : 'No Crops Added';
+
+  const totalAcres = (() => {
+    if (cropsList.length > 0) {
+      return cropsList.reduce((acc, c) => acc + (parseFloat(String(c.landSizeAcres ?? 0)) || 0), 0).toFixed(1);
+    }
+    return '0';
+  })();
+
+  const landSizeDisplay = cropsList.length > 0 ? `${totalAcres} Acres` : 'Not Set';
+
+  useEffect(() => {
+    if (selectedWeatherDistrict) {
+      fetchDashboardData(selectedWeatherDistrict);
+    } else {
+      setWeatherTemp(null);
+      fetchDashboardData('Thanjavur'); // general background fetch
+    }
+  }, [selectedWeatherDistrict, profile]);
+
+
+  const fetchDashboardData = async (targetDistrict: string) => {
+    // 1. Fetch weather for selected district (defaults to 1st crop profile's district)
     try {
-      const res = await insuranceApi.get('/api/weather', { params: { district } });
+      const res = await insuranceApi.get('/api/weather', { params: { district: targetDistrict } });
       if (res.data?.temperatureCelsius !== undefined) {
         setWeatherTemp(Math.round(res.data.temperatureCelsius));
       }
@@ -63,7 +92,7 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="page-view fade-in">
-      {/* Welcome Card */}
+      {/* Welcome Card with District Weather Defaults & Switcher */}
       <div className="welcome-card">
         <div>
           <h2>Welcome, {farmerName}!</h2>
@@ -72,24 +101,48 @@ export const DashboardPage: React.FC = () => {
           </div>
           <div className="stats-inline mt-3">
             <div className="s-item">
-              <div className="l">{t('districtLabel')}</div>
-              <div className="v">{district}</div>
+              <div className="l">Primary District</div>
+              <div className="v">{defaultDistrict || 'Not Set'}</div>
             </div>
             <div className="s-item">
-              <div className="l">{t('cropLabel')}</div>
-              <div className="v">{crop}</div>
+              <div className="l">Registered Crops ({cropsList.length})</div>
+              <div className="v">{cropSummary}</div>
             </div>
             <div className="s-item">
               <div className="l">{t('landLabel')}</div>
-              <div className="v">{landSize}</div>
+              <div className="v">{landSizeDisplay}</div>
             </div>
           </div>
         </div>
-        <div className="weather-mini">
-          <div className="l" style={{ fontSize: '11px', opacity: 0.75 }}>
-            {t('todayLabel')}
+
+        {/* Main Weather Widget - Defaults to 1st Crop District with Switcher */}
+        <div className="weather-mini flex flex-col items-end gap-1">
+          <div className="l text-right" style={{ fontSize: '11px', opacity: 0.85 }}>
+            📍 Weather: <strong className="underline">{selectedWeatherDistrict || 'Not Set'}</strong>
           </div>
-          <div className="t">{weatherTemp !== null ? `${weatherTemp}°C` : '--'}</div>
+          <div className="t">{selectedWeatherDistrict && weatherTemp !== null ? `${weatherTemp}°C` : '--'}</div>
+
+
+          {/* District Switcher for Multi-Crop Farmers */}
+          {cropsList.length > 1 && (
+            <div className="mt-1">
+              <select
+                value={selectedWeatherDistrict}
+                onChange={(e) => setSelectedWeatherDistrict(e.target.value)}
+                className="text-[10px] font-bold py-0.5 px-1.5 rounded bg-white/20 text-white border border-white/30 focus:outline-none cursor-pointer"
+                title="Switch district view"
+              >
+                {cropsList.map((c, i) => {
+                  const dist = c.districtName || defaultDistrict;
+                  return (
+                    <option key={i} value={dist} className="text-gray-900 font-normal">
+                      {i === 0 ? `★ ${dist} (1st Crop: ${c.cropGrown})` : `${dist} (Crop #${i + 1}: ${c.cropGrown})`}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -97,24 +150,25 @@ export const DashboardPage: React.FC = () => {
       <div className="profile-cta-banner">
         <div className="txt">
           <h3>
-            {profile?.districtName && profile?.cropGrown
-              ? 'Farmer Profile Registered & Active'
+            {profile?.districtName && (profile?.cropGrown || cropsList.length > 0)
+              ? 'Farmer Profile & Crops Active'
               : t('ctaTitle')}
           </h3>
           <p>
-            {profile?.districtName && profile?.cropGrown
-              ? `Configured for ${profile.districtName} district · ${profile.cropGrown} · ${profile.landSizeHectares || 1.0} Ha`
+            {profile?.districtName && (profile?.cropGrown || cropsList.length > 0)
+              ? `Default District: ${defaultDistrict} (1st Crop) · ${cropsList.length} Crops (${cropSummary}) · Total ${landSizeDisplay}`
               : t('ctaSub')}
           </p>
         </div>
         <button
-          className="btn btn-primary btn-lg whitespace-nowrap cursor-pointer"
+          className="btn btn-primary btn-lg whitespace-nowrap cursor-pointer flex items-center gap-2"
           onClick={() => navigate('/profile')}
         >
           <UserPlus size={18} />
-          {profile?.districtName && profile?.cropGrown ? 'Edit Profile' : t('completeProfileBtn')}
+          {profile?.districtName && (profile?.cropGrown || cropsList.length > 0) ? 'Manage Crops' : t('completeProfileBtn')}
         </button>
       </div>
+
 
       {/* Module Grid (4 Columns) */}
       <div className="module-grid">
@@ -189,7 +243,7 @@ export const DashboardPage: React.FC = () => {
           <h4>{t('modWeatherTitle')}</h4>
           <div className="m-detail">{t('modWeatherDetail')}</div>
           <div className="m-foot">
-            <span className="badge badge-amber">{district} Forecast</span>
+            <span className="badge badge-amber">{selectedWeatherDistrict} Forecast</span>
             <span
               className="btn-sm"
               style={{ color: 'var(--emerald-deep)', fontWeight: 700 }}
@@ -233,7 +287,7 @@ export const DashboardPage: React.FC = () => {
           <div className="l">{t('eligibleSubsidies')}</div>
           <div className="v">{subsidiesCount}</div>
           <div className="trend" style={{ color: 'var(--emerald-deep)' }}>
-            Matched for {crop}
+            Matched for {cropSummary}
           </div>
         </div>
 
@@ -249,18 +303,19 @@ export const DashboardPage: React.FC = () => {
           <div className="l">Live Temperature</div>
           <div className="v">{weatherTemp !== null ? `${weatherTemp}°C` : '--'}</div>
           <div className="trend" style={{ color: 'var(--sky)' }}>
-            {district}
+            {selectedWeatherDistrict}
           </div>
         </div>
 
         <div className="card qs-card">
           <div className="l">Land Size</div>
-          <div className="v">{landSize}</div>
+          <div className="v">{landSizeDisplay}</div>
           <div className="trend" style={{ color: 'var(--amber)' }}>
             Registered Profile
           </div>
         </div>
       </div>
+
     </div>
   );
 };

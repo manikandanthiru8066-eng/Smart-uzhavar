@@ -61,43 +61,55 @@ public class SubsidyController {
     }
 
     @GetMapping("/recommended")
-    public ResponseEntity<List<RecommendedSubsidyResponse>> getRecommendedSubsidies() {
+    public ResponseEntity<List<RecommendedSubsidyResponse>> getRecommendedSubsidies(
+            @RequestParam(required = false) Long cropProfileId) {
+
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
                 .orElseGet(() -> farmerRepository.findByUsername(username).orElse(null));
 
-        String farmerCrop = null;
-        String farmerDistrict = null;
-        String farmerSeason = null;
-
+        List<FarmerProfile> farmerProfiles = new ArrayList<>();
         if (farmer != null) {
-            FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer).orElse(null);
-            if (profile != null) {
-                farmerCrop = profile.getCropGrown();
-                farmerDistrict = profile.getDistrict() != null ? profile.getDistrict().getName() : null;
-                farmerSeason = profile.getSeason();
+            if (cropProfileId != null) {
+                farmerProfileRepository.findById(cropProfileId)
+                        .filter(p -> p.getFarmer().getId().equals(farmer.getId()))
+                        .ifPresent(farmerProfiles::add);
+            }
+            if (farmerProfiles.isEmpty()) {
+                farmerProfiles = farmerProfileRepository.findByFarmer(farmer);
             }
         }
 
         List<SubsidyScheme> allSchemes = subsidySchemeRepository.findAll();
         List<RecommendedSubsidyResponse> recommendations = new ArrayList<>();
 
-        for (SubsidyScheme scheme : allSchemes) {
-            double score = calculateMatchScore(farmerCrop, farmerDistrict, farmerSeason, scheme);
-            if (score > 0.0) {
-                recommendations.add(new RecommendedSubsidyResponse(
-                        scheme.getId(),
-                        scheme.getName(),
-                        scheme.getNameTa(),
-                        scheme.getDescription(),
-                        scheme.getDescriptionTa(),
-                        scheme.getApplicableCrops(),
-                        scheme.getApplicableCropsTa(),
-                        scheme.getApplicableDistricts(),
-                        scheme.getSubsidyAmount(),
-                        scheme.getCreatedAt(),
-                        score
-                ));
+        if (!farmerProfiles.isEmpty()) {
+            for (FarmerProfile profile : farmerProfiles) {
+                String farmerCrop = profile.getCropGrown();
+                String farmerDistrict = profile.getDistrict() != null ? profile.getDistrict().getName() : null;
+                String farmerSeason = profile.getSeason();
+                String farmerIrrigation = profile.getIrrigationType();
+
+                for (SubsidyScheme scheme : allSchemes) {
+                    List<String> reasons = new ArrayList<>();
+                    double score = calculateMatchScoreAndReasons(farmerCrop, farmerDistrict, farmerSeason, farmerIrrigation, scheme, reasons);
+                    if (score > 0.0) {
+                        recommendations.add(new RecommendedSubsidyResponse(
+                                scheme.getId(),
+                                scheme.getName(),
+                                scheme.getNameTa(),
+                                scheme.getDescription(),
+                                scheme.getDescriptionTa(),
+                                scheme.getApplicableCrops(),
+                                scheme.getApplicableCropsTa(),
+                                scheme.getApplicableDistricts(),
+                                scheme.getSubsidyAmount(),
+                                scheme.getCreatedAt(),
+                                score,
+                                reasons
+                        ));
+                    }
+                }
             }
         }
 
@@ -106,6 +118,8 @@ public class SubsidyController {
 
         if (recommendations.isEmpty()) {
             for (SubsidyScheme scheme : allSchemes) {
+                List<String> defaultReasons = new ArrayList<>();
+                defaultReasons.add("General Government Scheme");
                 recommendations.add(new RecommendedSubsidyResponse(
                         scheme.getId(),
                         scheme.getName(),
@@ -117,7 +131,8 @@ public class SubsidyController {
                         scheme.getApplicableDistricts(),
                         scheme.getSubsidyAmount(),
                         scheme.getCreatedAt(),
-                        50.0
+                        50.0,
+                        defaultReasons
                 ));
             }
         }
@@ -141,34 +156,45 @@ public class SubsidyController {
         return false;
     }
 
-    private double calculateMatchScore(String farmerCrop, String farmerDistrict, String farmerSeason, SubsidyScheme scheme) {
-        boolean cropMatches = false;
-        boolean districtMatches = false;
-        boolean seasonMatches = false;
+    private double calculateMatchScoreAndReasons(String farmerCrop, String farmerDistrict, String farmerSeason, String farmerIrrigation, SubsidyScheme scheme, List<String> reasons) {
+        double score = 0.0;
 
-        if (farmerCrop != null && !farmerCrop.trim().isEmpty()) {
-            cropMatches = matchesValue(farmerCrop, scheme.getApplicableCrops());
+        // 1. Crop Match (+40 points)
+        if (farmerCrop != null && !farmerCrop.trim().isEmpty() && matchesValue(farmerCrop, scheme.getApplicableCrops())) {
+            score += 40.0;
+            reasons.add("Matches your crop: " + farmerCrop.trim());
         }
 
-        if (farmerDistrict != null && !farmerDistrict.trim().isEmpty()) {
-            districtMatches = matchesValue(farmerDistrict, scheme.getApplicableDistricts());
+        // 2. District Match (+25 points)
+        if (farmerDistrict != null && !farmerDistrict.trim().isEmpty() && matchesValue(farmerDistrict, scheme.getApplicableDistricts())) {
+            score += 25.0;
+            reasons.add("Matches your district: " + farmerDistrict.trim());
         }
 
+        // 3. Season Match (+20 points)
         if (farmerSeason != null && !farmerSeason.trim().isEmpty()) {
             String text = (scheme.getName() + " " + scheme.getDescription()).toLowerCase();
             if (text.contains(farmerSeason.trim().toLowerCase())) {
-                seasonMatches = true;
+                score += 20.0;
+                reasons.add("Matches your season: " + farmerSeason.trim());
             }
         }
 
-        if (cropMatches && districtMatches) {
-            return seasonMatches ? 100.0 : 95.0; // Perfect match
-        } else if (cropMatches) {
-            return seasonMatches ? 75.0 : 60.0;
-        } else if (districtMatches) {
-            return seasonMatches ? 50.0 : 40.0;
+        // 4. Irrigation Type Relevance (+15 points)
+        String schemeText = (scheme.getName() + " " + scheme.getDescription()).toLowerCase();
+        boolean isIrrigationScheme = schemeText.contains("drip") || schemeText.contains("sprinkler") || schemeText.contains("micro") || schemeText.contains("irrigation") || schemeText.contains("pmksy");
+        
+        if (isIrrigationScheme) {
+            if (farmerIrrigation != null && (farmerIrrigation.equalsIgnoreCase("Canal") || farmerIrrigation.equalsIgnoreCase("Borewell") || farmerIrrigation.equalsIgnoreCase("Rainfed"))) {
+                score += 15.0;
+                reasons.add("Recommended for upgrading to micro-irrigation from " + farmerIrrigation);
+            } else if (farmerIrrigation != null && farmerIrrigation.toLowerCase().contains("drip")) {
+                score += 10.0;
+                reasons.add("Supports your " + farmerIrrigation + " system");
+            }
         }
 
-        return 0.0;
+        return score;
     }
+
 }

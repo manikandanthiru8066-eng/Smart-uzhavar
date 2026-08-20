@@ -82,39 +82,22 @@ public class AuthController {
             throw new IllegalArgumentException("Phone number '" + cleanPhone + "' is already in use.");
         }
 
-        // Creating farmer account
+        // Creating farmer account (Identity details ONLY, no crop profiles created during signup)
         Farmer farmer = new Farmer();
         farmer.setUsername(signupRequest.getUsername().trim());
         farmer.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        farmer.setFullName(signupRequest.getFullName() != null && !signupRequest.getFullName().trim().isEmpty() 
+                ? signupRequest.getFullName().trim() : signupRequest.getUsername().trim());
         farmer.setEmail(cleanEmail);
         farmer.setPhoneNumber(cleanPhone);
 
         Farmer savedFarmer = farmerRepository.save(farmer);
 
-        // Creating farmer profile
-        FarmerProfile profile = new FarmerProfile();
-        profile.setFarmer(savedFarmer);
-        profile.setFullName(signupRequest.getFullName() != null && !signupRequest.getFullName().trim().isEmpty() 
-                ? signupRequest.getFullName().trim() : signupRequest.getUsername().trim());
-        profile.setCropGrown(signupRequest.getCropGrown());
-        profile.setLandSizeHectares(signupRequest.getLandSizeHectares());
-
-        if (signupRequest.getDistrictName() != null && !signupRequest.getDistrictName().trim().isEmpty()) {
-            String targetDist = signupRequest.getDistrictName().trim();
-            District district = districtRepository.findByNameIgnoreCase(targetDist)
-                    .orElseGet(() -> districtRepository.findAll().stream()
-                            .filter(d -> d.getName().equalsIgnoreCase(targetDist))
-                            .findFirst()
-                            .orElse(null));
-            profile.setDistrict(district);
-        }
-
-        farmerProfileRepository.save(profile);
-
         // Generate token
         String jwt = tokenProvider.generateToken(savedFarmer.getUsername());
         return ResponseEntity.ok(new AuthResponse(jwt, savedFarmer.getUsername()));
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateFarmer(@RequestBody LoginRequest loginRequest) {

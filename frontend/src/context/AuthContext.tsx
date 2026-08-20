@@ -1,14 +1,36 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { subsidyApi } from '../api/client';
 
+export interface FarmerCropItem {
+  id?: number;
+  cropGrown: string;
+  districtName?: string;
+  block?: string;
+  landSizeAcres?: number;
+  landSizeHectares?: number;
+  irrigationType?: string;
+  cropDurationMonths?: number;
+  season?: string;
+}
+
 export interface FarmerProfileData {
   username: string;
   fullName: string;
   email?: string;
   phoneNumber?: string;
+
+  // Legacy compatibility fields
   districtName?: string;
+  block?: string;
   cropGrown?: string;
+  cropDurationMonths?: number;
+  season?: string;
+  irrigationType?: string;
+  landSizeAcres?: number;
   landSizeHectares?: number;
+
+  // 1-to-many Crop Profiles
+  crops?: FarmerCropItem[];
 }
 
 interface AuthContextType {
@@ -22,6 +44,9 @@ interface AuthContextType {
   logout: () => void;
   refreshProfile: () => Promise<void>;
   updateProfile: (data: Record<string, any>) => Promise<FarmerProfileData>;
+  addCropProfile: (cropData: Record<string, any>) => Promise<FarmerProfileData>;
+  updateCropProfile: (id: number, cropData: Record<string, any>) => Promise<FarmerProfileData>;
+  deleteCropProfile: (id: number) => Promise<FarmerProfileData>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -73,7 +98,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       setProfile(profileRes.data);
     } catch {
-      setProfile({ username: returnedUser, fullName: returnedUser });
+      setProfile({ username: returnedUser, fullName: returnedUser, crops: [] });
     }
   };
 
@@ -101,6 +126,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         districtName: data.districtName,
         cropGrown: data.cropGrown,
         landSizeHectares: data.landSizeHectares,
+        crops: [],
       });
     }
   };
@@ -123,6 +149,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return res.data;
   };
 
+  const addCropProfile = async (cropData: Record<string, any>) => {
+    const res = await subsidyApi.post<FarmerProfileData>('/api/profile/crops', cropData);
+    setProfile(res.data);
+    return res.data;
+  };
+
+  const updateCropProfile = async (id: number, cropData: Record<string, any>) => {
+    const res = await subsidyApi.put<FarmerProfileData>(`/api/profile/crops/${id}`, cropData);
+    setProfile(res.data);
+    return res.data;
+  };
+
+  const deleteCropProfile = async (id: number) => {
+    const res = await subsidyApi.delete<FarmerProfileData>(`/api/profile/crops/${id}`);
+    setProfile(res.data);
+    return res.data;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -136,6 +180,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         logout,
         refreshProfile,
         updateProfile,
+        addCropProfile,
+        updateCropProfile,
+        deleteCropProfile,
       }}
     >
       {children}

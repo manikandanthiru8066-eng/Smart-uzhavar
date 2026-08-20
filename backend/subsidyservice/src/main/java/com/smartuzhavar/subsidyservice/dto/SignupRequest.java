@@ -6,9 +6,6 @@ public class SignupRequest {
     private String email;
     private String phoneNumber;
     private String fullName;
-    private String districtName;
-    private String cropGrown;
-    private java.math.BigDecimal landSizeHectares;
 
     public SignupRequest() {}
 
@@ -50,29 +47,5 @@ public class SignupRequest {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
-    }
-
-    public String getDistrictName() {
-        return districtName;
-    }
-
-    public void setDistrictName(String districtName) {
-        this.districtName = districtName;
-    }
-
-    public String getCropGrown() {
-        return cropGrown;
-    }
-
-    public void setCropGrown(String cropGrown) {
-        this.cropGrown = cropGrown;
-    }
-
-    public java.math.BigDecimal getLandSizeHectares() {
-        return landSizeHectares;
-    }
-
-    public void setLandSizeHectares(java.math.BigDecimal landSizeHectares) {
-        this.landSizeHectares = landSizeHectares;
     }
 }

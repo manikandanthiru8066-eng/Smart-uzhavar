@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, FarmerCropItem } from '../context/AuthContext';
 import { subsidyApi } from '../api/client';
-import { Check, AlertCircle, ArrowLeft } from 'lucide-react';
+import { User, Mail, Phone, Sprout, Plus, Trash2, Edit3, CheckCircle, AlertCircle, Save, X } from 'lucide-react';
 
 interface DistrictItem {
   id: number;
@@ -12,274 +11,502 @@ interface DistrictItem {
 
 export const ProfilePage: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { profile, updateProfile, refreshProfile } = useAuth();
+  const { profile, username, updateProfile, addCropProfile, updateCropProfile, deleteCropProfile } = useAuth();
 
+  // Core Identity State
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [savingAccount, setSavingAccount] = useState(false);
+  const [accountSuccessMsg, setAccountSuccessMsg] = useState('');
+  const [accountErrMsg, setAccountErrMsg] = useState('');
+
+  // District options
   const [districts, setDistricts] = useState<DistrictItem[]>([]);
-  const [fullName, setFullName] = useState(profile?.fullName || '');
-  const [email, setEmail] = useState(profile?.email || '');
-  const [phoneNumber, setPhoneNumber] = useState(profile?.phoneNumber || '');
-  const [districtName, setDistrictName] = useState(profile?.districtName || '');
-  const [block, setBlock] = useState('Thiruvaiyaru');
-  const [cropGrown, setCropGrown] = useState(profile?.cropGrown || 'Paddy');
-  const [cropDurationMonths, setCropDurationMonths] = useState(
-    profile?.cropDurationMonths ? String(profile.cropDurationMonths) : '4'
-  );
-  const [season, setSeason] = useState(profile?.season || 'Kharif');
-  const [landSizeHectares, setLandSizeHectares] = useState(
-    profile?.landSizeHectares ? String(profile.landSizeHectares) : '1.0'
-  );
-  const [irrigationType, setIrrigationType] = useState('Canal');
 
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  // Add / Edit Crop Modal State
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingCropId, setEditingCropId] = useState<number | null>(null);
 
-  useEffect(() => {
-    refreshProfile();
-  }, []);
+  // New / Edit Crop Form State - INITIALIZED BLANK
+  const [cropGrown, setCropGrown] = useState('');
+  const [districtName, setDistrictName] = useState('');
+  const [block, setBlock] = useState('');
+  const [landSizeAcres, setLandSizeAcres] = useState('');
+  const [irrigationType, setIrrigationType] = useState('');
+  const [cropDurationMonths, setCropDurationMonths] = useState('');
+  const [season, setSeason] = useState('');
+  const [cropSaving, setCropSaving] = useState(false);
+  const [cropErrMsg, setCropErrMsg] = useState('');
 
   useEffect(() => {
     if (profile) {
       setFullName(profile.fullName || profile.username || '');
       setEmail(profile.email || '');
       setPhoneNumber(profile.phoneNumber || '');
-      setDistrictName(profile.districtName || '');
-      setCropGrown(profile.cropGrown || 'Paddy');
-      setCropDurationMonths(profile.cropDurationMonths ? String(profile.cropDurationMonths) : '4');
-      setSeason(profile.season || 'Kharif');
-      setLandSizeHectares(profile.landSizeHectares ? String(profile.landSizeHectares) : '1.0');
+
+      if (!profile.crops || profile.crops.length === 0) {
+        handleOpenAddCrop();
+      }
     }
+    fetchDistricts();
   }, [profile]);
 
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      try {
-        const res = await subsidyApi.get<DistrictItem[]>('/api/districts');
-        if (Array.isArray(res.data)) {
-          setDistricts(res.data);
-        }
-      } catch {
-        setDistricts([
-          { id: 1, name: 'Thanjavur' },
-          { id: 2, name: 'Thiruvarur' },
-          { id: 3, name: 'Nagapattinam' },
-          { id: 4, name: 'Trichy' },
-        ]);
-      }
-    };
-    fetchDistricts();
-  }, []);
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSaving(true);
+  const fetchDistricts = async () => {
     try {
-      await updateProfile({
-        fullName: fullName.trim(),
-        email: email.trim() || undefined,
-        phoneNumber: phoneNumber.trim() || undefined,
-        districtName: districtName || undefined,
-        cropGrown: cropGrown || undefined,
-        cropDurationMonths: parseInt(cropDurationMonths, 10) || 4,
-        season: season || 'Kharif',
-        landSizeHectares: parseFloat(landSizeHectares) || 1.0,
-      });
-      setSaved(true);
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err?.response?.data?.error || 'Failed to update profile.');
-    } finally {
-      setSaving(false);
+      const res = await subsidyApi.get<DistrictItem[]>('/api/districts');
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setDistricts(res.data);
+      }
+    } catch {
+      setDistricts([
+        { id: 1, name: 'Thanjavur' },
+        { id: 2, name: 'Erode' },
+        { id: 3, name: 'Thiruvarur' },
+        { id: 4, name: 'Nagapattinam' },
+        { id: 5, name: 'Trichy' },
+        { id: 6, name: 'Coimbatore' },
+        { id: 7, name: 'Salem' },
+      ]);
     }
   };
 
+  // Save Core Personal Account Details
+  const handleSaveAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingAccount(true);
+    setAccountSuccessMsg('');
+    setAccountErrMsg('');
+
+    try {
+      await updateProfile({
+        fullName,
+        email,
+        phoneNumber,
+      });
+      setAccountSuccessMsg('Farmer account details updated successfully!');
+    } catch (err: any) {
+      setAccountErrMsg(err?.response?.data?.message || 'Failed to update personal details.');
+    } finally {
+      setSavingAccount(false);
+    }
+  };
+
+  // Open Form for NEW Crop - STARTS COMPLETELY BLANK
+  const handleOpenAddCrop = () => {
+    setEditingCropId(null);
+    setCropGrown('');
+    setDistrictName('');
+    setBlock('');
+    setLandSizeAcres('');
+    setIrrigationType('');
+    setCropDurationMonths('');
+    setSeason('');
+    setCropErrMsg('');
+    setShowAddForm(true);
+  };
+
+  // Open Form to EDIT existing Crop
+  const handleOpenEditCrop = (cropItem: FarmerCropItem) => {
+    if (!cropItem.id) return;
+    setEditingCropId(cropItem.id);
+    setCropGrown(cropItem.cropGrown || '');
+    setDistrictName(cropItem.districtName || '');
+    setBlock(cropItem.block || '');
+    setLandSizeAcres(cropItem.landSizeAcres ? String(cropItem.landSizeAcres) : '');
+    setIrrigationType(cropItem.irrigationType || '');
+    setCropDurationMonths(cropItem.cropDurationMonths ? String(cropItem.cropDurationMonths) : '');
+    setSeason(cropItem.season || '');
+    setCropErrMsg('');
+    setShowAddForm(true);
+  };
+
+  // Save (Add or Update) Crop Profile
+  const handleSaveCropProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCropSaving(true);
+    setCropErrMsg('');
+
+    if (!cropGrown || !districtName || !block || !landSizeAcres || !irrigationType || !cropDurationMonths || !season) {
+      setCropErrMsg('Please complete all crop profile fields before saving.');
+      setCropSaving(false);
+      return;
+    }
+
+    const payload = {
+      cropGrown,
+      districtName,
+      block,
+      landSizeAcres: parseFloat(landSizeAcres) || 1.0,
+      irrigationType,
+      cropDurationMonths: parseInt(cropDurationMonths) || 4,
+      season,
+    };
+
+    try {
+      if (editingCropId !== null) {
+        await updateCropProfile(editingCropId, payload);
+      } else {
+        await addCropProfile(payload);
+      }
+      setShowAddForm(false);
+    } catch (err: any) {
+      setCropErrMsg(err?.response?.data?.message || 'Failed to save crop profile.');
+    } finally {
+      setCropSaving(false);
+    }
+  };
+
+  // Delete specific Crop Profile
+  const handleDeleteCrop = async (id?: number) => {
+    if (!id) return;
+    if (!window.confirm('Are you sure you want to delete this crop profile?')) return;
+    try {
+      await deleteCropProfile(id);
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to delete crop profile.');
+    }
+  };
+
+  const registeredCrops: FarmerCropItem[] = Array.isArray(profile?.crops) ? profile.crops : [];
+
   return (
     <div className="page-view fade-in">
-      <div className="flex items-center gap-3 mb-4">
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="btn btn-ghost btn-sm flex items-center gap-1.5"
-        >
-          <ArrowLeft size={16} />
-          Back to Dashboard
-        </button>
+      <div className="page-hd mb-6">
+        <h1>{t('completeProfileTitle')}</h1>
+        <p>{t('completeProfileSub')}</p>
       </div>
 
-      <div className="page-hd">
-        <h1>{t('profilePageTitle')}</h1>
-        <p>{t('profilePageSub')}</p>
-      </div>
+      {/* SECTION 1: Farmer Core Account Information */}
+      <div className="card p-6 mb-6">
+        <div className="flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
+          <User className="text-emerald-700" size={20} />
+          <h3 className="text-base font-bold text-gray-900">Farmer Account Identity</h3>
+          <span className="text-xs text-gray-400 font-medium ml-auto">(Fixed for login account)</span>
+        </div>
 
-      <div className="card p-7 max-w-2xl">
-        {error && (
-          <div className="p-3 mb-4 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
-            <AlertCircle size={16} />
-            <span>{error}</span>
+        {accountSuccessMsg && (
+          <div className="p-3 mb-4 text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2">
+            <CheckCircle size={16} /> {accountSuccessMsg}
+          </div>
+        )}
+        {accountErrMsg && (
+          <div className="p-3 mb-4 text-xs font-semibold text-red-800 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2">
+            <AlertCircle size={16} /> {accountErrMsg}
           </div>
         )}
 
-        {saved && (
-          <div className="p-3 mb-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center gap-2 font-medium">
-            <Check size={16} />
-            <span>Profile saved successfully! Redirecting to dashboard...</span>
-          </div>
-        )}
+        <form onSubmit={handleSaveAccount}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="field">
+              <label className="block text-xs font-semibold text-gray-700 mb-1">{t('usernameLabel')}</label>
+              <div className="relative flex items-center">
+                <User size={16} className="absolute left-3 text-gray-400 pointer-events-none z-10" />
+                <input
+                  type="text"
+                  value={profile?.username || username || ''}
+                  disabled
+                  className="w-full has-icon pl-10 pr-3.5 py-2.5 bg-gray-100 text-gray-500 cursor-not-allowed border border-gray-200 rounded-xl text-sm"
+                />
+              </div>
+            </div>
 
-        <form onSubmit={handleSave}>
-          <div className="field-row">
             <div className="field">
-              <label>{t('nameLabel')} *</label>
-              <input
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="field">
-              <label>Username</label>
-              <input value={profile?.username || ''} disabled className="bg-gray-100 cursor-not-allowed" />
-            </div>
-          </div>
-
-          <div className="field-row">
-            <div className="field">
-              <label>{t('phoneLabel')}</label>
-              <input
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="+91 98765 43210"
-              />
-            </div>
-            <div className="field">
-              <label>Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="farmer@example.com"
-              />
+              <label className="block text-xs font-semibold text-gray-700 mb-1">{t('fullNameLabel')} *</label>
+              <div className="relative flex items-center">
+                <User size={16} className="absolute left-3 text-gray-400 pointer-events-none z-10" />
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Enter your full name"
+                  className="w-full has-icon pl-10 pr-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                  required
+                />
+              </div>
             </div>
           </div>
 
-          <div className="field-row">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="field">
-              <label>{t('districtLabel')} *</label>
-              <select
-                value={districtName}
-                onChange={(e) => setDistrictName(e.target.value)}
-                required
-              >
-                <option value="">-- Select District --</option>
-                {districts.map((d) => (
-                  <option key={d.id || d.name} value={d.name}>
-                    {d.name}
-                  </option>
-                ))}
-              </select>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Email Address</label>
+              <div className="relative flex items-center">
+                <Mail size={16} className="absolute left-3 text-gray-400 pointer-events-none z-10" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="farmer@example.com"
+                  className="w-full has-icon pl-10 pr-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                />
+              </div>
             </div>
+
             <div className="field">
-              <label>Block / Taluk</label>
-              <input
-                value={block}
-                onChange={(e) => setBlock(e.target.value)}
-                placeholder="e.g. Thiruvaiyaru"
-              />
+              <label className="block text-xs font-semibold text-gray-700 mb-1">{t('phoneLabel')}</label>
+              <div className="relative flex items-center">
+                <Phone size={16} className="absolute left-3 text-gray-400 pointer-events-none z-10" />
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="10-digit mobile number"
+                  className="w-full has-icon pl-10 pr-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="field-row">
-            <div className="field">
-              <label>{t('cropTypeLabel')} *</label>
-              <select
-                value={cropGrown}
-                onChange={(e) => setCropGrown(e.target.value)}
-                required
-              >
-                <option value="Paddy">Paddy (Rice)</option>
-                <option value="Sugarcane">Sugarcane</option>
-                <option value="Cotton">Cotton</option>
-                <option value="Banana">Banana</option>
-                <option value="Groundnut">Groundnut</option>
-                <option value="Maize">Maize</option>
-              </select>
-            </div>
-            <div className="field">
-              <label>Land Size (Hectares)</label>
-              <input
-                type="number"
-                step="0.1"
-                value={landSizeHectares}
-                onChange={(e) => setLandSizeHectares(e.target.value)}
-                required
-              />
-            </div>
-          </div>
 
-          {/* New Profile Fields: Crop Duration & Season */}
-          <div className="field-row">
-            <div className="field">
-              <label>Crop Duration (months)</label>
-              <input
-                type="number"
-                min="1"
-                max="36"
-                value={cropDurationMonths}
-                onChange={(e) => setCropDurationMonths(e.target.value)}
-                placeholder="e.g. 4"
-              />
-            </div>
-            <div className="field">
-              <label>Season</label>
-              <select
-                value={season}
-                onChange={(e) => setSeason(e.target.value)}
-              >
-                <option value="Kharif">Kharif (Monsoon / June–Oct)</option>
-                <option value="Rabi">Rabi (Winter / Oct–March)</option>
-                <option value="Zaid">Zaid (Summer / March–June)</option>
-              </select>
-            </div>
-          </div>
 
-          <div className="field-row">
-            <div className="field">
-              <label>Irrigation Type</label>
-              <select
-                value={irrigationType}
-                onChange={(e) => setIrrigationType(e.target.value)}
-              >
-                <option value="Canal">Canal</option>
-                <option value="Borewell">Borewell</option>
-                <option value="Rain-fed">Rain-fed</option>
-                <option value="Drip/Sprinkler">Drip / Sprinkler</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 mt-6">
-            <button
-              type="submit"
-              disabled={saving}
-              className="btn btn-primary btn-lg"
-            >
-              <Check size={18} />
-              {saving ? 'Saving Profile...' : saved ? 'Saved!' : t('saveProfileBtn')}
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-ghost btn-lg"
-              onClick={() => navigate('/')}
-            >
-              Cancel
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={savingAccount}
+            className="btn btn-emerald btn-md flex items-center gap-2 cursor-pointer"
+          >
+            <Save size={16} />
+            {savingAccount ? 'Saving...' : 'Update Account Info'}
+          </button>
         </form>
+      </div>
+
+      {/* SECTION 2: Crop Profiles List & Add Crop Form */}
+      <div className="card p-6">
+        <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+          <div className="flex items-center gap-2">
+            <Sprout className="text-emerald-700" size={20} />
+            <h3 className="text-base font-bold text-gray-900">
+              Cultivated Crop Profiles ({registeredCrops.length})
+            </h3>
+          </div>
+
+          <button
+            onClick={handleOpenAddCrop}
+            className="btn btn-primary btn-sm flex items-center gap-1.5 cursor-pointer font-bold"
+          >
+            <Plus size={16} /> + Add Crop
+          </button>
+        </div>
+
+        {/* Form Modal / Inline Card for adding or editing a crop profile */}
+        {showAddForm && (
+          <div className="mb-6 p-5 bg-emerald-50/70 border-2 border-emerald-300 rounded-2xl fade-in">
+            <div className="flex items-center justify-between mb-4 border-b border-emerald-200 pb-2">
+              <h4 className="text-sm font-bold text-emerald-950 flex items-center gap-2">
+                <Sprout size={16} className="text-emerald-600" />
+                {editingCropId !== null ? `Edit Crop Profile (ID: ${editingCropId})` : 'Add New Crop Profile'}
+              </h4>
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="text-gray-500 hover:text-gray-800 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {cropErrMsg && (
+              <div className="p-3 mb-3 text-xs font-semibold text-red-800 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2">
+                <AlertCircle size={15} /> {cropErrMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveCropProfile}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="field">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">{t('cropLabel')} *</label>
+                  <select
+                    value={cropGrown}
+                    onChange={(e) => setCropGrown(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  >
+                    <option value="" disabled>-- Select Crop --</option>
+                    <option value="Paddy">Paddy (Rice)</option>
+                    <option value="Sugarcane">Sugarcane</option>
+                    <option value="Cotton">Cotton</option>
+                    <option value="Banana">Banana</option>
+                    <option value="Groundnut">Groundnut</option>
+                    <option value="Maize">Maize</option>
+                    <option value="Pulses">Pulses / Grams</option>
+                    <option value="Vegetables">Vegetables</option>
+                  </select>
+                </div>
+
+                <div className="field">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">{t('districtLabel')} *</label>
+                  <select
+                    value={districtName}
+                    onChange={(e) => setDistrictName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  >
+                    <option value="" disabled>-- Select District --</option>
+                    {districts.map((d) => (
+                      <option key={d.id || d.name} value={d.name}>
+                        {d.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="field">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Taluk / Block *</label>
+                  <input
+                    type="text"
+                    value={block}
+                    onChange={(e) => setBlock(e.target.value)}
+                    placeholder="e.g. Thiruvaiyaru / Central Block"
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  />
+                </div>
+
+                <div className="field">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Land Size (Acres) *</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    value={landSizeAcres}
+                    onChange={(e) => setLandSizeAcres(e.target.value)}
+                    placeholder="e.g. 2.5"
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="field">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Irrigation Type *</label>
+                  <select
+                    value={irrigationType}
+                    onChange={(e) => setIrrigationType(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  >
+                    <option value="" disabled>-- Select Irrigation Type --</option>
+                    <option value="Canal">Canal / River</option>
+                    <option value="Borewell">Borewell / Well</option>
+                    <option value="Drip/Sprinkler">Drip / Sprinkler</option>
+                    <option value="Rainfed">Rainfed</option>
+                  </select>
+                </div>
+
+                <div className="field">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Crop Duration (Months) *</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="24"
+                    value={cropDurationMonths}
+                    onChange={(e) => setCropDurationMonths(e.target.value)}
+                    placeholder="e.g. 4"
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="field mb-4">
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Cropping Season *</label>
+                <select
+                  value={season}
+                  onChange={(e) => setSeason(e.target.value)}
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  required
+                >
+                  <option value="" disabled>-- Select Season --</option>
+                  <option value="Kharif">Kharif (Monsoon / Kuruvai)</option>
+                  <option value="Rabi">Rabi (Winter / Samba)</option>
+                  <option value="Zaid">Zaid (Summer / Thaladi)</option>
+                </select>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={cropSaving}
+                  className="btn btn-emerald btn-md flex items-center gap-2 cursor-pointer"
+                >
+                  <Save size={16} />
+                  {cropSaving ? 'Saving Crop Profile...' : editingCropId !== null ? 'Update Crop Profile' : 'Save Crop Profile'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm(false)}
+                  className="btn btn-ghost btn-md cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Existing Crop Cards List */}
+        {registeredCrops.length === 0 && !showAddForm ? (
+          <div className="text-center p-8 bg-emerald-50/60 rounded-2xl border border-emerald-200">
+            <Sprout className="mx-auto text-emerald-600 mb-2" size={36} />
+            <h4 className="text-base font-bold text-emerald-950 mb-1">Welcome! Add Your First Crop Profile</h4>
+            <p className="text-xs text-gray-600 mb-4 max-w-md mx-auto">
+              You haven't added any crop profiles yet. Please add your first crop profile to unlock personalized subsidy, insurance, weather forecasts, and custom machinery options.
+            </p>
+            <button onClick={handleOpenAddCrop} className="btn btn-primary btn-md flex items-center gap-2 mx-auto font-bold cursor-pointer">
+              <Plus size={16} /> Add Crop Profile #1
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {registeredCrops.map((c, i) => {
+              const cropAcres = c.landSizeAcres || (c.landSizeHectares ? Number((c.landSizeHectares * 2.47105).toFixed(1)) : 2.5);
+              return (
+                <div
+                  key={c.id || i}
+                  className="p-5 bg-white border border-emerald-100 rounded-2xl shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="px-2.5 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-full">
+                        {i === 0 ? 'Crop Profile 1' : `Crop Profile ${i + 1}`}
+                      </span>
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                        {cropAcres} Acres
+                      </span>
+                    </div>
+
+                    <h4 className="text-base font-bold text-gray-900 mb-3">{c.cropGrown || 'Paddy'}</h4>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 bg-gray-50/80 p-3 rounded-xl mb-4">
+                      <div>📍 <strong>District:</strong> {c.districtName || 'Thanjavur'}</div>
+                      <div>🏘️ <strong>Block:</strong> {c.block || 'Central Block'}</div>
+                      <div>🌧️ <strong>Irrigation:</strong> {c.irrigationType || 'Canal'}</div>
+                      <div>⏱️ <strong>Duration:</strong> {c.cropDurationMonths || 4} Months</div>
+                      <div className="col-span-2">☀️ <strong>Season:</strong> {c.season || 'Kharif'}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                    <button
+                      onClick={() => handleOpenEditCrop(c)}
+                      className="flex-1 py-1.5 px-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-xs font-semibold rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <Edit3 size={13} /> Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCrop(c.id)}
+                      className="py-1.5 px-3 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-semibold rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <Trash2 size={13} /> Delete
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

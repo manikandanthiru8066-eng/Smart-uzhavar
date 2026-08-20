@@ -1,5 +1,7 @@
 package com.smartuzhavar.subsidyservice.controller;
 
+import com.smartuzhavar.subsidyservice.dto.CropProfileDto;
+import com.smartuzhavar.subsidyservice.dto.CropProfileRequest;
 import com.smartuzhavar.subsidyservice.dto.ProfileResponse;
 import com.smartuzhavar.subsidyservice.dto.ProfileUpdateRequest;
 import com.smartuzhavar.subsidyservice.entity.District;
@@ -12,6 +14,11 @@ import com.smartuzhavar.subsidyservice.repository.FarmerRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -29,74 +36,224 @@ public class ProfileController {
         this.districtRepository = districtRepository;
     }
 
-    @GetMapping
-    public ResponseEntity<ProfileResponse> getProfile() {
+    private Farmer getAuthenticatedFarmer() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
+        return farmerRepository.findByUsernameIgnoreCase(username)
                 .orElseGet(() -> farmerRepository.findByUsername(username)
                         .orElseThrow(() -> new ResourceNotFoundException("Farmer not found")));
+    }
 
-        FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer)
-                .orElseGet(() -> {
-                    FarmerProfile p = new FarmerProfile();
-                    p.setFarmer(farmer);
-                    p.setFullName(farmer.getUsername());
-                    return farmerProfileRepository.save(p);
-                });
+    private District resolveDistrict(String districtName) {
+        if (districtName == null || districtName.trim().isEmpty()) {
+            return null;
+        }
+        String targetDist = districtName.trim();
+        return districtRepository.findByNameIgnoreCase(targetDist)
+                .orElseGet(() -> districtRepository.findByName(targetDist)
+                        .orElseGet(() -> {
+                            District d = new District();
+                            d.setName(targetDist);
+                            return districtRepository.save(d);
+                        }));
+    }
 
-        return ResponseEntity.ok(convertToProfileResponse(farmer, profile));
+    private CropProfileDto convertToCropDto(FarmerProfile profile) {
+        return new CropProfileDto(
+                profile.getId(),
+                profile.getCropGrown(),
+                profile.getDistrict() != null ? profile.getDistrict().getName() : null,
+                profile.getBlock(),
+                profile.getLandSizeAcres(),
+                profile.getLandSizeHectares(),
+                profile.getIrrigationType(),
+                profile.getCropDurationMonths(),
+                profile.getSeason()
+        );
+    }
+
+    private ProfileResponse buildProfileResponse(Farmer farmer) {
+        List<FarmerProfile> profiles = farmerProfileRepository.findByFarmer(farmer).stream()
+                .sorted(java.util.Comparator.comparing(FarmerProfile::getId))
+                .collect(Collectors.toList());
+        List<CropProfileDto> cropDtos = profiles.stream()
+                .map(this::convertToCropDto)
+                .collect(Collectors.toList());
+
+
+        String fullName = (farmer.getFullName() != null && !farmer.getFullName().trim().isEmpty())
+                ? farmer.getFullName()
+                : profiles.stream()
+                        .filter(p -> p.getFullName() != null && !p.getFullName().trim().isEmpty())
+                        .map(FarmerProfile::getFullName)
+                        .findFirst()
+                        .orElse(farmer.getUsername());
+
+
+        return new ProfileResponse(
+                farmer.getUsername(),
+                fullName,
+                farmer.getEmail(),
+                farmer.getPhoneNumber(),
+                cropDtos
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<ProfileResponse> getProfile() {
+        Farmer farmer = getAuthenticatedFarmer();
+        return ResponseEntity.ok(buildProfileResponse(farmer));
+    }
+
+
+    // POST /api/profile/crops - Add a new crop profile for the logged-in farmer
+    @PostMapping("/crops")
+    public ResponseEntity<ProfileResponse> addCropProfile(@RequestBody CropProfileRequest request) {
+        Farmer farmer = getAuthenticatedFarmer();
+
+        FarmerProfile cropProfile = new FarmerProfile();
+        cropProfile.setFarmer(farmer);
+        cropProfile.setFullName(farmer.getUsername());
+        cropProfile.setCropGrown(request.getCropGrown() != null ? request.getCropGrown().trim() : "Paddy");
+        cropProfile.setBlock(request.getBlock() != null ? request.getBlock().trim() : null);
+        cropProfile.setCropDurationMonths(request.getCropDurationMonths() != null ? request.getCropDurationMonths() : 4);
+        cropProfile.setSeason(request.getSeason() != null ? request.getSeason().trim() : "Kharif");
+        cropProfile.setIrrigationType(request.getIrrigationType() != null ? request.getIrrigationType().trim() : "Canal");
+
+        // Calculate acres and hectares
+        BigDecimal acres = request.getLandSizeAcres();
+        BigDecimal hectares = request.getLandSizeHectares();
+
+        if (acres != null && acres.compareTo(BigDecimal.ZERO) > 0) {
+            hectares = acres.divide(new BigDecimal("2.47105"), 2, RoundingMode.HALF_UP);
+        } else if (hectares != null && hectares.compareTo(BigDecimal.ZERO) > 0) {
+            acres = hectares.multiply(new BigDecimal("2.47105")).setScale(2, RoundingMode.HALF_UP);
+        } else {
+            acres = new BigDecimal("2.5");
+            hectares = new BigDecimal("1.01");
+        }
+
+        cropProfile.setLandSizeAcres(acres);
+        cropProfile.setLandSizeHectares(hectares);
+
+        if (request.getDistrictName() != null) {
+            cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
+        }
+
+        farmerProfileRepository.save(cropProfile);
+
+        return ResponseEntity.ok(buildProfileResponse(farmer));
+    }
+
+    // PUT /api/profile/crops/{cropProfileId} - Edit a specific crop profile
+    @PutMapping("/crops/{cropProfileId}")
+    public ResponseEntity<ProfileResponse> updateCropProfile(
+            @PathVariable Long cropProfileId,
+            @RequestBody CropProfileRequest request) {
+
+        Farmer farmer = getAuthenticatedFarmer();
+        FarmerProfile cropProfile = farmerProfileRepository.findById(cropProfileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Crop profile not found with ID: " + cropProfileId));
+
+        if (!cropProfile.getFarmer().getId().equals(farmer.getId())) {
+            throw new IllegalArgumentException("Unauthorized to modify this crop profile");
+        }
+
+        if (request.getCropGrown() != null) {
+            cropProfile.setCropGrown(request.getCropGrown().trim());
+        }
+        if (request.getBlock() != null) {
+            cropProfile.setBlock(request.getBlock().trim());
+        }
+        if (request.getCropDurationMonths() != null) {
+            cropProfile.setCropDurationMonths(request.getCropDurationMonths());
+        }
+        if (request.getSeason() != null) {
+            cropProfile.setSeason(request.getSeason().trim());
+        }
+        if (request.getIrrigationType() != null) {
+            cropProfile.setIrrigationType(request.getIrrigationType().trim());
+        }
+        if (request.getDistrictName() != null) {
+            cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
+        }
+
+        if (request.getLandSizeAcres() != null) {
+            BigDecimal acres = request.getLandSizeAcres();
+            BigDecimal hectares = acres.divide(new BigDecimal("2.47105"), 2, RoundingMode.HALF_UP);
+            cropProfile.setLandSizeAcres(acres);
+            cropProfile.setLandSizeHectares(hectares);
+        } else if (request.getLandSizeHectares() != null) {
+            BigDecimal hectares = request.getLandSizeHectares();
+            BigDecimal acres = hectares.multiply(new BigDecimal("2.47105")).setScale(2, RoundingMode.HALF_UP);
+            cropProfile.setLandSizeHectares(hectares);
+            cropProfile.setLandSizeAcres(acres);
+        }
+
+        farmerProfileRepository.save(cropProfile);
+
+        return ResponseEntity.ok(buildProfileResponse(farmer));
+    }
+
+    // DELETE /api/profile/crops/{cropProfileId} - Delete a specific crop profile
+    @DeleteMapping("/crops/{cropProfileId}")
+    public ResponseEntity<ProfileResponse> deleteCropProfile(@PathVariable Long cropProfileId) {
+        Farmer farmer = getAuthenticatedFarmer();
+        FarmerProfile cropProfile = farmerProfileRepository.findById(cropProfileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Crop profile not found with ID: " + cropProfileId));
+
+        if (!cropProfile.getFarmer().getId().equals(farmer.getId())) {
+            throw new IllegalArgumentException("Unauthorized to delete this crop profile");
+        }
+
+        farmerProfileRepository.delete(cropProfile);
+
+        return ResponseEntity.ok(buildProfileResponse(farmer));
     }
 
     @PutMapping
     public ResponseEntity<ProfileResponse> updateProfile(@RequestBody ProfileUpdateRequest updateRequest) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
-                .orElseGet(() -> farmerRepository.findByUsername(username)
-                        .orElseThrow(() -> new ResourceNotFoundException("Farmer not found")));
+        Farmer farmer = getAuthenticatedFarmer();
+        List<FarmerProfile> profiles = farmerProfileRepository.findByFarmer(farmer);
 
-        FarmerProfile profile = farmerProfileRepository.findByFarmer(farmer)
-                .orElseGet(() -> {
-                    FarmerProfile p = new FarmerProfile();
-                    p.setFarmer(farmer);
-                    p.setFullName(updateRequest.getFullName() != null && !updateRequest.getFullName().trim().isEmpty() 
-                            ? updateRequest.getFullName().trim() : farmer.getUsername());
-                    return p;
-                });
+        FarmerProfile primaryProfile;
+        if (profiles.isEmpty()) {
+            primaryProfile = new FarmerProfile();
+            primaryProfile.setFarmer(farmer);
+            primaryProfile.setFullName(updateRequest.getFullName() != null && !updateRequest.getFullName().trim().isEmpty() 
+                    ? updateRequest.getFullName().trim() : farmer.getUsername());
+        } else {
+            primaryProfile = profiles.get(0);
+        }
 
-        // Update profile details
-        if (updateRequest.getFullName() != null) {
-            profile.setFullName(updateRequest.getFullName());
+        if (updateRequest.getFullName() != null && !updateRequest.getFullName().trim().isEmpty()) {
+            primaryProfile.setFullName(updateRequest.getFullName().trim());
         }
         if (updateRequest.getCropGrown() != null) {
-            profile.setCropGrown(updateRequest.getCropGrown());
+            primaryProfile.setCropGrown(updateRequest.getCropGrown());
         }
         if (updateRequest.getCropDurationMonths() != null) {
-            profile.setCropDurationMonths(updateRequest.getCropDurationMonths());
+            primaryProfile.setCropDurationMonths(updateRequest.getCropDurationMonths());
         }
         if (updateRequest.getSeason() != null) {
-            profile.setSeason(updateRequest.getSeason());
+            primaryProfile.setSeason(updateRequest.getSeason());
         }
         if (updateRequest.getLandSizeHectares() != null) {
-            profile.setLandSizeHectares(updateRequest.getLandSizeHectares());
+            primaryProfile.setLandSizeHectares(updateRequest.getLandSizeHectares());
+            BigDecimal acres = updateRequest.getLandSizeHectares().multiply(new BigDecimal("2.47105")).setScale(2, RoundingMode.HALF_UP);
+            primaryProfile.setLandSizeAcres(acres);
         }
 
         if (updateRequest.getDistrictName() != null) {
-            if (updateRequest.getDistrictName().trim().isEmpty()) {
-                profile.setDistrict(null);
-            } else {
-                District district = districtRepository.findByName(updateRequest.getDistrictName())
-                        .orElseThrow(() -> new IllegalArgumentException("District not found: " + updateRequest.getDistrictName()));
-                profile.setDistrict(district);
-            }
+            primaryProfile.setDistrict(resolveDistrict(updateRequest.getDistrictName()));
         }
 
-        // Update farmer details
+        // Update core farmer account details
         if (updateRequest.getEmail() != null && !updateRequest.getEmail().trim().isEmpty()) {
             if (!updateRequest.getEmail().equalsIgnoreCase(farmer.getEmail()) && 
                     farmerRepository.existsByEmail(updateRequest.getEmail())) {
                 throw new IllegalArgumentException("Email is already in use by another user");
             }
-            farmer.setEmail(updateRequest.getEmail());
+            farmer.setEmail(updateRequest.getEmail().trim());
         }
 
         if (updateRequest.getPhoneNumber() != null && !updateRequest.getPhoneNumber().trim().isEmpty()) {
@@ -104,26 +261,12 @@ public class ProfileController {
                     farmerRepository.existsByPhoneNumber(updateRequest.getPhoneNumber())) {
                 throw new IllegalArgumentException("Phone number is already in use by another user");
             }
-            farmer.setPhoneNumber(updateRequest.getPhoneNumber());
+            farmer.setPhoneNumber(updateRequest.getPhoneNumber().trim());
         }
 
         farmerRepository.save(farmer);
-        FarmerProfile savedProfile = farmerProfileRepository.save(profile);
+        farmerProfileRepository.save(primaryProfile);
 
-        return ResponseEntity.ok(convertToProfileResponse(farmer, savedProfile));
-    }
-
-    private ProfileResponse convertToProfileResponse(Farmer farmer, FarmerProfile profile) {
-        return new ProfileResponse(
-                farmer.getUsername(),
-                profile.getFullName(),
-                farmer.getEmail(),
-                farmer.getPhoneNumber(),
-                profile.getDistrict() != null ? profile.getDistrict().getName() : null,
-                profile.getCropGrown(),
-                profile.getCropDurationMonths(),
-                profile.getSeason(),
-                profile.getLandSizeHectares()
-        );
+        return ResponseEntity.ok(buildProfileResponse(farmer));
     }
 }

@@ -9,22 +9,30 @@ CREATE TABLE IF NOT EXISTS farmers (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
+    full_name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     phone_number VARCHAR(20) UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- Ensure farmer_profiles table exists (shared with subsidy-service)
 CREATE TABLE IF NOT EXISTS farmer_profiles (
     id BIGSERIAL PRIMARY KEY,
-    farmer_id BIGINT UNIQUE NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
-    full_name VARCHAR(100) NOT NULL,
+    farmer_id BIGINT NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
+    full_name VARCHAR(100),
     district_id BIGINT REFERENCES districts(id) ON DELETE SET NULL,
+    block VARCHAR(100),
     crop_grown VARCHAR(100),
+    crop_duration_months INT,
+    season VARCHAR(50),
+    irrigation_type VARCHAR(50),
+    land_size_acres DECIMAL(10, 2),
     land_size_hectares DECIMAL(10, 2),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Insurance Schemes table
 CREATE TABLE IF NOT EXISTS insurance_schemes (

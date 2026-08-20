@@ -1,6 +1,8 @@
 package com.smartuzhavar.subsidyservice.dto;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecommendedSubsidyResponse {
     private Long id;
@@ -14,12 +16,13 @@ public class RecommendedSubsidyResponse {
     private String subsidyAmount;
     private Instant createdAt;
     private double matchScore;
+    private List<String> matchReasons = new ArrayList<>();
 
     public RecommendedSubsidyResponse() {}
 
     public RecommendedSubsidyResponse(Long id, String name, String nameTa, String description, String descriptionTa,
                                        String applicableCrops, String applicableCropsTa, String applicableDistricts, 
-                                       String subsidyAmount, Instant createdAt, double matchScore) {
+                                       String subsidyAmount, Instant createdAt, double matchScore, List<String> matchReasons) {
         this.id = id;
         this.name = name;
         this.nameTa = nameTa;
@@ -31,6 +34,7 @@ public class RecommendedSubsidyResponse {
         this.subsidyAmount = subsidyAmount;
         this.createdAt = createdAt;
         this.matchScore = matchScore;
+        this.matchReasons = matchReasons != null ? matchReasons : new ArrayList<>();
     }
 
     public Long getId() {
@@ -119,5 +123,13 @@ public class RecommendedSubsidyResponse {
 
     public void setMatchScore(double matchScore) {
         this.matchScore = matchScore;
+    }
+
+    public List<String> getMatchReasons() {
+        return matchReasons;
+    }
+
+    public void setMatchReasons(List<String> matchReasons) {
+        this.matchReasons = matchReasons;
     }
 }

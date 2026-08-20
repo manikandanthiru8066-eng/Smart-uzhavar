@@ -17,6 +17,9 @@ public class Farmer {
     @Column(nullable = false, length = 100)
     private String password;
 
+    @Column(name = "full_name", length = 100)
+    private String fullName;
+
     @Column(unique = true, length = 100)
     private String email;
 
@@ -50,6 +53,15 @@ public class Farmer {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
 
     public String getPassword() {
         return password;
