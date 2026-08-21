@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 public class CropProfileRequest {
     private String cropGrown;
     private String districtName;
+    private Long talukId;
+    private String talukName;
+    private Long blockId;
     private String block;
     private BigDecimal landSizeAcres;
     private BigDecimal landSizeHectares;
@@ -28,6 +31,30 @@ public class CropProfileRequest {
 
     public void setDistrictName(String districtName) {
         this.districtName = districtName;
+    }
+
+    public Long getTalukId() {
+        return talukId;
+    }
+
+    public void setTalukId(Long talukId) {
+        this.talukId = talukId;
+    }
+
+    public String getTalukName() {
+        return talukName;
+    }
+
+    public void setTalukName(String talukName) {
+        this.talukName = talukName;
+    }
+
+    public Long getBlockId() {
+        return blockId;
+    }
+
+    public void setBlockId(Long blockId) {
+        this.blockId = blockId;
     }
 
     public String getBlock() {

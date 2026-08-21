@@ -4,16 +4,21 @@ import com.smartuzhavar.subsidyservice.dto.CropProfileDto;
 import com.smartuzhavar.subsidyservice.dto.CropProfileRequest;
 import com.smartuzhavar.subsidyservice.dto.ProfileResponse;
 import com.smartuzhavar.subsidyservice.dto.ProfileUpdateRequest;
+import com.smartuzhavar.subsidyservice.entity.Block;
 import com.smartuzhavar.subsidyservice.entity.District;
 import com.smartuzhavar.subsidyservice.entity.Farmer;
 import com.smartuzhavar.subsidyservice.entity.FarmerProfile;
+import com.smartuzhavar.subsidyservice.entity.Taluk;
 import com.smartuzhavar.subsidyservice.exception.ResourceNotFoundException;
+import com.smartuzhavar.subsidyservice.repository.BlockRepository;
 import com.smartuzhavar.subsidyservice.repository.DistrictRepository;
 import com.smartuzhavar.subsidyservice.repository.FarmerProfileRepository;
 import com.smartuzhavar.subsidyservice.repository.FarmerRepository;
+import com.smartuzhavar.subsidyservice.repository.TalukRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,13 +32,19 @@ public class ProfileController {
     private final FarmerRepository farmerRepository;
     private final FarmerProfileRepository farmerProfileRepository;
     private final DistrictRepository districtRepository;
+    private final TalukRepository talukRepository;
+    private final BlockRepository blockRepository;
 
     public ProfileController(FarmerRepository farmerRepository,
                              FarmerProfileRepository farmerProfileRepository,
-                             DistrictRepository districtRepository) {
+                             DistrictRepository districtRepository,
+                             TalukRepository talukRepository,
+                             BlockRepository blockRepository) {
         this.farmerRepository = farmerRepository;
         this.farmerProfileRepository = farmerProfileRepository;
         this.districtRepository = districtRepository;
+        this.talukRepository = talukRepository;
+        this.blockRepository = blockRepository;
     }
 
     private Farmer getAuthenticatedFarmer() {
@@ -57,12 +68,49 @@ public class ProfileController {
                         }));
     }
 
+    private void resolveLocationEntities(CropProfileRequest request, FarmerProfile cropProfile, District district) {
+        if (district != null) {
+            cropProfile.setDistrict(district);
+        }
+
+        // 1. Resolve Taluk
+        Taluk taluk = null;
+        if (request.getTalukId() != null) {
+            taluk = talukRepository.findById(request.getTalukId()).orElse(null);
+        } else if (request.getTalukName() != null && !request.getTalukName().trim().isEmpty() && district != null) {
+            taluk = talukRepository.findByNameIgnoreCaseAndDistrictId(request.getTalukName().trim(), district.getId()).orElse(null);
+        }
+        cropProfile.setTaluk(taluk);
+
+        // 2. Resolve Block
+        Block block = null;
+        String blockName = request.getBlock() != null ? request.getBlock().trim() : null;
+        if (request.getBlockId() != null) {
+            block = blockRepository.findById(request.getBlockId()).orElse(null);
+            if (block != null) {
+                blockName = block.getName();
+            }
+        } else if (blockName != null && taluk != null) {
+            block = blockRepository.findByNameIgnoreCaseAndTalukId(blockName, taluk.getId()).orElse(null);
+        }
+        cropProfile.setBlockEntity(block);
+        cropProfile.setBlock(blockName);
+    }
+
     private CropProfileDto convertToCropDto(FarmerProfile profile) {
+        Long talukId = profile.getTaluk() != null ? profile.getTaluk().getId() : null;
+        String talukName = profile.getTaluk() != null ? profile.getTaluk().getName() : null;
+        Long blockId = profile.getBlockEntity() != null ? profile.getBlockEntity().getId() : null;
+        String blockName = profile.getBlockEntity() != null ? profile.getBlockEntity().getName() : profile.getBlock();
+
         return new CropProfileDto(
                 profile.getId(),
                 profile.getCropGrown(),
                 profile.getDistrict() != null ? profile.getDistrict().getName() : null,
-                profile.getBlock(),
+                talukId,
+                talukName,
+                blockId,
+                blockName,
                 profile.getLandSizeAcres(),
                 profile.getLandSizeHectares(),
                 profile.getIrrigationType(),
@@ -112,9 +160,8 @@ public class ProfileController {
 
         FarmerProfile cropProfile = new FarmerProfile();
         cropProfile.setFarmer(farmer);
-        cropProfile.setFullName(farmer.getUsername());
+        cropProfile.setFullName(farmer.getFullName() != null ? farmer.getFullName() : farmer.getUsername());
         cropProfile.setCropGrown(request.getCropGrown() != null ? request.getCropGrown().trim() : "Paddy");
-        cropProfile.setBlock(request.getBlock() != null ? request.getBlock().trim() : null);
         cropProfile.setCropDurationMonths(request.getCropDurationMonths() != null ? request.getCropDurationMonths() : 4);
         cropProfile.setSeason(request.getSeason() != null ? request.getSeason().trim() : "Kharif");
         cropProfile.setIrrigationType(request.getIrrigationType() != null ? request.getIrrigationType().trim() : "Canal");
@@ -135,9 +182,8 @@ public class ProfileController {
         cropProfile.setLandSizeAcres(acres);
         cropProfile.setLandSizeHectares(hectares);
 
-        if (request.getDistrictName() != null) {
-            cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
-        }
+        District district = resolveDistrict(request.getDistrictName());
+        resolveLocationEntities(request, cropProfile, district);
 
         farmerProfileRepository.save(cropProfile);
 
@@ -161,9 +207,6 @@ public class ProfileController {
         if (request.getCropGrown() != null) {
             cropProfile.setCropGrown(request.getCropGrown().trim());
         }
-        if (request.getBlock() != null) {
-            cropProfile.setBlock(request.getBlock().trim());
-        }
         if (request.getCropDurationMonths() != null) {
             cropProfile.setCropDurationMonths(request.getCropDurationMonths());
         }
@@ -173,9 +216,9 @@ public class ProfileController {
         if (request.getIrrigationType() != null) {
             cropProfile.setIrrigationType(request.getIrrigationType().trim());
         }
-        if (request.getDistrictName() != null) {
-            cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
-        }
+
+        District district = request.getDistrictName() != null ? resolveDistrict(request.getDistrictName()) : cropProfile.getDistrict();
+        resolveLocationEntities(request, cropProfile, district);
 
         if (request.getLandSizeAcres() != null) {
             BigDecimal acres = request.getLandSizeAcres();
