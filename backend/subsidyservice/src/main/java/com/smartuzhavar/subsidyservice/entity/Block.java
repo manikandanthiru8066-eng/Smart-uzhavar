@@ -42,3 +42,4 @@ public class Block {
     public Set<Taluk> getTaluks() { return taluks; }
     public void setTaluks(Set<Taluk> taluks) { this.taluks = taluks; }
 }
+

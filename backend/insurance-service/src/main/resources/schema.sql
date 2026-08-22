@@ -37,8 +37,35 @@ CREATE TABLE IF NOT EXISTS farmers (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 3. Taluks table
+CREATE TABLE IF NOT EXISTS taluks (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    district_id BIGINT NOT NULL REFERENCES districts(id) ON DELETE CASCADE
+);
 
--- Ensure farmer_profiles table exists (shared with subsidy-service)
+-- 4. Blocks table
+CREATE TABLE IF NOT EXISTS blocks (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    taluk_id BIGINT NOT NULL REFERENCES taluks(id) ON DELETE CASCADE
+);
+
+-- 5. District Crop Statistics table
+CREATE TABLE IF NOT EXISTS district_crop_stats (
+    id BIGSERIAL PRIMARY KEY,
+    district_id BIGINT NOT NULL REFERENCES districts(id) ON DELETE CASCADE,
+    crop VARCHAR(100) NOT NULL,
+    season VARCHAR(50),
+    year VARCHAR(20),
+    area_hectares DECIMAL(12, 2),
+    production_tonnes DECIMAL(12, 2),
+    yield_kg_per_ha DECIMAL(12, 2),
+    is_top_crop BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 6. Farmer Profiles table (One farmer can have MULTIPLE crop profiles)
 CREATE TABLE IF NOT EXISTS farmer_profiles (
     id BIGSERIAL PRIMARY KEY,
     farmer_id BIGINT NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
@@ -48,7 +75,7 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
     block_id BIGINT REFERENCES blocks(id) ON DELETE SET NULL,
     block VARCHAR(100),
     crop_grown VARCHAR(100),
-    crop_duration_months INT,
+    crop_duration_months INTEGER,
     season VARCHAR(50),
     irrigation_type VARCHAR(50),
     land_size_acres DECIMAL(10, 2),
@@ -58,7 +85,6 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
 );
 ALTER TABLE farmer_profiles ADD COLUMN IF NOT EXISTS taluk_id BIGINT REFERENCES taluks(id) ON DELETE SET NULL;
 ALTER TABLE farmer_profiles ADD COLUMN IF NOT EXISTS block_id BIGINT REFERENCES blocks(id) ON DELETE SET NULL;
-
 
 
 -- Insurance Schemes table

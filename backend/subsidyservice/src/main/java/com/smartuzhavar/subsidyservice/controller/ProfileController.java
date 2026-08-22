@@ -4,16 +4,21 @@ import com.smartuzhavar.subsidyservice.dto.CropProfileDto;
 import com.smartuzhavar.subsidyservice.dto.CropProfileRequest;
 import com.smartuzhavar.subsidyservice.dto.ProfileResponse;
 import com.smartuzhavar.subsidyservice.dto.ProfileUpdateRequest;
+import com.smartuzhavar.subsidyservice.entity.Block;
 import com.smartuzhavar.subsidyservice.entity.District;
 import com.smartuzhavar.subsidyservice.entity.Farmer;
 import com.smartuzhavar.subsidyservice.entity.FarmerProfile;
+import com.smartuzhavar.subsidyservice.entity.Taluk;
 import com.smartuzhavar.subsidyservice.exception.ResourceNotFoundException;
+import com.smartuzhavar.subsidyservice.repository.BlockRepository;
 import com.smartuzhavar.subsidyservice.repository.DistrictRepository;
 import com.smartuzhavar.subsidyservice.repository.FarmerProfileRepository;
 import com.smartuzhavar.subsidyservice.repository.FarmerRepository;
+import com.smartuzhavar.subsidyservice.repository.TalukRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,14 +32,24 @@ public class ProfileController {
     private final FarmerRepository farmerRepository;
     private final FarmerProfileRepository farmerProfileRepository;
     private final DistrictRepository districtRepository;
+<<<<<<< HEAD
     private final com.smartuzhavar.subsidyservice.repository.TalukRepository talukRepository;
     private final com.smartuzhavar.subsidyservice.repository.BlockRepository blockRepository;
+=======
+    private final TalukRepository talukRepository;
+    private final BlockRepository blockRepository;
+>>>>>>> origin/dev
 
     public ProfileController(FarmerRepository farmerRepository,
                              FarmerProfileRepository farmerProfileRepository,
                              DistrictRepository districtRepository,
+<<<<<<< HEAD
                              com.smartuzhavar.subsidyservice.repository.TalukRepository talukRepository,
                              com.smartuzhavar.subsidyservice.repository.BlockRepository blockRepository) {
+=======
+                             TalukRepository talukRepository,
+                             BlockRepository blockRepository) {
+>>>>>>> origin/dev
         this.farmerRepository = farmerRepository;
         this.farmerProfileRepository = farmerProfileRepository;
         this.districtRepository = districtRepository;
@@ -63,16 +78,49 @@ public class ProfileController {
                         }));
     }
 
+    private void resolveLocationEntities(CropProfileRequest request, FarmerProfile cropProfile, District district) {
+        if (district != null) {
+            cropProfile.setDistrict(district);
+        }
+
+        // 1. Resolve Taluk
+        Taluk taluk = null;
+        if (request.getTalukId() != null) {
+            taluk = talukRepository.findById(request.getTalukId()).orElse(null);
+        } else if (request.getTalukName() != null && !request.getTalukName().trim().isEmpty() && district != null) {
+            taluk = talukRepository.findByNameIgnoreCaseAndDistrictId(request.getTalukName().trim(), district.getId()).orElse(null);
+        }
+        cropProfile.setTaluk(taluk);
+
+        // 2. Resolve Block
+        Block block = null;
+        String blockName = request.getBlock() != null ? request.getBlock().trim() : null;
+        if (request.getBlockId() != null) {
+            block = blockRepository.findById(request.getBlockId()).orElse(null);
+            if (block != null) {
+                blockName = block.getName();
+            }
+        } else if (blockName != null && taluk != null) {
+            block = blockRepository.findByNameIgnoreCaseAndTalukId(blockName, taluk.getId()).orElse(null);
+        }
+        cropProfile.setBlockEntity(block);
+        cropProfile.setBlock(blockName);
+    }
+
     private CropProfileDto convertToCropDto(FarmerProfile profile) {
+        Long talukId = profile.getTaluk() != null ? profile.getTaluk().getId() : null;
+        String talukName = profile.getTaluk() != null ? profile.getTaluk().getName() : null;
+        Long blockId = profile.getBlockEntity() != null ? profile.getBlockEntity().getId() : null;
         String blockName = profile.getBlockEntity() != null ? profile.getBlockEntity().getName() : profile.getBlock();
+
         return new CropProfileDto(
                 profile.getId(),
                 profile.getCropGrown(),
                 profile.getDistrict() != null ? profile.getDistrict().getId() : null,
                 profile.getDistrict() != null ? profile.getDistrict().getName() : null,
-                profile.getTaluk() != null ? profile.getTaluk().getId() : null,
-                profile.getTaluk() != null ? profile.getTaluk().getName() : null,
-                profile.getBlockEntity() != null ? profile.getBlockEntity().getId() : null,
+                talukId,
+                talukName,
+                blockId,
                 blockName,
                 profile.getLandSizeAcres(),
                 profile.getLandSizeHectares(),
@@ -123,7 +171,7 @@ public class ProfileController {
 
         FarmerProfile cropProfile = new FarmerProfile();
         cropProfile.setFarmer(farmer);
-        cropProfile.setFullName(farmer.getUsername());
+        cropProfile.setFullName(farmer.getFullName() != null ? farmer.getFullName() : farmer.getUsername());
         cropProfile.setCropGrown(request.getCropGrown() != null ? request.getCropGrown().trim() : "Paddy");
         cropProfile.setCropDurationMonths(request.getCropDurationMonths() != null ? request.getCropDurationMonths() : 4);
         cropProfile.setSeason(request.getSeason() != null ? request.getSeason().trim() : "Kharif");
@@ -145,11 +193,16 @@ public class ProfileController {
         cropProfile.setLandSizeAcres(acres);
         cropProfile.setLandSizeHectares(hectares);
 
+<<<<<<< HEAD
         if (request.getDistrictId() != null) {
             districtRepository.findById(request.getDistrictId()).ifPresent(cropProfile::setDistrict);
         } else if (request.getDistrictName() != null) {
             cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
         }
+=======
+        District district = resolveDistrict(request.getDistrictName());
+        resolveLocationEntities(request, cropProfile, district);
+>>>>>>> origin/dev
 
         if (request.getTalukId() != null) {
             talukRepository.findById(request.getTalukId()).ifPresent(cropProfile::setTaluk);
@@ -196,11 +249,16 @@ public class ProfileController {
             cropProfile.setIrrigationType(request.getIrrigationType().trim());
         }
 
+<<<<<<< HEAD
         if (request.getDistrictId() != null) {
             districtRepository.findById(request.getDistrictId()).ifPresent(cropProfile::setDistrict);
         } else if (request.getDistrictName() != null) {
             cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
         }
+=======
+        District district = request.getDistrictName() != null ? resolveDistrict(request.getDistrictName()) : cropProfile.getDistrict();
+        resolveLocationEntities(request, cropProfile, district);
+>>>>>>> origin/dev
 
         if (request.getTalukId() != null) {
             talukRepository.findById(request.getTalukId()).ifPresent(cropProfile::setTaluk);

@@ -55,3 +55,4 @@ public class Taluk {
     public Set<Block> getBlocks() { return blocks; }
     public void setBlocks(Set<Block> blocks) { this.blocks = blocks; }
 }
+

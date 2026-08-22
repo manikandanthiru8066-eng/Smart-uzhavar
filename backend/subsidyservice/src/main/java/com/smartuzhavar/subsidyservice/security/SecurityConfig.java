@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/subsidies").permitAll()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
+
             );
 
 

@@ -12,13 +12,11 @@ interface DistrictItem {
 interface TalukItem {
   id: number;
   name: string;
-  lgdSubdistrictCode?: number;
 }
 
 interface BlockItem {
   id: number;
   name: string;
-  lgdBlockCode?: string;
 }
 
 export const ProfilePage: React.FC = () => {
@@ -33,10 +31,12 @@ export const ProfilePage: React.FC = () => {
   const [accountSuccessMsg, setAccountSuccessMsg] = useState('');
   const [accountErrMsg, setAccountErrMsg] = useState('');
 
-  // District, Taluk, Block options
+  // District options & Cascading Taluk/Block options
   const [districts, setDistricts] = useState<DistrictItem[]>([]);
   const [taluks, setTaluks] = useState<TalukItem[]>([]);
   const [blocks, setBlocks] = useState<BlockItem[]>([]);
+  const [loadingTaluks, setLoadingTaluks] = useState(false);
+  const [loadingBlocks, setLoadingBlocks] = useState(false);
 
   // Add / Edit Crop Modal State
   const [showAddForm, setShowAddForm] = useState(false);
@@ -44,11 +44,11 @@ export const ProfilePage: React.FC = () => {
 
   // New / Edit Crop Form State
   const [cropGrown, setCropGrown] = useState('');
-  const [selectedDistrictId, setSelectedDistrictId] = useState<number | null>(null);
   const [districtName, setDistrictName] = useState('');
-  const [selectedTalukId, setSelectedTalukId] = useState<number | null>(null);
-  const [talukName, setTalukName] = useState('');
-  const [selectedBlockId, setSelectedBlockId] = useState<number | null>(null);
+  const [selectedTalukId, setSelectedTalukId] = useState('');
+  const [selectedTalukName, setSelectedTalukName] = useState('');
+  const [selectedBlockId, setSelectedBlockId] = useState('');
+  const [selectedBlockName, setSelectedBlockName] = useState('');
   const [block, setBlock] = useState('');
   const [landSizeAcres, setLandSizeAcres] = useState('');
   const [irrigationType, setIrrigationType] = useState('');
@@ -89,57 +89,70 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  // Cascading Handlers
-  const handleDistrictSelect = async (distId: number) => {
-    setSelectedDistrictId(distId);
-    const d = districts.find((item) => item.id === distId);
-    setDistrictName(d ? d.name : '');
-
-    setSelectedTalukId(null);
-    setTalukName('');
-    setTaluks([]);
-
-    setSelectedBlockId(null);
-    setBlock('');
-    setBlocks([]);
-
-    if (distId) {
-      try {
-        const res = await subsidyApi.get<TalukItem[]>(`/api/districts/${distId}/taluks`);
-        if (Array.isArray(res.data)) {
-          setTaluks(res.data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch taluks for district', distId, err);
-      }
+  const fetchTaluksForDistrict = async (distName: string) => {
+    if (!distName) {
+      setTaluks([]);
+      return;
+    }
+    setLoadingTaluks(true);
+    try {
+      const res = await subsidyApi.get<TalukItem[]>(`/api/districts/name/${encodeURIComponent(distName)}/taluks`);
+      setTaluks(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setTaluks([]);
+    } finally {
+      setLoadingTaluks(false);
     }
   };
 
-  const handleTalukSelect = async (tlkId: number) => {
-    setSelectedTalukId(tlkId);
-    const tItem = taluks.find((item) => item.id === tlkId);
-    setTalukName(tItem ? tItem.name : '');
-
-    setSelectedBlockId(null);
-    setBlock('');
-    setBlocks([]);
-
-    if (tlkId) {
-      try {
-        const res = await subsidyApi.get<BlockItem[]>(`/api/taluks/${tlkId}/blocks`);
-        if (Array.isArray(res.data)) {
-          setBlocks(res.data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch blocks for taluk', tlkId, err);
-      }
+  const fetchBlocksForTaluk = async (talukIdStr: string) => {
+    if (!talukIdStr) {
+      setBlocks([]);
+      return;
+    }
+    setLoadingBlocks(true);
+    try {
+      const res = await subsidyApi.get<BlockItem[]>(`/api/taluks/${talukIdStr}/blocks`);
+      setBlocks(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setBlocks([]);
+    } finally {
+      setLoadingBlocks(false);
     }
   };
 
-  const handleBlockSelect = (blkId: number) => {
-    setSelectedBlockId(blkId);
-    const b = blocks.find((item) => item.id === blkId);
-    setBlock(b ? b.name : '');
+  const handleDistrictChange = (distName: string) => {
+    setDistrictName(distName);
+    setSelectedTalukId('');
+    setSelectedTalukName('');
+    setSelectedBlockId('');
+    setSelectedBlockName('');
+    setBlock('');
+    setBlocks([]);
+    fetchTaluksForDistrict(distName);
+  };
+
+  const handleTalukChange = (talukIdStr: string) => {
+    setSelectedTalukId(talukIdStr);
+    const foundTaluk = taluks.find(t => String(t.id) === talukIdStr);
+    const tName = foundTaluk ? foundTaluk.name : '';
+    setSelectedTalukName(tName);
+    setSelectedBlockId('');
+    setSelectedBlockName('');
+    setBlock('');
+    if (talukIdStr) {
+      fetchBlocksForTaluk(talukIdStr);
+    } else {
+      setBlocks([]);
+    }
+  };
+
+  const handleBlockChange = (blockIdStr: string) => {
+    setSelectedBlockId(blockIdStr);
+    const foundBlock = blocks.find(b => String(b.id) === blockIdStr);
+    const bName = foundBlock ? foundBlock.name : '';
+    setSelectedBlockName(bName);
+    setBlock(bName);
   };
 
   // Save Core Personal Account Details
@@ -167,13 +180,13 @@ export const ProfilePage: React.FC = () => {
   const handleOpenAddCrop = () => {
     setEditingCropId(null);
     setCropGrown('');
-    setSelectedDistrictId(null);
     setDistrictName('');
-    setSelectedTalukId(null);
-    setTalukName('');
-    setTaluks([]);
-    setSelectedBlockId(null);
+    setSelectedTalukId('');
+    setSelectedTalukName('');
+    setSelectedBlockId('');
+    setSelectedBlockName('');
     setBlock('');
+    setTaluks([]);
     setBlocks([]);
     setLandSizeAcres('');
     setIrrigationType('');
@@ -188,49 +201,38 @@ export const ProfilePage: React.FC = () => {
     if (!cropItem.id) return;
     setEditingCropId(cropItem.id);
     setCropGrown(cropItem.cropGrown || '');
-
-    const distId = cropItem.districtId || (districts.find((d) => d.name === cropItem.districtName)?.id ?? null);
-    setSelectedDistrictId(distId);
-    setDistrictName(cropItem.districtName || '');
-
-    let loadedTaluks: TalukItem[] = [];
-    if (distId) {
-      try {
-        const res = await subsidyApi.get<TalukItem[]>(`/api/districts/${distId}/taluks`);
-        if (Array.isArray(res.data)) {
-          loadedTaluks = res.data;
-          setTaluks(res.data);
-        }
-      } catch (err) {
-        console.error('Error fetching taluks:', err);
-      }
-    }
-
-    const tlkId = cropItem.talukId || (loadedTaluks.find((tItem) => tItem.name === cropItem.talukName)?.id ?? null);
-    setSelectedTalukId(tlkId);
-    setTalukName(cropItem.talukName || '');
-
-    if (tlkId) {
-      try {
-        const res = await subsidyApi.get<BlockItem[]>(`/api/taluks/${tlkId}/blocks`);
-        if (Array.isArray(res.data)) {
-          setBlocks(res.data);
-          const blkId = cropItem.blockId || (res.data.find((b) => b.name === cropItem.block)?.id ?? null);
-          setSelectedBlockId(blkId);
-        }
-      } catch (err) {
-        console.error('Error fetching blocks:', err);
-      }
-    } else {
-      setSelectedBlockId(cropItem.blockId || null);
-    }
-
-    setBlock(cropItem.block || '');
+    const dist = cropItem.districtName || '';
+    setDistrictName(dist);
     setLandSizeAcres(cropItem.landSizeAcres ? String(cropItem.landSizeAcres) : '');
     setIrrigationType(cropItem.irrigationType || '');
     setCropDurationMonths(cropItem.cropDurationMonths ? String(cropItem.cropDurationMonths) : '');
     setSeason(cropItem.season || '');
     setCropErrMsg('');
+
+    if (dist) {
+      await fetchTaluksForDistrict(dist);
+    }
+
+    if (cropItem.talukId) {
+      const tId = String(cropItem.talukId);
+      setSelectedTalukId(tId);
+      setSelectedTalukName(cropItem.talukName || '');
+      await fetchBlocksForTaluk(tId);
+    } else {
+      setSelectedTalukId('');
+      setSelectedTalukName(cropItem.talukName || '');
+    }
+
+    if (cropItem.blockId) {
+      setSelectedBlockId(String(cropItem.blockId));
+      setSelectedBlockName(cropItem.block || '');
+      setBlock(cropItem.block || '');
+    } else {
+      setSelectedBlockId('');
+      setSelectedBlockName(cropItem.block || '');
+      setBlock(cropItem.block || '');
+    }
+
     setShowAddForm(true);
   };
 
@@ -240,20 +242,21 @@ export const ProfilePage: React.FC = () => {
     setCropSaving(true);
     setCropErrMsg('');
 
-    if (!cropGrown || !districtName || (!block && !selectedBlockId) || !landSizeAcres || !irrigationType || !cropDurationMonths || !season) {
-      setCropErrMsg('Please complete all crop profile fields before saving.');
+    const finalBlockName = selectedBlockName || block;
+
+    if (!cropGrown || !districtName || !selectedTalukId || !finalBlockName || !landSizeAcres || !irrigationType || !cropDurationMonths || !season) {
+      setCropErrMsg('Please select your District, Taluk, and Block from the cascading dropdowns.');
       setCropSaving(false);
       return;
     }
 
     const payload = {
       cropGrown,
-      districtId: selectedDistrictId,
       districtName,
-      talukId: selectedTalukId,
-      talukName,
-      blockId: selectedBlockId,
-      block,
+      talukId: selectedTalukId ? parseInt(selectedTalukId) : undefined,
+      talukName: selectedTalukName,
+      blockId: selectedBlockId ? parseInt(selectedBlockId) : undefined,
+      block: finalBlockName,
       landSizeAcres: parseFloat(landSizeAcres) || 1.0,
       irrigationType,
       cropDurationMonths: parseInt(cropDurationMonths) || 4,
@@ -377,10 +380,10 @@ export const ProfilePage: React.FC = () => {
           <button
             type="submit"
             disabled={savingAccount}
-            className="btn btn-emerald btn-md flex items-center gap-2 cursor-pointer"
+            className="btn btn-primary btn-md flex items-center gap-2 cursor-pointer"
           >
             <Save size={16} />
-            {savingAccount ? 'Saving...' : 'Update Account Info'}
+            {savingAccount ? 'Saving...' : 'Save Personal Details'}
           </button>
         </form>
       </div>
@@ -395,21 +398,23 @@ export const ProfilePage: React.FC = () => {
             </h3>
           </div>
 
-          <button
-            onClick={handleOpenAddCrop}
-            className="btn btn-primary btn-sm flex items-center gap-1.5 cursor-pointer font-bold"
-          >
-            <Plus size={16} /> + Add Crop
-          </button>
+          {!showAddForm && (
+            <button
+              onClick={handleOpenAddCrop}
+              className="btn btn-primary btn-sm flex items-center gap-1 cursor-pointer font-bold"
+            >
+              <Plus size={16} /> Add Crop Profile
+            </button>
+          )}
         </div>
 
         {/* Form Modal / Inline Card for adding or editing a crop profile */}
         {showAddForm && (
-          <div className="mb-6 p-5 bg-emerald-50/70 border-2 border-emerald-300 rounded-2xl fade-in">
-            <div className="flex items-center justify-between mb-4 border-b border-emerald-200 pb-2">
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
               <h4 className="text-sm font-bold text-emerald-950 flex items-center gap-2">
-                <Sprout size={16} className="text-emerald-600" />
-                {editingCropId !== null ? `Edit Crop Profile (ID: ${editingCropId})` : 'Add New Crop Profile'}
+                <Sprout size={16} className="text-emerald-700" />
+                {editingCropId !== null ? 'Edit Crop Profile' : 'Add New Crop Profile'}
               </h4>
               <button
                 onClick={() => setShowAddForm(false)}
@@ -426,7 +431,7 @@ export const ProfilePage: React.FC = () => {
             )}
 
             <form onSubmit={handleSaveCropProfile}>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="field">
                   <label className="block text-xs font-semibold text-gray-700 mb-1">{t('cropLabel')} *</label>
                   <select
@@ -444,62 +449,66 @@ export const ProfilePage: React.FC = () => {
                     <option value="Maize">Maize</option>
                     <option value="Pulses">Pulses / Grams</option>
                     <option value="Vegetables">Vegetables</option>
+                    <option value="Coconut">Coconut</option>
+                    <option value="Turmeric">Turmeric</option>
                   </select>
                 </div>
 
-                {/* District Dropdown */}
                 <div className="field">
                   <label className="block text-xs font-semibold text-gray-700 mb-1">{t('districtLabel')} *</label>
                   <select
-                    value={selectedDistrictId || ''}
-                    onChange={(e) => handleDistrictSelect(Number(e.target.value))}
+                    value={districtName}
+                    onChange={(e) => handleDistrictChange(e.target.value)}
                     className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     required
                   >
                     <option value="" disabled>-- Select District --</option>
                     {districts.map((d) => (
-                      <option key={d.id} value={d.id}>
+                      <option key={d.id || d.name} value={d.name}>
                         {d.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Taluk Dropdown */}
-                <div className="field">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Taluk *</label>
-                  <select
-                    value={selectedTalukId || ''}
-                    onChange={(e) => handleTalukSelect(Number(e.target.value))}
-                    disabled={!selectedDistrictId || taluks.length === 0}
-                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    required
-                  >
-                    <option value="" disabled>
-                      {!selectedDistrictId ? '-- Select District First --' : taluks.length === 0 ? 'Loading Taluks...' : '-- Select Taluk --'}
-                    </option>
-                    {taluks.map((tItem) => (
-                      <option key={tItem.id} value={tItem.id}>
-                        {tItem.name}
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                {/* Block Dropdown */}
+              {/* CASCADING TALUK & BLOCK DROPDOWNS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="field">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Block *</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Taluk * {loadingTaluks && <span className="text-emerald-600 animate-pulse">(Loading...)</span>}
+                  </label>
                   <select
-                    value={selectedBlockId || ''}
-                    onChange={(e) => handleBlockSelect(Number(e.target.value))}
-                    disabled={!selectedTalukId || blocks.length === 0}
+                    value={selectedTalukId}
+                    onChange={(e) => handleTalukChange(e.target.value)}
+                    disabled={!districtName || loadingTaluks}
                     className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     required
                   >
                     <option value="" disabled>
-                      {!selectedTalukId ? '-- Select Taluk First --' : blocks.length === 0 ? 'Loading Blocks...' : '-- Select Block --'}
+                      {!districtName ? '-- Select District First --' : loadingTaluks ? '-- Loading Taluks... --' : '-- Select Taluk --'}
+                    </option>
+                    {taluks.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="field">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Block * {loadingBlocks && <span className="text-emerald-600 animate-pulse">(Loading...)</span>}
+                  </label>
+                  <select
+                    value={selectedBlockId}
+                    onChange={(e) => handleBlockChange(e.target.value)}
+                    disabled={!selectedTalukId || loadingBlocks}
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    required
+                  >
+                    <option value="" disabled>
+                      {!selectedTalukId ? '-- Select Taluk First --' : loadingBlocks ? '-- Loading Blocks... --' : '-- Select Block --'}
                     </option>
                     {blocks.map((b) => (
                       <option key={b.id} value={b.id}>
@@ -508,7 +517,9 @@ export const ProfilePage: React.FC = () => {
                     ))}
                   </select>
                 </div>
+              </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="field">
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Land Size (Acres) *</label>
                   <input
@@ -538,11 +549,9 @@ export const ProfilePage: React.FC = () => {
                     <option value="Rainfed">Rainfed</option>
                   </select>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="field">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Crop Duration (Months) *</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Duration (Months) *</label>
                   <input
                     type="number"
                     min="1"
@@ -554,21 +563,21 @@ export const ProfilePage: React.FC = () => {
                     required
                   />
                 </div>
+              </div>
 
-                <div className="field">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Cropping Season *</label>
-                  <select
-                    value={season}
-                    onChange={(e) => setSeason(e.target.value)}
-                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    required
-                  >
-                    <option value="" disabled>-- Select Season --</option>
-                    <option value="Kharif">Kharif (Monsoon / Kuruvai)</option>
-                    <option value="Rabi">Rabi (Winter / Samba)</option>
-                    <option value="Zaid">Zaid (Summer / Thaladi)</option>
-                  </select>
-                </div>
+              <div className="field mb-4">
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Cropping Season *</label>
+                <select
+                  value={season}
+                  onChange={(e) => setSeason(e.target.value)}
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  required
+                >
+                  <option value="" disabled>-- Select Season --</option>
+                  <option value="Kharif">Kharif (Monsoon / Kuruvai)</option>
+                  <option value="Rabi">Rabi (Winter / Samba)</option>
+                  <option value="Zaid">Zaid (Summer / Thaladi)</option>
+                </select>
               </div>
 
               <div className="flex gap-2">
@@ -578,7 +587,7 @@ export const ProfilePage: React.FC = () => {
                   className="btn btn-emerald btn-md flex items-center gap-2 cursor-pointer"
                 >
                   <Save size={16} />
-                  {cropSaving ? 'Saving Crop Profile...' : editingCropId !== null ? 'Update Crop Profile' : 'Save Crop Profile'}
+                  {cropSaving ? 'Saving...' : editingCropId !== null ? 'Update Crop' : 'Save Crop Profile'}
                 </button>
                 <button
                   type="button"
@@ -627,11 +636,10 @@ export const ProfilePage: React.FC = () => {
 
                     <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 bg-gray-50/80 p-3 rounded-xl mb-4">
                       <div>📍 <strong>District:</strong> {c.districtName || 'Thanjavur'}</div>
-                      <div>🏛️ <strong>Taluk:</strong> {c.talukName || 'N/A'}</div>
-                      <div>🏘️ <strong>Block:</strong> {c.block || 'N/A'}</div>
+                      <div>🏘️ <strong>Block:</strong> {c.block || 'Central Block'}</div>
                       <div>🌧️ <strong>Irrigation:</strong> {c.irrigationType || 'Canal'}</div>
                       <div>⏱️ <strong>Duration:</strong> {c.cropDurationMonths || 4} Months</div>
-                      <div>☀️ <strong>Season:</strong> {c.season || 'Kharif'}</div>
+                      <div className="col-span-2">☀️ <strong>Season:</strong> {c.season || 'Kharif'}</div>
                     </div>
                   </div>
 

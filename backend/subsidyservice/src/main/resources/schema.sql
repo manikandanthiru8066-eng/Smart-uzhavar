@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS subsidy_applications CASCADE;
 DROP TABLE IF EXISTS subsidy_schemes CASCADE;
 DROP TABLE IF EXISTS farmer_profiles CASCADE;
+DROP TABLE IF EXISTS district_crop_stats CASCADE;
 DROP TABLE IF EXISTS farmers CASCADE;
 DROP TABLE IF EXISTS taluk_blocks CASCADE;
 DROP TABLE IF EXISTS blocks CASCADE;
@@ -37,6 +38,19 @@ CREATE TABLE IF NOT EXISTS taluk_blocks (
     PRIMARY KEY (taluk_id, block_id)
 );
 
+-- 1e. District Crop Statistics table
+CREATE TABLE IF NOT EXISTS district_crop_stats (
+    id BIGSERIAL PRIMARY KEY,
+    district_id BIGINT NOT NULL REFERENCES districts(id) ON DELETE CASCADE,
+    crop VARCHAR(100) NOT NULL,
+    season VARCHAR(50),
+    year VARCHAR(20),
+    area_hectares DECIMAL(12, 2),
+    production_tonnes DECIMAL(12, 2),
+    yield_kg_per_ha DECIMAL(12, 2),
+    is_top_crop BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- 2. Farmers table (Authentication details)
 CREATE TABLE IF NOT EXISTS farmers (
@@ -49,7 +63,6 @@ CREATE TABLE IF NOT EXISTS farmers (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-
 -- 3. Farmer Profiles table (One farmer can have MULTIPLE crop profiles)
 CREATE TABLE IF NOT EXISTS farmer_profiles (
     id BIGSERIAL PRIMARY KEY,
@@ -60,7 +73,7 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
     block_id BIGINT REFERENCES blocks(id) ON DELETE SET NULL,
     block VARCHAR(100),
     crop_grown VARCHAR(100),
-    crop_duration_months INT,
+    crop_duration_months INTEGER,
     season VARCHAR(50),
     irrigation_type VARCHAR(50),
     land_size_acres DECIMAL(10, 2),
@@ -69,10 +82,8 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
 -- 4. Subsidy Schemes table
-CREATE TABLE subsidy_schemes (
+CREATE TABLE IF NOT EXISTS subsidy_schemes (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     name_ta VARCHAR(255),
@@ -86,7 +97,7 @@ CREATE TABLE subsidy_schemes (
 );
 
 -- 5. Subsidy Applications table
-CREATE TABLE subsidy_applications (
+CREATE TABLE IF NOT EXISTS subsidy_applications (
     id BIGSERIAL PRIMARY KEY,
     farmer_id BIGINT NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
     scheme_id BIGINT NOT NULL REFERENCES subsidy_schemes(id) ON DELETE CASCADE,

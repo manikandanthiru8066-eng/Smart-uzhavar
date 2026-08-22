@@ -19,6 +19,17 @@ export const DashboardPage: React.FC = () => {
   const [weatherTemp, setWeatherTemp] = useState<number | null>(null);
   const [subsidiesCount, setSubsidiesCount] = useState<number>(0);
   const [insuranceCount, setInsuranceCount] = useState<number>(0);
+  const [districtCropStats, setDistrictCropStats] = useState<Array<{
+    id: number;
+    crop: string;
+    season: string;
+    year: string;
+    areaHectares: number;
+    productionTonnes: number;
+    yieldKgPerHa: number;
+    isTopCrop: boolean;
+  }>>([]);
+
 
   const farmerName = profile?.fullName || profile?.username || username || 'Farmer';
   const cropsList = Array.isArray(profile?.crops) && profile.crops.length > 0 ? profile.crops : [];
@@ -59,7 +70,7 @@ export const DashboardPage: React.FC = () => {
 
 
   const fetchDashboardData = async (targetDistrict: string) => {
-    // 1. Fetch weather for selected district (defaults to 1st crop profile's district)
+    // 1. Fetch weather for selected district
     try {
       const res = await insuranceApi.get('/api/weather', { params: { district: targetDistrict } });
       if (res.data?.temperatureCelsius !== undefined) {
@@ -69,7 +80,23 @@ export const DashboardPage: React.FC = () => {
       setWeatherTemp(32);
     }
 
-    // 2. Fetch recommended subsidies
+    // 2. Fetch district crop stats
+    if (targetDistrict) {
+      try {
+        const res = await subsidyApi.get(`/api/districts/name/${encodeURIComponent(targetDistrict)}/crop-stats`);
+        if (Array.isArray(res.data)) {
+          setDistrictCropStats(res.data);
+        } else {
+          setDistrictCropStats([]);
+        }
+      } catch {
+        setDistrictCropStats([]);
+      }
+    } else {
+      setDistrictCropStats([]);
+    }
+
+    // 3. Fetch recommended subsidies
     try {
       const res = await subsidyApi.get('/api/subsidies/recommended');
       if (Array.isArray(res.data)) {
@@ -79,7 +106,7 @@ export const DashboardPage: React.FC = () => {
       setSubsidiesCount(2);
     }
 
-    // 3. Fetch recommended insurance
+    // 4. Fetch recommended insurance
     try {
       const res = await insuranceApi.get('/api/insurance/recommended');
       if (Array.isArray(res.data)) {
@@ -115,13 +142,12 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Weather Widget - Defaults to 1st Crop District with Switcher */}
+        {/* Main Weather Widget */}
         <div className="weather-mini flex flex-col items-end gap-1">
           <div className="l text-right" style={{ fontSize: '11px', opacity: 0.85 }}>
             📍 Weather: <strong className="underline">{selectedWeatherDistrict || 'Not Set'}</strong>
           </div>
           <div className="t">{selectedWeatherDistrict && weatherTemp !== null ? `${weatherTemp}°C` : '--'}</div>
-
 
           {/* District Switcher for Multi-Crop Farmers */}
           {cropsList.length > 1 && (
@@ -129,14 +155,13 @@ export const DashboardPage: React.FC = () => {
               <select
                 value={selectedWeatherDistrict}
                 onChange={(e) => setSelectedWeatherDistrict(e.target.value)}
-                className="text-[10px] font-bold py-0.5 px-1.5 rounded bg-white/20 text-white border border-white/30 focus:outline-none cursor-pointer"
-                title="Switch district view"
+                className="text-xs text-gray-900 bg-white/90 border border-emerald-200 rounded-lg px-2 py-1 outline-none font-semibold cursor-pointer shadow-sm"
               >
                 {cropsList.map((c, i) => {
-                  const dist = c.districtName || defaultDistrict;
+                  const distName = c.districtName || `Crop #${i + 1}`;
                   return (
-                    <option key={i} value={dist} className="text-gray-900 font-normal">
-                      {i === 0 ? `★ ${dist} (1st Crop: ${c.cropGrown})` : `${dist} (Crop #${i + 1}: ${c.cropGrown})`}
+                    <option key={c.id || i} value={distName}>
+                      {c.cropGrown} ({distName})
                     </option>
                   );
                 })}
@@ -168,6 +193,42 @@ export const DashboardPage: React.FC = () => {
           {profile?.districtName && (profile?.cropGrown || cropsList.length > 0) ? 'Manage Crops' : t('completeProfileBtn')}
         </button>
       </div>
+
+      {/* District Crop Yield Insights Card */}
+      {selectedWeatherDistrict && districtCropStats.length > 0 && (
+        <div className="card p-5 mb-6 bg-gradient-to-r from-emerald-900 to-emerald-950 text-white rounded-2xl shadow-sm border border-emerald-800">
+          <div className="flex items-center justify-between mb-3 border-b border-emerald-800/80 pb-2">
+            <h4 className="text-sm font-bold flex items-center gap-2 text-emerald-300">
+              <Tractor size={18} className="text-emerald-400" />
+              District Crop Yield Context ({selectedWeatherDistrict})
+            </h4>
+            <span className="text-[11px] font-medium bg-emerald-800/80 text-emerald-200 px-2.5 py-0.5 rounded-full border border-emerald-700">
+              tn_district_crop_data 2024-25
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            {districtCropStats.map((stat, idx) => (
+              <div key={stat.id || idx} className="bg-emerald-900/60 border border-emerald-800 rounded-xl p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-bold text-sm text-white">{stat.crop}</span>
+                  {stat.isTopCrop && (
+                    <span className="text-[10px] font-bold bg-amber-400 text-gray-950 px-1.5 py-0.5 rounded">
+                      TOP CROP
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-emerald-200 font-mono">
+                  Yield: <strong>{Number(stat.yieldKgPerHa).toLocaleString()} kg/ha</strong>
+                </div>
+                <div className="text-[11px] text-emerald-300/80 mt-0.5">
+                  Area: {Number(stat.areaHectares).toLocaleString()} Ha ({stat.season})
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
 
       {/* Module Grid (4 Columns) */}

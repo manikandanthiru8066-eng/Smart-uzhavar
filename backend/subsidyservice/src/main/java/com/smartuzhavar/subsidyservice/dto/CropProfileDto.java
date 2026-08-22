@@ -38,12 +38,36 @@ public class CropProfileDto {
         this.season = season;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCropGrown() {
+        return cropGrown;
+    }
+
+    public void setCropGrown(String cropGrown) {
+        this.cropGrown = cropGrown;
+    }
+
     public Long getDistrictId() {
         return districtId;
     }
 
     public void setDistrictId(Long districtId) {
         this.districtId = districtId;
+    }
+
+    public String getDistrictName() {
+        return districtName;
+    }
+
+    public void setDistrictName(String districtName) {
+        this.districtName = districtName;
     }
 
     public Long getTalukId() {
@@ -68,31 +92,6 @@ public class CropProfileDto {
 
     public void setBlockId(Long blockId) {
         this.blockId = blockId;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCropGrown() {
-        return cropGrown;
-    }
-
-    public void setCropGrown(String cropGrown) {
-        this.cropGrown = cropGrown;
-    }
-
-    public String getDistrictName() {
-        return districtName;
-    }
-
-    public void setDistrictName(String districtName) {
-        this.districtName = districtName;
     }
 
     public String getBlock() {
@@ -143,3 +142,4 @@ public class CropProfileDto {
         this.season = season;
     }
 }
+

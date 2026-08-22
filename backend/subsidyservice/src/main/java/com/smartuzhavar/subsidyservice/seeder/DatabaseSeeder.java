@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartuzhavar.subsidyservice.entity.Block;
 import com.smartuzhavar.subsidyservice.entity.District;
+import com.smartuzhavar.subsidyservice.entity.DistrictCropStat;
 import com.smartuzhavar.subsidyservice.entity.SubsidyScheme;
 import com.smartuzhavar.subsidyservice.entity.Taluk;
 import com.smartuzhavar.subsidyservice.repository.BlockRepository;
+import com.smartuzhavar.subsidyservice.repository.DistrictCropStatRepository;
 import com.smartuzhavar.subsidyservice.repository.DistrictRepository;
 import com.smartuzhavar.subsidyservice.repository.SubsidySchemeRepository;
 import com.smartuzhavar.subsidyservice.repository.TalukRepository;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,17 +34,20 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final TalukRepository talukRepository;
     private final BlockRepository blockRepository;
     private final SubsidySchemeRepository subsidySchemeRepository;
+    private final DistrictCropStatRepository districtCropStatRepository;
     private final ObjectMapper objectMapper;
 
     public DatabaseSeeder(DistrictRepository districtRepository,
                           TalukRepository talukRepository,
                           BlockRepository blockRepository,
                           SubsidySchemeRepository subsidySchemeRepository,
+                          DistrictCropStatRepository districtCropStatRepository,
                           ObjectMapper objectMapper) {
         this.districtRepository = districtRepository;
         this.talukRepository = talukRepository;
         this.blockRepository = blockRepository;
         this.subsidySchemeRepository = subsidySchemeRepository;
+        this.districtCropStatRepository = districtCropStatRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -49,9 +55,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         seedDistricts();
         seedTalukBlockHierarchy();
+        seedDistrictCropStats();
         seedSubsidySchemes();
     }
-
 
     private void seedDistricts() {
         try {
@@ -84,6 +90,15 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
     }
 
+    private District getOrCreateDistrict(String distName) {
+        if (distName == null || distName.trim().isEmpty()) {
+            return null;
+        }
+        String name = distName.trim();
+        return districtRepository.findByNameIgnoreCase(name)
+                .orElseGet(() -> districtRepository.save(new District(name)));
+    }
+
     @Transactional
     public void seedTalukBlockHierarchy() {
         if (talukRepository.count() > 0 && blockRepository.count() > 0) {
@@ -101,8 +116,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             JsonNode rootNode = objectMapper.readTree(file);
             JsonNode districtsNode = rootNode.get("districts");
             if (districtsNode == null || !districtsNode.isArray()) {
-                log.error("Invalid format in tn_taluk_block_hierarchy.json: missing districts array.");
-                return;
+                districtsNode = rootNode;
             }
 
             for (JsonNode distNode : districtsNode) {
@@ -118,26 +132,26 @@ public class DatabaseSeeder implements CommandLineRunner {
                 JsonNode taluksNode = distNode.get("taluks");
                 if (taluksNode != null && taluksNode.isArray()) {
                     for (JsonNode talukNode : taluksNode) {
-                        String talukName = talukNode.get("taluk").asText();
-                        int lgdSubdistrictCode = talukNode.get("lgd_subdistrict_code").asInt();
+                        String talukName = talukNode.has("taluk") ? talukNode.get("taluk").asText() : talukNode.get("name").asText();
+                        Integer lgdSubdistrictCode = talukNode.has("lgd_subdistrict_code") ? talukNode.get("lgd_subdistrict_code").asInt() : null;
 
-                        Taluk taluk = talukRepository.findByLgdSubdistrictCode(lgdSubdistrictCode)
-                                .orElseGet(() -> {
-                                    Taluk t = new Taluk(talukName, lgdSubdistrictCode, district);
-                                    return talukRepository.save(t);
-                                });
+                        Taluk taluk = (lgdSubdistrictCode != null)
+                                ? talukRepository.findByLgdSubdistrictCode(lgdSubdistrictCode).orElse(null)
+                                : null;
+
+                        if (taluk == null) {
+                            taluk = talukRepository.findByNameIgnoreCaseAndDistrictId(talukName, district.getId())
+                                    .orElseGet(() -> talukRepository.save(new Taluk(talukName, lgdSubdistrictCode != null ? lgdSubdistrictCode : 0, district)));
+                        }
 
                         JsonNode blocksNode = talukNode.get("blocks");
                         if (blocksNode != null && blocksNode.isArray()) {
                             for (JsonNode blockNode : blocksNode) {
-                                String blockName = blockNode.get("block").asText();
-                                String lgdBlockCode = blockNode.get("lgd_block_code").asText();
+                                String blockName = blockNode.isObject() ? blockNode.get("block").asText() : blockNode.asText();
+                                String lgdBlockCode = blockNode.isObject() && blockNode.has("lgd_block_code") ? blockNode.get("lgd_block_code").asText() : blockName;
 
                                 Block block = blockRepository.findByLgdBlockCode(lgdBlockCode)
-                                        .orElseGet(() -> {
-                                            Block b = new Block(blockName, lgdBlockCode);
-                                            return blockRepository.save(b);
-                                        });
+                                        .orElseGet(() -> blockRepository.save(new Block(blockName, lgdBlockCode)));
 
                                 taluk.getBlocks().add(block);
                             }
@@ -154,7 +168,54 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
     }
 
+    private void seedDistrictCropStats() {
+        try {
+            if (districtCropStatRepository.count() >= 20) {
+                log.info("District crop statistics table already seeded with {} records.", districtCropStatRepository.count());
+                return;
+            }
 
+            log.info("Seeding District Crop Stats from tn_district_crop_data.json...");
+            districtCropStatRepository.deleteAll();
+
+            File file = findFile("database/tn_district_crop_data.json");
+            if (file == null || !file.exists()) {
+                log.error("Could not find tn_district_crop_data.json file for seeding!");
+                return;
+            }
+
+            JsonNode rootNode = objectMapper.readTree(file);
+            int statCount = 0;
+
+            for (JsonNode distNode : rootNode) {
+                String distName = distNode.path("district").asText();
+                District district = getOrCreateDistrict(distName);
+                if (district == null) {
+                    continue;
+                }
+
+                JsonNode statsNode = distNode.path("cropStats");
+                for (JsonNode statNode : statsNode) {
+                    DistrictCropStat stat = new DistrictCropStat();
+                    stat.setDistrict(district);
+                    stat.setCrop(statNode.path("crop").asText());
+                    stat.setSeason(statNode.path("season").asText());
+                    stat.setYear(statNode.path("year").asText("2024-25"));
+                    stat.setAreaHectares(new BigDecimal(statNode.path("areaHectares").asText("0")));
+                    stat.setProductionTonnes(new BigDecimal(statNode.path("productionTonnes").asText("0")));
+                    stat.setYieldKgPerHa(new BigDecimal(statNode.path("yieldKgPerHa").asText("0")));
+                    stat.setIsTopCrop(statNode.path("isTopCrop").asBoolean(false));
+
+                    districtCropStatRepository.save(stat);
+                    statCount++;
+                }
+            }
+
+            log.info("Successfully seeded {} district crop yield stat records.", statCount);
+        } catch (Exception e) {
+            log.error("Error seeding District Crop Stats: {}", e.getMessage(), e);
+        }
+    }
 
     private void seedSubsidySchemes() {
         boolean needsReseed = subsidySchemeRepository.count() == 0 ||
@@ -182,24 +243,22 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private File findFile(String relativePath) {
-        // Try current folder (workspace root if run from there)
         File f1 = new File(relativePath);
         if (f1.exists()) {
             log.info("Found file at: {}", f1.getAbsolutePath());
             return f1;
         }
-        // Try two levels up (if run from backend/subsidyservice)
         File f2 = new File("../../" + relativePath);
         if (f2.exists()) {
             log.info("Found file at: {}", f2.getAbsolutePath());
             return f2;
         }
-        // Try one level up (if run from backend)
         File f3 = new File("../" + relativePath);
         if (f3.exists()) {
             log.info("Found file at: {}", f3.getAbsolutePath());
             return f3;
         }
+        log.warn("File not found in paths: {}, {}, {}", f1.getAbsolutePath(), f2.getAbsolutePath(), f3.getAbsolutePath());
         return null;
     }
 }
