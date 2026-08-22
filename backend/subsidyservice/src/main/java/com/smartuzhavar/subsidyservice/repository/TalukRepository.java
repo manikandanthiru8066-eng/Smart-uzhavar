@@ -13,5 +13,7 @@ public interface TalukRepository extends JpaRepository<Taluk, Long> {
     List<Taluk> findByDistrict(District district);
     List<Taluk> findByDistrictIdOrderByNameAsc(Long districtId);
     List<Taluk> findByDistrictNameIgnoreCaseOrderByNameAsc(String districtName);
+    Optional<Taluk> findByLgdSubdistrictCode(Integer lgdSubdistrictCode);
     Optional<Taluk> findByNameIgnoreCaseAndDistrictId(String name, Long districtId);
 }
+

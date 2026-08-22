@@ -1,41 +1,44 @@
 DROP TABLE IF EXISTS subsidy_applications CASCADE;
 DROP TABLE IF EXISTS subsidy_schemes CASCADE;
 DROP TABLE IF EXISTS farmer_profiles CASCADE;
+DROP TABLE IF EXISTS district_crop_stats CASCADE;
 DROP TABLE IF EXISTS farmers CASCADE;
+DROP TABLE IF EXISTS taluk_blocks CASCADE;
+DROP TABLE IF EXISTS blocks CASCADE;
+DROP TABLE IF EXISTS taluks CASCADE;
 DROP TABLE IF EXISTS districts CASCADE;
 
 -- 1. Districts table
-CREATE TABLE districts (
+CREATE TABLE IF NOT EXISTS districts (
     id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL
+    name VARCHAR(100) UNIQUE NOT NULL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION
 );
 
--- 2. Farmers table (Authentication details)
-CREATE TABLE farmers (
-    id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    full_name VARCHAR(100),
-    email VARCHAR(100) UNIQUE,
-    phone_number VARCHAR(20) UNIQUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- 3. Taluks table
+-- 1b. Taluks table
 CREATE TABLE IF NOT EXISTS taluks (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    lgd_subdistrict_code INT UNIQUE NOT NULL,
     district_id BIGINT NOT NULL REFERENCES districts(id) ON DELETE CASCADE
 );
 
--- 4. Blocks table
+-- 1c. Blocks table
 CREATE TABLE IF NOT EXISTS blocks (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    taluk_id BIGINT NOT NULL REFERENCES taluks(id) ON DELETE CASCADE
+    lgd_block_code VARCHAR(20) UNIQUE NOT NULL
 );
 
--- 5. District Crop Statistics table
+-- 1d. Taluk Blocks join table
+CREATE TABLE IF NOT EXISTS taluk_blocks (
+    taluk_id BIGINT NOT NULL REFERENCES taluks(id) ON DELETE CASCADE,
+    block_id BIGINT NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+    PRIMARY KEY (taluk_id, block_id)
+);
+
+-- 1e. District Crop Statistics table
 CREATE TABLE IF NOT EXISTS district_crop_stats (
     id BIGSERIAL PRIMARY KEY,
     district_id BIGINT NOT NULL REFERENCES districts(id) ON DELETE CASCADE,
@@ -49,8 +52,19 @@ CREATE TABLE IF NOT EXISTS district_crop_stats (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Farmer Profiles table (One farmer can have MULTIPLE crop profiles)
-CREATE TABLE farmer_profiles (
+-- 2. Farmers table (Authentication details)
+CREATE TABLE IF NOT EXISTS farmers (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    full_name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    phone_number VARCHAR(20) UNIQUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Farmer Profiles table (One farmer can have MULTIPLE crop profiles)
+CREATE TABLE IF NOT EXISTS farmer_profiles (
     id BIGSERIAL PRIMARY KEY,
     farmer_id BIGINT NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
     full_name VARCHAR(100),
@@ -68,9 +82,8 @@ CREATE TABLE farmer_profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-
 -- 4. Subsidy Schemes table
-CREATE TABLE subsidy_schemes (
+CREATE TABLE IF NOT EXISTS subsidy_schemes (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     name_ta VARCHAR(255),
@@ -84,7 +97,7 @@ CREATE TABLE subsidy_schemes (
 );
 
 -- 5. Subsidy Applications table
-CREATE TABLE subsidy_applications (
+CREATE TABLE IF NOT EXISTS subsidy_applications (
     id BIGSERIAL PRIMARY KEY,
     farmer_id BIGINT NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
     scheme_id BIGINT NOT NULL REFERENCES subsidy_schemes(id) ON DELETE CASCADE,

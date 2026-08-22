@@ -52,9 +52,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/machinery").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/machinery/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/districts").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/districts/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/taluks/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             );
+
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

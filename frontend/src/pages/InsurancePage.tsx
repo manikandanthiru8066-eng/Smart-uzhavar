@@ -202,27 +202,66 @@ export const InsurancePage: React.FC = () => {
 
               {group.schemes.map((scheme, idx) => (
                 <div key={scheme.id || idx} className="card ins-card mb-4">
-                  <div className="ins-top">
-                    <div>
-                      <h4>{(isTa && scheme.nameTa) ? scheme.nameTa : scheme.name}</h4>
-                      <div className="ins-meta">
-                        <span className="badge badge-sky">{scheme.schemeType || 'YIELD_BASED'}</span>
-                        <span className="badge badge-amber">{cropItem.districtName || 'District'}</span>
-                        <span className="badge badge-green">{cropItem.cropGrown || 'Crop'}</span>
+                  <div className="ins-top flex flex-col md:flex-row md:items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h4 className="text-base font-bold text-gray-900 leading-snug">
+                        {(isTa && scheme.nameTa) ? scheme.nameTa : scheme.name}
+                      </h4>
+                      <div className="ins-meta mt-2 flex flex-wrap items-center gap-2">
+                        <span className="badge badge-sky">{scheme.schemeType?.replace('_', ' ') || 'YIELD_BASED'}</span>
+                        <span className="badge badge-amber">📍 {cropItem.districtName || 'District'}</span>
+                        <span className="badge badge-green">🌾 {cropItem.cropGrown || 'Crop'}</span>
                       </div>
                       {scheme.matchReasons && scheme.matchReasons.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
+                        <div className="flex flex-wrap gap-1.5 mt-2.5">
                           {scheme.matchReasons.map((reason, rIdx) => (
-                            <span key={rIdx} className="px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg flex items-center gap-1">
+                            <span key={rIdx} className="px-2.5 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-lg flex items-center gap-1">
                               ✓ {reason}
                             </span>
                           ))}
                         </div>
                       )}
                     </div>
+
+                    <div className="flex items-center gap-3 shrink-0 bg-emerald-50/80 border border-emerald-200/70 px-3.5 py-2 rounded-xl text-right">
+                      <div>
+                        <div className="text-[10px] uppercase font-bold tracking-wider text-emerald-800 opacity-80">Premium Rate</div>
+                        <div className="text-sm font-extrabold text-emerald-950">
+                          {scheme.premiumRatePercentage ? `${scheme.premiumRatePercentage}%` : '2.0%'}
+                        </div>
+                      </div>
+                      {scheme.sumInsuredPerAcre && (
+                        <div className="border-l border-emerald-200 pl-3">
+                          <div className="text-[10px] uppercase font-bold tracking-wider text-emerald-800 opacity-80">Sum Insured / Acre</div>
+                          <div className="text-sm font-extrabold text-emerald-950">
+                            ₹{scheme.sumInsuredPerAcre.toLocaleString('en-IN')}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <p className="ins-desc">{(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}</p>
+                  <p className="ins-desc">
+                    {(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}
+                  </p>
+
+                  <div className="ins-footer">
+                    <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                      <span>🌾</span> <strong>Crops Covered:</strong> {scheme.applicableCrops || cropItem.cropGrown || 'All Crops'}
+                    </span>
+                    <button
+                      className="btn btn-ghost btn-sm text-xs font-semibold text-emerald-800 border border-emerald-200 hover:bg-emerald-50 flex items-center gap-1.5"
+                      onClick={() => {
+                        if (scheme.id) {
+                          setSelectedSchemeId(scheme.id);
+                          calculateEstimate(scheme.id, cropItem.landSizeAcres || calcAcres, cropItem.cropGrown || calcCrop);
+                          document.getElementById('calculator-section')?.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
+                    >
+                      <Calculator size={14} /> Calculate Premium
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -231,25 +270,66 @@ export const InsurancePage: React.FC = () => {
       ) : (
         /* Fallback single list if zero crops */
         <div className="mb-6">
-          <h3 className="text-sm font-semibold mb-3">Recommended Insurance Schemes</h3>
+          <h3 className="text-sm font-bold text-gray-800 mb-3.5 uppercase tracking-wider">Recommended Insurance Schemes</h3>
           {fallbackSchemes.map((scheme, idx) => (
             <div key={scheme.id || idx} className="card ins-card mb-4">
-              <div className="ins-top">
-                <div>
-                  <h4>{(isTa && scheme.nameTa) ? scheme.nameTa : scheme.name}</h4>
-                  <div className="ins-meta">
-                    <span className="badge badge-sky">{scheme.schemeType || 'YIELD_BASED'}</span>
+              <div className="ins-top flex flex-col md:flex-row md:items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h4 className="text-base font-bold text-gray-900 leading-snug">
+                    {(isTa && scheme.nameTa) ? scheme.nameTa : scheme.name}
+                  </h4>
+                  <div className="ins-meta mt-2 flex flex-wrap items-center gap-2">
+                    <span className="badge badge-sky">{scheme.schemeType?.replace('_', ' ') || 'YIELD_BASED'}</span>
                   </div>
                 </div>
+
+                <div className="flex items-center gap-3 shrink-0 bg-emerald-50/80 border border-emerald-200/70 px-3.5 py-2 rounded-xl text-right">
+                  <div>
+                    <div className="text-[10px] uppercase font-bold tracking-wider text-emerald-800 opacity-80">Premium Rate</div>
+                    <div className="text-sm font-extrabold text-emerald-950">
+                      {scheme.premiumRatePercentage ? `${scheme.premiumRatePercentage}%` : '2.0%'}
+                    </div>
+                  </div>
+                  {scheme.sumInsuredPerAcre && (
+                    <div className="border-l border-emerald-200 pl-3">
+                      <div className="text-[10px] uppercase font-bold tracking-wider text-emerald-800 opacity-80">Sum Insured / Acre</div>
+                      <div className="text-sm font-extrabold text-emerald-950">
+                        ₹{scheme.sumInsuredPerAcre.toLocaleString('en-IN')}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <p className="ins-desc">{(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}</p>
+
+              <p className="ins-desc">
+                {(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}
+              </p>
+
+              <div className="ins-footer">
+                <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                  <span>🌾</span> <strong>Crops Covered:</strong> {scheme.applicableCrops || 'All Crops'}
+                </span>
+                <button
+                  className="btn btn-ghost btn-sm text-xs font-semibold text-emerald-800 border border-emerald-200 hover:bg-emerald-50 flex items-center gap-1.5"
+                  onClick={() => {
+                    if (scheme.id) {
+                      setSelectedSchemeId(scheme.id);
+                      calculateEstimate(scheme.id, calcAcres, calcCrop);
+                      document.getElementById('calculator-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  <Calculator size={14} /> Calculate Premium
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
       {/* Premium Calculator Card */}
-      <div className="card calc-card mb-6">
+      <div id="calculator-section" className="card calc-card mb-6">
+
         <div className="flex items-center gap-2 mb-3">
           <Calculator className="text-emerald-700" size={20} />
           <h3 className="text-sm font-bold text-gray-900">{t('premiumCalculatorTitle')}</h3>

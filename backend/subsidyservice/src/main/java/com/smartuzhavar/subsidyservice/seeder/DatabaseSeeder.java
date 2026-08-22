@@ -3,12 +3,21 @@ package com.smartuzhavar.subsidyservice.seeder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smartuzhavar.subsidyservice.entity.*;
-import com.smartuzhavar.subsidyservice.repository.*;
+import com.smartuzhavar.subsidyservice.entity.Block;
+import com.smartuzhavar.subsidyservice.entity.District;
+import com.smartuzhavar.subsidyservice.entity.DistrictCropStat;
+import com.smartuzhavar.subsidyservice.entity.SubsidyScheme;
+import com.smartuzhavar.subsidyservice.entity.Taluk;
+import com.smartuzhavar.subsidyservice.repository.BlockRepository;
+import com.smartuzhavar.subsidyservice.repository.DistrictCropStatRepository;
+import com.smartuzhavar.subsidyservice.repository.DistrictRepository;
+import com.smartuzhavar.subsidyservice.repository.SubsidySchemeRepository;
+import com.smartuzhavar.subsidyservice.repository.TalukRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,22 +31,22 @@ public class DatabaseSeeder implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(DatabaseSeeder.class);
 
     private final DistrictRepository districtRepository;
-    private final SubsidySchemeRepository subsidySchemeRepository;
     private final TalukRepository talukRepository;
     private final BlockRepository blockRepository;
+    private final SubsidySchemeRepository subsidySchemeRepository;
     private final DistrictCropStatRepository districtCropStatRepository;
     private final ObjectMapper objectMapper;
 
     public DatabaseSeeder(DistrictRepository districtRepository,
-                          SubsidySchemeRepository subsidySchemeRepository,
                           TalukRepository talukRepository,
                           BlockRepository blockRepository,
+                          SubsidySchemeRepository subsidySchemeRepository,
                           DistrictCropStatRepository districtCropStatRepository,
                           ObjectMapper objectMapper) {
         this.districtRepository = districtRepository;
-        this.subsidySchemeRepository = subsidySchemeRepository;
         this.talukRepository = talukRepository;
         this.blockRepository = blockRepository;
+        this.subsidySchemeRepository = subsidySchemeRepository;
         this.districtCropStatRepository = districtCropStatRepository;
         this.objectMapper = objectMapper;
     }
@@ -45,7 +54,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         seedDistricts();
-        seedTaluksAndBlocks();
+        seedTalukBlockHierarchy();
         seedDistrictCropStats();
         seedSubsidySchemes();
     }
@@ -53,24 +62,29 @@ public class DatabaseSeeder implements CommandLineRunner {
     private void seedDistricts() {
         try {
             long existing = districtRepository.count();
-            if (existing >= 38) {
-                log.info("Districts table already has {} districts — skipping seed.", existing);
+            boolean missingCoordinates = existing > 0 && districtRepository.findAll().stream().anyMatch(d -> d.getLatitude() == null);
+            if (existing >= 38 && !missingCoordinates) {
+                log.info("Districts table already has {} districts with coordinates — skipping seed.", existing);
                 return;
             }
             if (existing > 0) {
-                log.info("Districts table has only {} entries — re-seeding from tn_districts.json.", existing);
+                log.info("Districts table needs re-seeding/updating with coordinates (count={}, missingCoords={}).", existing, missingCoordinates);
                 districtRepository.deleteAll();
             }
 
-            File file = findFile("database/tn_districts.json");
+            File file = findFile("database/tn_district_coordinates.json");
             if (file == null || !file.exists()) {
-                log.error("Could not find tn_districts.json file for seeding!");
+                file = findFile("database/tn_districts.json");
+            }
+
+            if (file == null || !file.exists()) {
+                log.error("Could not find district JSON file for seeding!");
                 return;
             }
 
             List<District> districts = objectMapper.readValue(file, new TypeReference<List<District>>() {});
             districtRepository.saveAll(districts);
-            log.info("Successfully seeded {} districts.", districts.size());
+            log.info("Successfully seeded {} districts with coordinates from {}.", districts.size(), file.getName());
         } catch (Exception e) {
             log.warn("District seeding skipped or completed by parallel service: {}", e.getMessage());
         }
@@ -85,54 +99,72 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .orElseGet(() -> districtRepository.save(new District(name)));
     }
 
-    private void seedTaluksAndBlocks() {
+    @Transactional
+    public void seedTalukBlockHierarchy() {
+        if (talukRepository.count() > 0 && blockRepository.count() > 0) {
+            log.info("Taluks and Blocks tables already seeded (taluks={}, blocks={}).", talukRepository.count(), blockRepository.count());
+            return;
+        }
+
+        File file = findFile("database/tn_taluk_block_hierarchy.json");
+        if (file == null || !file.exists()) {
+            log.error("Could not find tn_taluk_block_hierarchy.json file for seeding!");
+            return;
+        }
+
         try {
-            if (talukRepository.count() >= 100) {
-                log.info("Taluks & Blocks tables already seeded with {} taluks.", talukRepository.count());
-                return;
-            }
-
-            log.info("Seeding Taluks & Blocks from tn_taluk_block_hierarchy.json...");
-            blockRepository.deleteAll();
-            talukRepository.deleteAll();
-
-            File file = findFile("database/tn_taluk_block_hierarchy.json");
-            if (file == null || !file.exists()) {
-                log.error("Could not find tn_taluk_block_hierarchy.json file for seeding!");
-                return;
-            }
-
             JsonNode rootNode = objectMapper.readTree(file);
-            int talukCount = 0;
-            int blockCount = 0;
+            JsonNode districtsNode = rootNode.get("districts");
+            if (districtsNode == null || !districtsNode.isArray()) {
+                districtsNode = rootNode;
+            }
 
-            for (JsonNode distNode : rootNode) {
-                String distName = distNode.path("district").asText();
-                District district = getOrCreateDistrict(distName);
-                if (district == null) {
-                    continue;
+            for (JsonNode distNode : districtsNode) {
+                String distName = distNode.get("district").asText();
+                Optional<District> districtOpt = districtRepository.findByNameIgnoreCase(distName);
+                if (districtOpt.isEmpty()) {
+                    District newDist = new District();
+                    newDist.setName(distName);
+                    districtOpt = Optional.of(districtRepository.save(newDist));
                 }
+                District district = districtOpt.get();
 
-                JsonNode taluksNode = distNode.path("taluks");
-                for (JsonNode talukNode : taluksNode) {
-                    String talukName = talukNode.path("name").asText();
-                    Taluk taluk = new Taluk(talukName, district);
-                    taluk = talukRepository.save(taluk);
-                    talukCount++;
+                JsonNode taluksNode = distNode.get("taluks");
+                if (taluksNode != null && taluksNode.isArray()) {
+                    for (JsonNode talukNode : taluksNode) {
+                        String talukName = talukNode.has("taluk") ? talukNode.get("taluk").asText() : talukNode.get("name").asText();
+                        Integer lgdSubdistrictCode = talukNode.has("lgd_subdistrict_code") ? talukNode.get("lgd_subdistrict_code").asInt() : null;
 
-                    JsonNode blocksNode = talukNode.path("blocks");
-                    for (JsonNode blockNode : blocksNode) {
-                        String blockName = blockNode.asText();
-                        Block block = new Block(blockName, taluk);
-                        blockRepository.save(block);
-                        blockCount++;
+                        Taluk taluk = (lgdSubdistrictCode != null)
+                                ? talukRepository.findByLgdSubdistrictCode(lgdSubdistrictCode).orElse(null)
+                                : null;
+
+                        if (taluk == null) {
+                            taluk = talukRepository.findByNameIgnoreCaseAndDistrictId(talukName, district.getId())
+                                    .orElseGet(() -> talukRepository.save(new Taluk(talukName, lgdSubdistrictCode != null ? lgdSubdistrictCode : 0, district)));
+                        }
+
+                        JsonNode blocksNode = talukNode.get("blocks");
+                        if (blocksNode != null && blocksNode.isArray()) {
+                            for (JsonNode blockNode : blocksNode) {
+                                String blockName = blockNode.isObject() ? blockNode.get("block").asText() : blockNode.asText();
+                                String lgdBlockCode = blockNode.isObject() && blockNode.has("lgd_block_code") ? blockNode.get("lgd_block_code").asText() : blockName;
+
+                                Block block = blockRepository.findByLgdBlockCode(lgdBlockCode)
+                                        .orElseGet(() -> blockRepository.save(new Block(blockName, lgdBlockCode)));
+
+                                taluk.getBlocks().add(block);
+                            }
+                            talukRepository.save(taluk);
+                        }
                     }
                 }
             }
 
-            log.info("Successfully seeded {} taluks and {} blocks across Tamil Nadu.", talukCount, blockCount);
+            log.info("Successfully seeded LGD hierarchy: {} taluks and {} unique blocks across districts.",
+                    talukRepository.count(), blockRepository.count());
         } catch (Exception e) {
-            log.error("Error seeding Taluks & Blocks: {}", e.getMessage(), e);
+            log.error("Error seeding taluk and block hierarchy: {}", e.getMessage(), e);
         }
     }
 
@@ -184,8 +216,6 @@ public class DatabaseSeeder implements CommandLineRunner {
             log.error("Error seeding District Crop Stats: {}", e.getMessage(), e);
         }
     }
-
-
 
     private void seedSubsidySchemes() {
         boolean needsReseed = subsidySchemeRepository.count() == 0 ||

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class CropProfileDto {
     private Long id;
     private String cropGrown;
+    private Long districtId;
     private String districtName;
     private Long talukId;
     private String talukName;
@@ -18,11 +19,13 @@ public class CropProfileDto {
 
     public CropProfileDto() {}
 
-    public CropProfileDto(Long id, String cropGrown, String districtName, Long talukId, String talukName,
-                          Long blockId, String block, BigDecimal landSizeAcres, BigDecimal landSizeHectares, 
+    public CropProfileDto(Long id, String cropGrown, Long districtId, String districtName, 
+                          Long talukId, String talukName, Long blockId, String block, 
+                          BigDecimal landSizeAcres, BigDecimal landSizeHectares, 
                           String irrigationType, Integer cropDurationMonths, String season) {
         this.id = id;
         this.cropGrown = cropGrown;
+        this.districtId = districtId;
         this.districtName = districtName;
         this.talukId = talukId;
         this.talukName = talukName;
@@ -49,6 +52,14 @@ public class CropProfileDto {
 
     public void setCropGrown(String cropGrown) {
         this.cropGrown = cropGrown;
+    }
+
+    public Long getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Long districtId) {
+        this.districtId = districtId;
     }
 
     public String getDistrictName() {
@@ -131,3 +142,4 @@ public class CropProfileDto {
         this.season = season;
     }
 }
+

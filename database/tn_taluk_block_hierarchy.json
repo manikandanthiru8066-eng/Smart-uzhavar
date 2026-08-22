@@ -1,364 +1,4795 @@
-[
-  {
-    "district": "Ariyalur",
-    "taluks": [
-      { "name": "Ariyalur", "blocks": ["Ariyalur", "Thirumanur"] },
-      { "name": "Udayarpalayam", "blocks": ["Jayamkondam", "T.Palur"] },
-      { "name": "Sendurai", "blocks": ["Sendurai"] }
-    ]
+{
+  "metadata": {
+    "state": "Tamil Nadu",
+    "state_code": 33,
+    "source_primary": "Local Government Directory (LGD), Ministry of Panchayati Raj, Government of India",
+    "source_files": [
+      "All Blocks of Tamil Nadu(State Code:33) State",
+      "All Blocks of Tamil Nadu State (Block With Covered Village)",
+      "Village To Gram Panchayat Mapping Of Tamil Nadu(State Code : 33) State"
+    ],
+    "uploaded_export_date": "2026-08-21",
+    "district_count": 38,
+    "taluk_count": 317,
+    "block_count_in_latest_block_export": 389,
+    "mapping_method": "A block is listed under a taluk when the LGD Block-With-Covered-Village export contains at least one village whose LGD sub-district code/name in the LGD Village-to-Gram-Panchayat mapping matches that taluk.",
+    "important_note": "LGD's covered-village export does not encode a simple one-parent Taluk→Block hierarchy. Some development blocks have covered villages in more than one sub-district/taluk; such blocks therefore appear under each relevant taluk. This is a cross-reference, not an invented administrative parent relationship.",
+    "verification_status": "District and taluk names/codes are from LGD exports. Block names/codes are from the latest uploaded LGD block export. Taluk-to-block associations are derived only by matching official LGD village codes between the two uploaded LGD exports.",
+    "official_website": "https://lgdirectory.gov.in/"
   },
-  {
-    "district": "Chengalpattu",
-    "taluks": [
-      { "name": "Chengalpattu", "blocks": ["Kattankulathur", "St. Thomas Mount"] },
-      { "name": "Tambaram", "blocks": ["Tambaram"] },
-      { "name": "Maduranthakam", "blocks": ["Maduranthakam", "Acharapakkam"] },
-      { "name": "Cheyyur", "blocks": ["Cheyyur", "Lathur"] },
-      { "name": "Tiruporur", "blocks": ["Tiruporur"] }
-    ]
-  },
-  {
-    "district": "Chennai",
-    "taluks": [
-      { "name": "Egmore", "blocks": ["Zone 9 Egmore"] },
-      { "name": "Mylapore", "blocks": ["Zone 10 Mylapore"] },
-      { "name": "Tondiarpet", "blocks": ["Zone 4 Tondiarpet"] },
-      { "name": "Ambattur", "blocks": ["Zone 7 Ambattur"] }
-    ]
-  },
-  {
-    "district": "Coimbatore",
-    "taluks": [
-      { "name": "Coimbatore North", "blocks": ["Periyanaickenpalayam", "Sarcarsamakulam"] },
-      { "name": "Coimbatore South", "blocks": ["Thondamuthur", "Madukkarai"] },
-      { "name": "Pollachi", "blocks": ["Pollachi North", "Pollachi South"] },
-      { "name": "Mettupalayam", "blocks": ["Karamadai"] },
-      { "name": "Sulur", "blocks": ["Sulur"] },
-      { "name": "Valparai", "blocks": ["Valparai"] }
-    ]
-  },
-  {
-    "district": "Cuddalore",
-    "taluks": [
-      { "name": "Cuddalore", "blocks": ["Cuddalore", "Kurinjipadi"] },
-      { "name": "Chidambaram", "blocks": ["Chidambaram", "Keerapalayam"] },
-      { "name": "Panruti", "blocks": ["Panruti", "Annagramam"] },
-      { "name": "Vriddhachalam", "blocks": ["Vriddhachalam", "Nallur", "Kammapuram"] },
-      { "name": "Kattumannarkoil", "blocks": ["Kattumannarkoil", "Kumaratchi"] }
-    ]
-  },
-  {
-    "district": "Dharmapuri",
-    "taluks": [
-      { "name": "Dharmapuri", "blocks": ["Dharmapuri", "Nallampalli"] },
-      { "name": "Harur", "blocks": ["Harur", "Morappur"] },
-      { "name": "Pappireddipatti", "blocks": ["Pappireddipatti"] },
-      { "name": "Pennagaram", "blocks": ["Pennagaram", "Eriyur"] },
-      { "name": "Palacode", "blocks": ["Palacode", "Karimangalam"] }
-    ]
-  },
-  {
-    "district": "Dindigul",
-    "taluks": [
-      { "name": "Dindigul East", "blocks": ["Dindigul", "Shanarpatti"] },
-      { "name": "Dindigul West", "blocks": ["Reddiyarchatram"] },
-      { "name": "Palani", "blocks": ["Palani", "Thoppampatti"] },
-      { "name": "Kodaikanal", "blocks": ["Kodaikanal"] },
-      { "name": "Nilakottai", "blocks": ["Nilakottai", "Vattalagundu"] },
-      { "name": "Nattam", "blocks": ["Nattam"] }
-    ]
-  },
-  {
-    "district": "Erode",
-    "taluks": [
-      { "name": "Erode", "blocks": ["Erode", "Modakkurichi"] },
-      { "name": "Gobichettipalayam", "blocks": ["Gobichettipalayam", "T.N.Palayam"] },
-      { "name": "Bhavani", "blocks": ["Bhavani", "Ammapettai"] },
-      { "name": "Perundurai", "blocks": ["Perundurai", "Chennimalai"] },
-      { "name": "Sathyamangalam", "blocks": ["Sathyamangalam", "Bhavanisagar"] },
-      { "name": "Kodumudi", "blocks": ["Kodumudi"] }
-    ]
-  },
-  {
-    "district": "Kallakurichi",
-    "taluks": [
-      { "name": "Kallakurichi", "blocks": ["Kallakurichi", "Thyagadurgam"] },
-      { "name": "Sankarapuram", "blocks": ["Sankarapuram", "Kalrayan Hills"] },
-      { "name": "Tirukoilur", "blocks": ["Tirukoilur", "Mugaiyur"] },
-      { "name": "Ulundurpet", "blocks": ["Ulundurpet", "Thirunavalur"] }
-    ]
-  },
-  {
-    "district": "Kanchipuram",
-    "taluks": [
-      { "name": "Kanchipuram", "blocks": ["Kanchipuram", "Walajabad"] },
-      { "name": "Sriperumbudur", "blocks": ["Sriperumbudur"] },
-      { "name": "Uthiramerur", "blocks": ["Uthiramerur"] }
-    ]
-  },
-  {
-    "district": "Kanyakumari",
-    "taluks": [
-      { "name": "Agastheeswaram", "blocks": ["Agastheeswaram", "Rajakkamangalam"] },
-      { "name": "Thovalai", "blocks": ["Thovalai"] },
-      { "name": "Kalkulam", "blocks": ["Kurunthencode", "Thuckalay"] },
-      { "name": "Vilavancode", "blocks": ["Killiyoor", "Munchirai"] }
-    ]
-  },
-  {
-    "district": "Karur",
-    "taluks": [
-      { "name": "Karur", "blocks": ["Karur", "Thanthoni"] },
-      { "name": "Aravakurichi", "blocks": ["Aravakurichi", "K.Paramathi"] },
-      { "name": "Kulithalai", "blocks": ["Kulithalai", "Krishnarayapuram"] },
-      { "name": "Manmangalam", "blocks": ["Manmangalam"] }
-    ]
-  },
-  {
-    "district": "Krishnagiri",
-    "taluks": [
-      { "name": "Krishnagiri", "blocks": ["Krishnagiri", "Bargur"] },
-      { "name": "Hosur", "blocks": ["Hosur", "Shoolagiri"] },
-      { "name": "Denkanikottai", "blocks": ["Thally", "Kelamangalam"] },
-      { "name": "Pochampalli", "blocks": ["Pochampalli", "Kaveripattinam"] },
-      { "name": "Uthangarai", "blocks": ["Uthangarai", "Mathur"] }
-    ]
-  },
-  {
-    "district": "Madurai",
-    "taluks": [
-      { "name": "Madurai North", "blocks": ["Madurai East"] },
-      { "name": "Madurai South", "blocks": ["Madurai West", "Thiruparankundram"] },
-      { "name": "Melur", "blocks": ["Melur", "Kottampatti"] },
-      { "name": "Tirumangalam", "blocks": ["Tirumangalam", "Kalligudi"] },
-      { "name": "Usilampatti", "blocks": ["Usilampatti", "Sedapatti"] }
-    ]
-  },
-  {
-    "district": "Mayiladuthurai",
-    "taluks": [
-      { "name": "Mayiladuthurai", "blocks": ["Mayiladuthurai", "Kuthalam"] },
-      { "name": "Sirkazhi", "blocks": ["Sirkazhi", "Kollidam"] },
-      { "name": "Tharangambadi", "blocks": ["Sembanarkoil"] }
-    ]
-  },
-  {
-    "district": "Nagapattinam",
-    "taluks": [
-      { "name": "Nagapattinam", "blocks": ["Nagapattinam", "Thirukuvalai"] },
-      { "name": "Kilvelur", "blocks": ["Kilvelur"] },
-      { "name": "Vedaranyam", "blocks": ["Vedaranyam", "Thalainayar"] }
-    ]
-  },
-  {
-    "district": "Namakkal",
-    "taluks": [
-      { "name": "Namakkal", "blocks": ["Namakkal", "Mohanur", "Erumaipatti"] },
-      { "name": "Rasipuram", "blocks": ["Rasipuram", "Vennandur", "Namagiripettai"] },
-      { "name": "Tiruchengodu", "blocks": ["Tiruchengodu", "Elaichipalayam", "Mallasamudram"] },
-      { "name": "Paramathi Velur", "blocks": ["Paramathi", "Kabilarmalai"] }
-    ]
-  },
-  {
-    "district": "Nilgiris",
-    "taluks": [
-      { "name": "Udhagamandalam", "blocks": ["Udhagamandalam"] },
-      { "name": "Coonoor", "blocks": ["Coonoor"] },
-      { "name": "Kotagiri", "blocks": ["Kotagiri"] },
-      { "name": "Gudalur", "blocks": ["Gudalur"] }
-    ]
-  },
-  {
-    "district": "Perambalur",
-    "taluks": [
-      { "name": "Perambalur", "blocks": ["Perambalur"] },
-      { "name": "Kunnam", "blocks": ["Veppur", "Kunnam"] },
-      { "name": "Veppanthattai", "blocks": ["Veppanthattai"] }
-    ]
-  },
-  {
-    "district": "Pudukkottai",
-    "taluks": [
-      { "name": "Pudukkottai", "blocks": ["Pudukkottai", "Annavasal"] },
-      { "name": "Aranthangi", "blocks": ["Aranthangi", "Avudiyarkoil"] },
-      { "name": "Alangudi", "blocks": ["Alangudi", "Thiruvarankulam"] },
-      { "name": "Gandarvakkottai", "blocks": ["Gandarvakkottai"] },
-      { "name": "Thirumayam", "blocks": ["Thirumayam", "Ponnamaravathi"] }
-    ]
-  },
-  {
-    "district": "Ramanathapuram",
-    "taluks": [
-      { "name": "Ramanathapuram", "blocks": ["Ramanathapuram", "Tiruppullani"] },
-      { "name": "Paramakudi", "blocks": ["Paramakudi", "Bogalur"] },
-      { "name": "Kadaladi", "blocks": ["Kadaladi", "Sayalgudi"] },
-      { "name": "Mudukulathur", "blocks": ["Mudukulathur"] },
-      { "name": "Tiruvadanai", "blocks": ["Tiruvadanai", "RS Mangalam"] }
-    ]
-  },
-  {
-    "district": "Ranipet",
-    "taluks": [
-      { "name": "Walajah", "blocks": ["Walajah"] },
-      { "name": "Arcot", "blocks": ["Arcot", "Timiri"] },
-      { "name": "Arakkonam", "blocks": ["Arakkonam", "Nemili"] },
-      { "name": "Sholinghur", "blocks": ["Sholinghur"] }
-    ]
-  },
-  {
-    "district": "Salem",
-    "taluks": [
-      { "name": "Salem", "blocks": ["Salem", "Veerapandi"] },
-      { "name": "Attur", "blocks": ["Attur", "Thalaivasal", "Peddanaickenpalayam"] },
-      { "name": "Mettur", "blocks": ["Mecheri", "Kolasanam"] },
-      { "name": "Omalur", "blocks": ["Omalur", "Kadayampatti"] },
-      { "name": "Sankari", "blocks": ["Sankari", "Magudanchavadi"] },
-      { "name": "Yercaud", "blocks": ["Yercaud"] }
-    ]
-  },
-  {
-    "district": "Sivaganga",
-    "taluks": [
-      { "name": "Sivaganga", "blocks": ["Sivaganga", "Kalayarkoil"] },
-      { "name": "Karaikudi", "blocks": ["Sakkottai", "Kannankudi"] },
-      { "name": "Devakottai", "blocks": ["Devakottai"] },
-      { "name": "Manamadurai", "blocks": ["Manamadurai", "Thirupuvanam"] }
-    ]
-  },
-  {
-    "district": "Tenkasi",
-    "taluks": [
-      { "name": "Tenkasi", "blocks": ["Tenkasi", "Kadayam"] },
-      { "name": "Sankarankovil", "blocks": ["Sankarankovil", "Melaneelithanallur"] },
-      { "name": "Kadayanallur", "blocks": ["Kadayanallur"] },
-      { "name": "Shenkottai", "blocks": ["Shenkottai"] },
-      { "name": "Alangulam", "blocks": ["Alangulam", "Keelapavoor"] }
-    ]
-  },
-  {
-    "district": "Thanjavur",
-    "taluks": [
-      { "name": "Thiruvaiyaru", "blocks": ["Thiruvaiyaru", "Budalur"] },
-      { "name": "Thanjavur", "blocks": ["Thanjavur", "Orathanadu"] },
-      { "name": "Papanasam", "blocks": ["Papanasam", "Ammapettai"] },
-      { "name": "Kumbakonam", "blocks": ["Kumbakonam", "Thirupanandal"] },
-      { "name": "Pattukkottai", "blocks": ["Pattukkottai", "Peravurani"] }
-    ]
-  },
-  {
-    "district": "Theni",
-    "taluks": [
-      { "name": "Theni", "blocks": ["Theni"] },
-      { "name": "Periyakulam", "blocks": ["Periyakulam"] },
-      { "name": "Uthamapalayam", "blocks": ["Uthamapalayam", "Cumbum"] },
-      { "name": "Andipatti", "blocks": ["Andipatti", "Kadamalaikundu"] }
-    ]
-  },
-  {
-    "district": "Thoothukudi",
-    "taluks": [
-      { "name": "Thoothukudi", "blocks": ["Thoothukudi"] },
-      { "name": "Tiruchendur", "blocks": ["Tiruchendur", "Udangudi"] },
-      { "name": "Kovilpatti", "blocks": ["Kovilpatti", "Kayathar"] },
-      { "name": "Ettayapuram", "blocks": ["Ettayapuram"] },
-      { "name": "Srivaikuntam", "blocks": ["Srivaikuntam", "Karungulam"] }
-    ]
-  },
-  {
-    "district": "Tiruchirappalli",
-    "taluks": [
-      { "name": "Tiruchirappalli East", "blocks": ["Tiruchirappalli"] },
-      { "name": "Tiruchirappalli West", "blocks": ["Andanallur"] },
-      { "name": "Lalgudi", "blocks": ["Lalgudi", "Pullambadi"] },
-      { "name": "Musiri", "blocks": ["Musiri", "Thottiyam"] },
-      { "name": "Thuraiyur", "blocks": ["Thuraiyur", "Uppiliapuram"] },
-      { "name": "Manapparai", "blocks": ["Manapparai", "Marungapuri"] }
-    ]
-  },
-  {
-    "district": "Tirunelveli",
-    "taluks": [
-      { "name": "Tirunelveli", "blocks": ["Palayamkottai", "Manur"] },
-      { "name": "Ambasamudram", "blocks": ["Ambasamudram", "Cheranmahadevi"] },
-      { "name": "Nanguneri", "blocks": ["Nanguneri", "Kalakadu"] },
-      { "name": "Radhapuram", "blocks": ["Radhapuram", "Valliyoor"] }
-    ]
-  },
-  {
-    "district": "Tirupathur",
-    "taluks": [
-      { "name": "Tirupathur", "blocks": ["Tirupathur", "Jolarpet"] },
-      { "name": "Vaniyambadi", "blocks": ["Vaniyambadi", "Alangayam"] },
-      { "name": "Ambur", "blocks": ["Ambur"] },
-      { "name": "Natrampalli", "blocks": ["Natrampalli"] }
-    ]
-  },
-  {
-    "district": "Tiruppur",
-    "taluks": [
-      { "name": "Tiruppur North", "blocks": ["Tiruppur"] },
-      { "name": "Tiruppur South", "blocks": ["Pongalur"] },
-      { "name": "Avinashi", "blocks": ["Avinashi"] },
-      { "name": "Dharapuram", "blocks": ["Dharapuram", "Kundadam"] },
-      { "name": "Udumalaipettai", "blocks": ["Udumalaipettai", "Madathukulam"] },
-      { "name": "Palladam", "blocks": ["Palladam"] }
-    ]
-  },
-  {
-    "district": "Tiruvallur",
-    "taluks": [
-      { "name": "Tiruvallur", "blocks": ["Tiruvallur", "Poondamallee"] },
-      { "name": "Ponneri", "blocks": ["Ponneri", "Gummidipoondi"] },
-      { "name": "Tirutani", "blocks": ["Tirutani", "Tiruvalangadu"] },
-      { "name": "Avadi", "blocks": ["Punamallee"] }
-    ]
-  },
-  {
-    "district": "Tiruvannamalai",
-    "taluks": [
-      { "name": "Tiruvannamalai", "blocks": ["Tiruvannamalai", "Turinjapuram"] },
-      { "name": "Arani", "blocks": ["Arani East", "Arani West"] },
-      { "name": "Cheyyar", "blocks": ["Cheyyar", "Anakkavoor"] },
-      { "name": "Polur", "blocks": ["Polur", "Chetpet"] },
-      { "name": "Chengam", "blocks": ["Chengam", "Pudupalayam"] }
-    ]
-  },
-  {
-    "district": "Tiruvarur",
-    "taluks": [
-      { "name": "Tiruvarur", "blocks": ["Tiruvarur", "Koradacheri"] },
-      { "name": "Mannargudi", "blocks": ["Mannargudi", "Needamangalam"] },
-      { "name": "Nannilam", "blocks": ["Nannilam", "Kudavasal"] },
-      { "name": "Thiruthuraipoondi", "blocks": ["Thiruthuraipoondi", "Muthupet"] },
-      { "name": "Valangaiman", "blocks": ["Valangaiman"] }
-    ]
-  },
-  {
-    "district": "Vellore",
-    "taluks": [
-      { "name": "Vellore", "blocks": ["Vellore", "Vellore Rural"] },
-      { "name": "Katpadi", "blocks": ["Katpadi"] },
-      { "name": "Gudiyatham", "blocks": ["Gudiyatham"] },
-      { "name": "Anaicut", "blocks": ["Anaicut"] }
-    ]
-  },
-  {
-    "district": "Viluppuram",
-    "taluks": [
-      { "name": "Viluppuram", "blocks": ["Viluppuram", "Koliyanur", "Vikkravandi"] },
-      { "name": "Tindivanam", "blocks": ["Tindivanam", "Marakkanam"] },
-      { "name": "Gingee", "blocks": ["Gingee", "Melmalayanur"] },
-      { "name": "Vanur", "blocks": ["Vanur"] }
-    ]
-  },
-  {
-    "district": "Virudhunagar",
-    "taluks": [
-      { "name": "Virudhunagar", "blocks": ["Virudhunagar"] },
-      { "name": "Sivakasi", "blocks": ["Sivakasi"] },
-      { "name": "Rajapalayam", "blocks": ["Rajapalayam"] },
-      { "name": "Aruppukottai", "blocks": ["Aruppukottai", "Tiruchuli"] },
-      { "name": "Sattur", "blocks": ["Sattur"] }
-    ]
-  }
-]
+  "districts": [
+    {
+      "district": "Ariyalur",
+      "taluks": [
+        {
+          "taluk": "Andimadam",
+          "lgd_subdistrict_code": 5983,
+          "blocks": [
+            {
+              "block": "Andimadam",
+              "lgd_block_code": "6255"
+            }
+          ]
+        },
+        {
+          "taluk": "Ariyalur",
+          "lgd_subdistrict_code": 5787,
+          "blocks": [
+            {
+              "block": "Ariyalur",
+              "lgd_block_code": "6256"
+            },
+            {
+              "block": "Thirumanur",
+              "lgd_block_code": "6261"
+            }
+          ]
+        },
+        {
+          "taluk": "Sendurai",
+          "lgd_subdistrict_code": 5785,
+          "blocks": [
+            {
+              "block": "Sendurai",
+              "lgd_block_code": "6259"
+            }
+          ]
+        },
+        {
+          "taluk": "Udayarpalayam",
+          "lgd_subdistrict_code": 5786,
+          "blocks": [
+            {
+              "block": "Andimadam",
+              "lgd_block_code": "6255"
+            },
+            {
+              "block": "Jayamkondam",
+              "lgd_block_code": "6257"
+            },
+            {
+              "block": "T. Palur",
+              "lgd_block_code": "6260"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Chengalpattu",
+      "taluks": [
+        {
+          "taluk": "Chengalpattu",
+          "lgd_subdistrict_code": 5706,
+          "blocks": [
+            {
+              "block": "Kattankolathur",
+              "lgd_block_code": "6178"
+            },
+            {
+              "block": "Thiruporur",
+              "lgd_block_code": "6184"
+            }
+          ]
+        },
+        {
+          "taluk": "Cheyyur",
+          "lgd_subdistrict_code": 5711,
+          "blocks": [
+            {
+              "block": "Chithamur",
+              "lgd_block_code": "6176"
+            },
+            {
+              "block": "Lathur",
+              "lgd_block_code": "6180"
+            }
+          ]
+        },
+        {
+          "taluk": "Maduranthakam",
+          "lgd_subdistrict_code": 5710,
+          "blocks": [
+            {
+              "block": "Acharapakkam",
+              "lgd_block_code": "6175"
+            },
+            {
+              "block": "Madurantakam",
+              "lgd_block_code": "6181"
+            }
+          ]
+        },
+        {
+          "taluk": "Pallavaram",
+          "lgd_subdistrict_code": 6629,
+          "blocks": [
+            {
+              "block": "St.Thomas Mount",
+              "lgd_block_code": "6183"
+            }
+          ]
+        },
+        {
+          "taluk": "Tambaram",
+          "lgd_subdistrict_code": 5703,
+          "blocks": [
+            {
+              "block": "St.Thomas Mount",
+              "lgd_block_code": "6183"
+            }
+          ]
+        },
+        {
+          "taluk": "Tirukalukundram",
+          "lgd_subdistrict_code": 5709,
+          "blocks": [
+            {
+              "block": "Tirukkalukunram",
+              "lgd_block_code": "6185"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruporur",
+          "lgd_subdistrict_code": 5958,
+          "blocks": [
+            {
+              "block": "Thiruporur",
+              "lgd_block_code": "6184"
+            }
+          ]
+        },
+        {
+          "taluk": "Vandalur",
+          "lgd_subdistrict_code": 7058,
+          "blocks": [
+            {
+              "block": "Kattankolathur",
+              "lgd_block_code": "6178"
+            },
+            {
+              "block": "Thiruporur",
+              "lgd_block_code": "6184"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Coimbatore",
+      "taluks": [
+        {
+          "taluk": "Anaimalai",
+          "lgd_subdistrict_code": 6643,
+          "blocks": [
+            {
+              "block": "Anamalai",
+              "lgd_block_code": "6101"
+            },
+            {
+              "block": "Pollachi South",
+              "lgd_block_code": "6112"
+            }
+          ]
+        },
+        {
+          "taluk": "Annur",
+          "lgd_subdistrict_code": 5955,
+          "blocks": [
+            {
+              "block": "Annur",
+              "lgd_block_code": "6102"
+            },
+            {
+              "block": "Sarcarsamakulam",
+              "lgd_block_code": "6114"
+            }
+          ]
+        },
+        {
+          "taluk": "Coimbatore North",
+          "lgd_subdistrict_code": 5897,
+          "blocks": [
+            {
+              "block": "Periyanayakkanpalayam",
+              "lgd_block_code": "6110"
+            }
+          ]
+        },
+        {
+          "taluk": "Coimbatore South",
+          "lgd_subdistrict_code": 5898,
+          "blocks": [
+            {
+              "block": "Madukkarai",
+              "lgd_block_code": "6108"
+            },
+            {
+              "block": "Thondamuthur",
+              "lgd_block_code": "6117"
+            }
+          ]
+        },
+        {
+          "taluk": "Kinathukadavu",
+          "lgd_subdistrict_code": 5956,
+          "blocks": [
+            {
+              "block": "Kinathukadavu",
+              "lgd_block_code": "6106"
+            }
+          ]
+        },
+        {
+          "taluk": "Madukkari",
+          "lgd_subdistrict_code": 5986,
+          "blocks": [
+            {
+              "block": "Madukkarai",
+              "lgd_block_code": "6108"
+            }
+          ]
+        },
+        {
+          "taluk": "Mettupalayam",
+          "lgd_subdistrict_code": 5895,
+          "blocks": [
+            {
+              "block": "Karamadai",
+              "lgd_block_code": "6105"
+            }
+          ]
+        },
+        {
+          "taluk": "Perur",
+          "lgd_subdistrict_code": 5957,
+          "blocks": [
+            {
+              "block": "Thondamuthur",
+              "lgd_block_code": "6117"
+            }
+          ]
+        },
+        {
+          "taluk": "Pollachi",
+          "lgd_subdistrict_code": 5899,
+          "blocks": [
+            {
+              "block": "Kinathukadavu",
+              "lgd_block_code": "6106"
+            },
+            {
+              "block": "Pollachi North",
+              "lgd_block_code": "6111"
+            },
+            {
+              "block": "Pollachi South",
+              "lgd_block_code": "6112"
+            }
+          ]
+        },
+        {
+          "taluk": "Sulur",
+          "lgd_subdistrict_code": 5896,
+          "blocks": [
+            {
+              "block": "Sultanpet",
+              "lgd_block_code": "6115"
+            },
+            {
+              "block": "Sulur",
+              "lgd_block_code": "6116"
+            }
+          ]
+        },
+        {
+          "taluk": "Valparai",
+          "lgd_subdistrict_code": 5900,
+          "blocks": [
+            {
+              "block": "Anamalai",
+              "lgd_block_code": "6101"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Cuddalore",
+      "taluks": [
+        {
+          "taluk": "Bhuvanagiri",
+          "lgd_subdistrict_code": 6645,
+          "blocks": [
+            {
+              "block": "Melbhuvanagiri",
+              "lgd_block_code": "6128"
+            },
+            {
+              "block": "Parangipettai",
+              "lgd_block_code": "6131"
+            }
+          ]
+        },
+        {
+          "taluk": "Chidambaram",
+          "lgd_subdistrict_code": 5791,
+          "blocks": [
+            {
+              "block": "Keerapalayam",
+              "lgd_block_code": "6124"
+            },
+            {
+              "block": "Komaratchi",
+              "lgd_block_code": "6125"
+            },
+            {
+              "block": "Melbhuvanagiri",
+              "lgd_block_code": "6128"
+            },
+            {
+              "block": "Parangipettai",
+              "lgd_block_code": "6131"
+            }
+          ]
+        },
+        {
+          "taluk": "Cuddalore",
+          "lgd_subdistrict_code": 5789,
+          "blocks": [
+            {
+              "block": "Cuddalore",
+              "lgd_block_code": "6121"
+            },
+            {
+              "block": "Kurinjipadi",
+              "lgd_block_code": "6126"
+            }
+          ]
+        },
+        {
+          "taluk": "Kattumannarkoil",
+          "lgd_subdistrict_code": 5792,
+          "blocks": [
+            {
+              "block": "Kattumannarkoil",
+              "lgd_block_code": "6123"
+            },
+            {
+              "block": "Keerapalayam",
+              "lgd_block_code": "6124"
+            },
+            {
+              "block": "Komaratchi",
+              "lgd_block_code": "6125"
+            }
+          ]
+        },
+        {
+          "taluk": "Kurinjipadi",
+          "lgd_subdistrict_code": 5790,
+          "blocks": [
+            {
+              "block": "Kammapuram",
+              "lgd_block_code": "6122"
+            },
+            {
+              "block": "Kurinjipadi",
+              "lgd_block_code": "6126"
+            }
+          ]
+        },
+        {
+          "taluk": "Panruti",
+          "lgd_subdistrict_code": 5788,
+          "blocks": [
+            {
+              "block": "Annagramam",
+              "lgd_block_code": "6120"
+            },
+            {
+              "block": "Panruti",
+              "lgd_block_code": "6130"
+            }
+          ]
+        },
+        {
+          "taluk": "Srimushnam",
+          "lgd_subdistrict_code": 6646,
+          "blocks": [
+            {
+              "block": "Kammapuram",
+              "lgd_block_code": "6122"
+            },
+            {
+              "block": "Kurinjipadi",
+              "lgd_block_code": "6126"
+            },
+            {
+              "block": "Srimushnam",
+              "lgd_block_code": "7476"
+            }
+          ]
+        },
+        {
+          "taluk": "Tittakudi",
+          "lgd_subdistrict_code": 5794,
+          "blocks": [
+            {
+              "block": "Mangalur",
+              "lgd_block_code": "6127"
+            },
+            {
+              "block": "Nallur",
+              "lgd_block_code": "6129"
+            }
+          ]
+        },
+        {
+          "taluk": "Veppur",
+          "lgd_subdistrict_code": 5953,
+          "blocks": [
+            {
+              "block": "Mangalur",
+              "lgd_block_code": "6127"
+            },
+            {
+              "block": "Nallur",
+              "lgd_block_code": "6129"
+            }
+          ]
+        },
+        {
+          "taluk": "Virudhachalam",
+          "lgd_subdistrict_code": 5793,
+          "blocks": [
+            {
+              "block": "Kammapuram",
+              "lgd_block_code": "6122"
+            },
+            {
+              "block": "Nallur",
+              "lgd_block_code": "6129"
+            },
+            {
+              "block": "Panruti",
+              "lgd_block_code": "6130"
+            },
+            {
+              "block": "Srimushnam",
+              "lgd_block_code": "7476"
+            },
+            {
+              "block": "Vriddhachalam",
+              "lgd_block_code": "6132"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Dharmapuri",
+      "taluks": [
+        {
+          "taluk": "Dharmapuri",
+          "lgd_subdistrict_code": 5888,
+          "blocks": [
+            {
+              "block": "Dharmapuri",
+              "lgd_block_code": "6133"
+            },
+            {
+              "block": "Nallampalli",
+              "lgd_block_code": "6137"
+            }
+          ]
+        },
+        {
+          "taluk": "Harur",
+          "lgd_subdistrict_code": 5886,
+          "blocks": [
+            {
+              "block": "Harur",
+              "lgd_block_code": "6134"
+            },
+            {
+              "block": "Kadathur",
+              "lgd_block_code": "7478"
+            },
+            {
+              "block": "Morappur",
+              "lgd_block_code": "6136"
+            }
+          ]
+        },
+        {
+          "taluk": "Karimangalam",
+          "lgd_subdistrict_code": 6622,
+          "blocks": [
+            {
+              "block": "Harur",
+              "lgd_block_code": "6134"
+            },
+            {
+              "block": "Karimangalam",
+              "lgd_block_code": "6135"
+            },
+            {
+              "block": "Morappur",
+              "lgd_block_code": "6136"
+            }
+          ]
+        },
+        {
+          "taluk": "Nallampalli",
+          "lgd_subdistrict_code": 6623,
+          "blocks": [
+            {
+              "block": "Nallampalli",
+              "lgd_block_code": "6137"
+            }
+          ]
+        },
+        {
+          "taluk": "Palakkodu",
+          "lgd_subdistrict_code": 5885,
+          "blocks": [
+            {
+              "block": "Karimangalam",
+              "lgd_block_code": "6135"
+            },
+            {
+              "block": "Palakkodu",
+              "lgd_block_code": "6138"
+            }
+          ]
+        },
+        {
+          "taluk": "Pappireddipatti",
+          "lgd_subdistrict_code": 5887,
+          "blocks": [
+            {
+              "block": "Harur",
+              "lgd_block_code": "6134"
+            },
+            {
+              "block": "Kadathur",
+              "lgd_block_code": "7478"
+            },
+            {
+              "block": "Morappur",
+              "lgd_block_code": "6136"
+            },
+            {
+              "block": "Pappireddipatty",
+              "lgd_block_code": "6139"
+            }
+          ]
+        },
+        {
+          "taluk": "Pennagaram",
+          "lgd_subdistrict_code": 5889,
+          "blocks": [
+            {
+              "block": "Eriyur",
+              "lgd_block_code": "7477"
+            },
+            {
+              "block": "Nallampalli",
+              "lgd_block_code": "6137"
+            },
+            {
+              "block": "Palakkodu",
+              "lgd_block_code": "6138"
+            },
+            {
+              "block": "Pennagaram",
+              "lgd_block_code": "6140"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Dindigul",
+      "taluks": [
+        {
+          "taluk": "Athoor",
+          "lgd_subdistrict_code": 5994,
+          "blocks": [
+            {
+              "block": "Athoor",
+              "lgd_block_code": "6141"
+            }
+          ]
+        },
+        {
+          "taluk": "Dindiguleast",
+          "lgd_subdistrict_code": 5980,
+          "blocks": [
+            {
+              "block": "Dindigul",
+              "lgd_block_code": "6142"
+            },
+            {
+              "block": "Shanarpatti",
+              "lgd_block_code": "6150"
+            }
+          ]
+        },
+        {
+          "taluk": "Dindigulwest",
+          "lgd_subdistrict_code": 5979,
+          "blocks": [
+            {
+              "block": "Dindigul",
+              "lgd_block_code": "6142"
+            },
+            {
+              "block": "Reddiyarchatiram",
+              "lgd_block_code": "6149"
+            }
+          ]
+        },
+        {
+          "taluk": "Gujiliamparai",
+          "lgd_subdistrict_code": 6700,
+          "blocks": [
+            {
+              "block": "Guziliamparai",
+              "lgd_block_code": "6143"
+            },
+            {
+              "block": "Vedasandur",
+              "lgd_block_code": "6154"
+            }
+          ]
+        },
+        {
+          "taluk": "Kodaikanal",
+          "lgd_subdistrict_code": 5766,
+          "blocks": [
+            {
+              "block": "Kodaikanal",
+              "lgd_block_code": "6144"
+            }
+          ]
+        },
+        {
+          "taluk": "Natham",
+          "lgd_subdistrict_code": 5763,
+          "blocks": [
+            {
+              "block": "Nattam",
+              "lgd_block_code": "6145"
+            }
+          ]
+        },
+        {
+          "taluk": "Nilakkottai",
+          "lgd_subdistrict_code": 5767,
+          "blocks": [
+            {
+              "block": "Nilakottai",
+              "lgd_block_code": "6146"
+            },
+            {
+              "block": "Shanarpatti",
+              "lgd_block_code": "6150"
+            },
+            {
+              "block": "Vattalkundu",
+              "lgd_block_code": "6153"
+            }
+          ]
+        },
+        {
+          "taluk": "Oddanchatram",
+          "lgd_subdistrict_code": 5761,
+          "blocks": [
+            {
+              "block": "Oddanchatram",
+              "lgd_block_code": "6147"
+            },
+            {
+              "block": "Thoppampatti",
+              "lgd_block_code": "6151"
+            }
+          ]
+        },
+        {
+          "taluk": "Palani",
+          "lgd_subdistrict_code": 5760,
+          "blocks": [
+            {
+              "block": "Palani",
+              "lgd_block_code": "6148"
+            },
+            {
+              "block": "Thoppampatti",
+              "lgd_block_code": "6151"
+            }
+          ]
+        },
+        {
+          "taluk": "Vedasandur",
+          "lgd_subdistrict_code": 5762,
+          "blocks": [
+            {
+              "block": "Guziliamparai",
+              "lgd_block_code": "6143"
+            },
+            {
+              "block": "Oddanchatram",
+              "lgd_block_code": "6147"
+            },
+            {
+              "block": "Shanarpatti",
+              "lgd_block_code": "6150"
+            },
+            {
+              "block": "Vadamadurai",
+              "lgd_block_code": "6152"
+            },
+            {
+              "block": "Vedasandur",
+              "lgd_block_code": "6154"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Erode",
+      "taluks": [
+        {
+          "taluk": "Anthiyur",
+          "lgd_subdistrict_code": 5969,
+          "blocks": [
+            {
+              "block": "Ammapet",
+              "lgd_block_code": "6155"
+            },
+            {
+              "block": "Andiyur",
+              "lgd_block_code": "6156"
+            }
+          ]
+        },
+        {
+          "taluk": "Bhavani",
+          "lgd_subdistrict_code": 5750,
+          "blocks": [
+            {
+              "block": "Ammapet",
+              "lgd_block_code": "6155"
+            },
+            {
+              "block": "Andiyur",
+              "lgd_block_code": "6156"
+            },
+            {
+              "block": "Bhavani",
+              "lgd_block_code": "6157"
+            },
+            {
+              "block": "Gopichettipalaiyam",
+              "lgd_block_code": "6162"
+            }
+          ]
+        },
+        {
+          "taluk": "Erode",
+          "lgd_subdistrict_code": 5753,
+          "blocks": [
+            {
+              "block": "Erode",
+              "lgd_block_code": "6161"
+            }
+          ]
+        },
+        {
+          "taluk": "Gobichettipalayam",
+          "lgd_subdistrict_code": 5751,
+          "blocks": [
+            {
+              "block": "Gopichettipalaiyam",
+              "lgd_block_code": "6162"
+            },
+            {
+              "block": "Thoockanaickenpalaiyam",
+              "lgd_block_code": "6172"
+            }
+          ]
+        },
+        {
+          "taluk": "Kodumudi",
+          "lgd_subdistrict_code": 6637,
+          "blocks": [
+            {
+              "block": "Kodumudi",
+              "lgd_block_code": "6164"
+            }
+          ]
+        },
+        {
+          "taluk": "Modakkurichi",
+          "lgd_subdistrict_code": 6636,
+          "blocks": [
+            {
+              "block": "Modakurichi",
+              "lgd_block_code": "6166"
+            }
+          ]
+        },
+        {
+          "taluk": "Nambiyur",
+          "lgd_subdistrict_code": 6638,
+          "blocks": [
+            {
+              "block": "Bhavanisagar",
+              "lgd_block_code": "6158"
+            },
+            {
+              "block": "Nambiyur",
+              "lgd_block_code": "6168"
+            }
+          ]
+        },
+        {
+          "taluk": "Perundurai",
+          "lgd_subdistrict_code": 5752,
+          "blocks": [
+            {
+              "block": "Chennimalai",
+              "lgd_block_code": "6159"
+            },
+            {
+              "block": "Perundurai",
+              "lgd_block_code": "6169"
+            }
+          ]
+        },
+        {
+          "taluk": "Sathyamangalam",
+          "lgd_subdistrict_code": 5749,
+          "blocks": [
+            {
+              "block": "Bhavanisagar",
+              "lgd_block_code": "6158"
+            },
+            {
+              "block": "Satyamangalam",
+              "lgd_block_code": "6170"
+            },
+            {
+              "block": "Talavadi",
+              "lgd_block_code": "6171"
+            }
+          ]
+        },
+        {
+          "taluk": "Thalavadi",
+          "lgd_subdistrict_code": 6539,
+          "blocks": [
+            {
+              "block": "Talavadi",
+              "lgd_block_code": "6171"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Kallakurichi",
+      "taluks": [
+        {
+          "taluk": "Chinnasalem",
+          "lgd_subdistrict_code": 5977,
+          "blocks": [
+            {
+              "block": "Chinnasalem",
+              "lgd_block_code": "6453"
+            },
+            {
+              "block": "Kallakkurichi",
+              "lgd_block_code": "6455"
+            },
+            {
+              "block": "Kalrayanhills",
+              "lgd_block_code": "6456"
+            },
+            {
+              "block": "Sankarapuram",
+              "lgd_block_code": "6466"
+            }
+          ]
+        },
+        {
+          "taluk": "Kallakkurichi",
+          "lgd_subdistrict_code": 5734,
+          "blocks": [
+            {
+              "block": "Chinnasalem",
+              "lgd_block_code": "6453"
+            },
+            {
+              "block": "Kallakkurichi",
+              "lgd_block_code": "6455"
+            },
+            {
+              "block": "Rishivandiam",
+              "lgd_block_code": "6465"
+            },
+            {
+              "block": "Thiagadurgam",
+              "lgd_block_code": "6467"
+            }
+          ]
+        },
+        {
+          "taluk": "Kalvarayan Hills",
+          "lgd_subdistrict_code": 7055,
+          "blocks": [
+            {
+              "block": "Kalrayanhills",
+              "lgd_block_code": "6456"
+            },
+            {
+              "block": "Rishivandiam",
+              "lgd_block_code": "6465"
+            },
+            {
+              "block": "Sankarapuram",
+              "lgd_block_code": "6466"
+            }
+          ]
+        },
+        {
+          "taluk": "Sankarapuram",
+          "lgd_subdistrict_code": 5733,
+          "blocks": [
+            {
+              "block": "Kallakkurichi",
+              "lgd_block_code": "6455"
+            },
+            {
+              "block": "Kalrayanhills",
+              "lgd_block_code": "6456"
+            },
+            {
+              "block": "Rishivandiam",
+              "lgd_block_code": "6465"
+            },
+            {
+              "block": "Sankarapuram",
+              "lgd_block_code": "6466"
+            }
+          ]
+        },
+        {
+          "taluk": "Tirukkoyilur",
+          "lgd_subdistrict_code": 5732,
+          "blocks": [
+            {
+              "block": "Tirukkoyilur",
+              "lgd_block_code": "6469"
+            },
+            {
+              "block": "Tirunavalur",
+              "lgd_block_code": "6470"
+            }
+          ]
+        },
+        {
+          "taluk": "Ulundurpettai",
+          "lgd_subdistrict_code": 5735,
+          "blocks": [
+            {
+              "block": "Thiagadurgam",
+              "lgd_block_code": "6467"
+            },
+            {
+              "block": "Tirunavalur",
+              "lgd_block_code": "6470"
+            },
+            {
+              "block": "Ulundurpet",
+              "lgd_block_code": "6471"
+            }
+          ]
+        },
+        {
+          "taluk": "Vanapuram",
+          "lgd_subdistrict_code": 7405,
+          "blocks": [
+            {
+              "block": "Rishivandiam",
+              "lgd_block_code": "6465"
+            },
+            {
+              "block": "Sankarapuram",
+              "lgd_block_code": "6466"
+            },
+            {
+              "block": "Thiagadurgam",
+              "lgd_block_code": "6467"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Kancheepuram",
+      "taluks": [
+        {
+          "taluk": "Kancheepuram",
+          "lgd_subdistrict_code": 5707,
+          "blocks": [
+            {
+              "block": "Kanchipuram",
+              "lgd_block_code": "6177"
+            },
+            {
+              "block": "Walajabad",
+              "lgd_block_code": "6187"
+            }
+          ]
+        },
+        {
+          "taluk": "Kundrathur",
+          "lgd_subdistrict_code": 7057,
+          "blocks": [
+            {
+              "block": "Kunnattur",
+              "lgd_block_code": "6179"
+            },
+            {
+              "block": "Sriperumbudur",
+              "lgd_block_code": "6182"
+            }
+          ]
+        },
+        {
+          "taluk": "Sriperumbudur",
+          "lgd_subdistrict_code": 5702,
+          "blocks": [
+            {
+              "block": "Kunnattur",
+              "lgd_block_code": "6179"
+            },
+            {
+              "block": "Sriperumbudur",
+              "lgd_block_code": "6182"
+            }
+          ]
+        },
+        {
+          "taluk": "Uthiramerur",
+          "lgd_subdistrict_code": 5708,
+          "blocks": [
+            {
+              "block": "Uttiramerur",
+              "lgd_block_code": "6186"
+            }
+          ]
+        },
+        {
+          "taluk": "Walajabad",
+          "lgd_subdistrict_code": 6626,
+          "blocks": [
+            {
+              "block": "Kanchipuram",
+              "lgd_block_code": "6177"
+            },
+            {
+              "block": "Walajabad",
+              "lgd_block_code": "6187"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Kanniyakumari",
+      "taluks": [
+        {
+          "taluk": "Agastheeswaram",
+          "lgd_subdistrict_code": 5884,
+          "blocks": [
+            {
+              "block": "Agastiswaram",
+              "lgd_block_code": "6188"
+            },
+            {
+              "block": "Rajakkamangalam",
+              "lgd_block_code": "6193"
+            }
+          ]
+        },
+        {
+          "taluk": "Kalkulam",
+          "lgd_subdistrict_code": 5882,
+          "blocks": [
+            {
+              "block": "Agastiswaram",
+              "lgd_block_code": "6188"
+            },
+            {
+              "block": "Kurunthancode",
+              "lgd_block_code": "6190"
+            },
+            {
+              "block": "Thackalai",
+              "lgd_block_code": "6194"
+            }
+          ]
+        },
+        {
+          "taluk": "Killiyoor",
+          "lgd_subdistrict_code": 6673,
+          "blocks": [
+            {
+              "block": "Killiyoor",
+              "lgd_block_code": "6189"
+            },
+            {
+              "block": "Munchira",
+              "lgd_block_code": "6192"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruvattar",
+          "lgd_subdistrict_code": 6672,
+          "blocks": [
+            {
+              "block": "Thiruvattar",
+              "lgd_block_code": "6195"
+            }
+          ]
+        },
+        {
+          "taluk": "Thovala",
+          "lgd_subdistrict_code": 5883,
+          "blocks": [
+            {
+              "block": "Thovala",
+              "lgd_block_code": "6196"
+            }
+          ]
+        },
+        {
+          "taluk": "Vilavancode",
+          "lgd_subdistrict_code": 5881,
+          "blocks": [
+            {
+              "block": "Killiyoor",
+              "lgd_block_code": "6189"
+            },
+            {
+              "block": "Melpuram",
+              "lgd_block_code": "6191"
+            },
+            {
+              "block": "Munchira",
+              "lgd_block_code": "6192"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Karur",
+      "taluks": [
+        {
+          "taluk": "Aravakurichi",
+          "lgd_subdistrict_code": 5768,
+          "blocks": [
+            {
+              "block": "Aravakurichi",
+              "lgd_block_code": "6197"
+            },
+            {
+              "block": "K.Paramathy",
+              "lgd_block_code": "6198"
+            }
+          ]
+        },
+        {
+          "taluk": "Kadavur",
+          "lgd_subdistrict_code": 5772,
+          "blocks": [
+            {
+              "block": "Kadavur",
+              "lgd_block_code": "6199"
+            },
+            {
+              "block": "Krishnarayapuram",
+              "lgd_block_code": "6201"
+            }
+          ]
+        },
+        {
+          "taluk": "Karur",
+          "lgd_subdistrict_code": 5769,
+          "blocks": [
+            {
+              "block": "Thanthoni",
+              "lgd_block_code": "6203"
+            }
+          ]
+        },
+        {
+          "taluk": "Krishnarayapuram",
+          "lgd_subdistrict_code": 5770,
+          "blocks": [
+            {
+              "block": "Krishnarayapuram",
+              "lgd_block_code": "6201"
+            }
+          ]
+        },
+        {
+          "taluk": "Kulithalai",
+          "lgd_subdistrict_code": 5771,
+          "blocks": [
+            {
+              "block": "Kulittalai",
+              "lgd_block_code": "6202"
+            },
+            {
+              "block": "Thogaimalai",
+              "lgd_block_code": "6204"
+            }
+          ]
+        },
+        {
+          "taluk": "Manmangalam",
+          "lgd_subdistrict_code": 5985,
+          "blocks": [
+            {
+              "block": "Karur",
+              "lgd_block_code": "6200"
+            },
+            {
+              "block": "Thanthoni",
+              "lgd_block_code": "6203"
+            }
+          ]
+        },
+        {
+          "taluk": "Pugalur",
+          "lgd_subdistrict_code": 6676,
+          "blocks": [
+            {
+              "block": "K.Paramathy",
+              "lgd_block_code": "6198"
+            },
+            {
+              "block": "Karur",
+              "lgd_block_code": "6200"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Krishnagiri",
+      "taluks": [
+        {
+          "taluk": "Anchetty",
+          "lgd_subdistrict_code": 6662,
+          "blocks": [
+            {
+              "block": "Thally",
+              "lgd_block_code": "6212"
+            }
+          ]
+        },
+        {
+          "taluk": "Bargur",
+          "lgd_subdistrict_code": 6613,
+          "blocks": [
+            {
+              "block": "Bargur",
+              "lgd_block_code": "6205"
+            },
+            {
+              "block": "Mathur",
+              "lgd_block_code": "6210"
+            },
+            {
+              "block": "Veppanapalli",
+              "lgd_block_code": "6214"
+            }
+          ]
+        },
+        {
+          "taluk": "Denkanikottai",
+          "lgd_subdistrict_code": 5892,
+          "blocks": [
+            {
+              "block": "Kelamangalam",
+              "lgd_block_code": "6208"
+            },
+            {
+              "block": "Thally",
+              "lgd_block_code": "6212"
+            }
+          ]
+        },
+        {
+          "taluk": "Hosur",
+          "lgd_subdistrict_code": 5890,
+          "blocks": [
+            {
+              "block": "Hosur",
+              "lgd_block_code": "6206"
+            },
+            {
+              "block": "Shoolagiri",
+              "lgd_block_code": "6211"
+            }
+          ]
+        },
+        {
+          "taluk": "Krishnagiri",
+          "lgd_subdistrict_code": 5891,
+          "blocks": [
+            {
+              "block": "Bargur",
+              "lgd_block_code": "6205"
+            },
+            {
+              "block": "Kaveripattinam",
+              "lgd_block_code": "6207"
+            },
+            {
+              "block": "Krishnagiri",
+              "lgd_block_code": "6209"
+            },
+            {
+              "block": "Veppanapalli",
+              "lgd_block_code": "6214"
+            }
+          ]
+        },
+        {
+          "taluk": "Pochampalli",
+          "lgd_subdistrict_code": 5893,
+          "blocks": [
+            {
+              "block": "Bargur",
+              "lgd_block_code": "6205"
+            },
+            {
+              "block": "Kaveripattinam",
+              "lgd_block_code": "6207"
+            },
+            {
+              "block": "Mathur",
+              "lgd_block_code": "6210"
+            }
+          ]
+        },
+        {
+          "taluk": "Shoolagiri",
+          "lgd_subdistrict_code": 6641,
+          "blocks": [
+            {
+              "block": "Hosur",
+              "lgd_block_code": "6206"
+            },
+            {
+              "block": "Shoolagiri",
+              "lgd_block_code": "6211"
+            }
+          ]
+        },
+        {
+          "taluk": "Uthangarai",
+          "lgd_subdistrict_code": 5894,
+          "blocks": [
+            {
+              "block": "Mathur",
+              "lgd_block_code": "6210"
+            },
+            {
+              "block": "Uthangarai",
+              "lgd_block_code": "6213"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Madurai",
+      "taluks": [
+        {
+          "taluk": "Kalligudi",
+          "lgd_subdistrict_code": 6615,
+          "blocks": [
+            {
+              "block": "Kallikudi",
+              "lgd_block_code": "6217"
+            }
+          ]
+        },
+        {
+          "taluk": "Madurai East",
+          "lgd_subdistrict_code": 5960,
+          "blocks": [
+            {
+              "block": "Madurai East",
+              "lgd_block_code": "6219"
+            },
+            {
+              "block": "Madurai West",
+              "lgd_block_code": "6220"
+            }
+          ]
+        },
+        {
+          "taluk": "Madurai North",
+          "lgd_subdistrict_code": 5836,
+          "blocks": [
+            {
+              "block": "Madurai East",
+              "lgd_block_code": "6219"
+            },
+            {
+              "block": "Madurai West",
+              "lgd_block_code": "6220"
+            }
+          ]
+        },
+        {
+          "taluk": "Madurai South",
+          "lgd_subdistrict_code": 5841,
+          "blocks": [
+            {
+              "block": "Madurai West",
+              "lgd_block_code": "6220"
+            },
+            {
+              "block": "Tirupparangunram",
+              "lgd_block_code": "6225"
+            }
+          ]
+        },
+        {
+          "taluk": "Madurai West",
+          "lgd_subdistrict_code": 5961,
+          "blocks": [
+            {
+              "block": "Tirupparangunram",
+              "lgd_block_code": "6225"
+            }
+          ]
+        },
+        {
+          "taluk": "Melur",
+          "lgd_subdistrict_code": 5835,
+          "blocks": [
+            {
+              "block": "Kottampatti",
+              "lgd_block_code": "6218"
+            },
+            {
+              "block": "Melur",
+              "lgd_block_code": "6221"
+            }
+          ]
+        },
+        {
+          "taluk": "Peraiyur",
+          "lgd_subdistrict_code": 5839,
+          "blocks": [
+            {
+              "block": "Sedapatti",
+              "lgd_block_code": "6222"
+            },
+            {
+              "block": "T.Kallupatti",
+              "lgd_block_code": "6223"
+            }
+          ]
+        },
+        {
+          "taluk": "Thirumangalam",
+          "lgd_subdistrict_code": 5840,
+          "blocks": [
+            {
+              "block": "Tirumangalam",
+              "lgd_block_code": "6224"
+            }
+          ]
+        },
+        {
+          "taluk": "Thirupparankundram",
+          "lgd_subdistrict_code": 5962,
+          "blocks": [
+            {
+              "block": "Tirupparangunram",
+              "lgd_block_code": "6225"
+            }
+          ]
+        },
+        {
+          "taluk": "Usilampatti",
+          "lgd_subdistrict_code": 5838,
+          "blocks": [
+            {
+              "block": "Chellampatti",
+              "lgd_block_code": "6216"
+            },
+            {
+              "block": "Usilampatti",
+              "lgd_block_code": "6226"
+            }
+          ]
+        },
+        {
+          "taluk": "Vadipatti",
+          "lgd_subdistrict_code": 5837,
+          "blocks": [
+            {
+              "block": "Alanganallur",
+              "lgd_block_code": "6215"
+            },
+            {
+              "block": "Vadipatti",
+              "lgd_block_code": "6227"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Mayiladuthurai",
+      "taluks": [
+        {
+          "taluk": "Kuthalam",
+          "lgd_subdistrict_code": 5797,
+          "blocks": [
+            {
+              "block": "Kuttalam",
+              "lgd_block_code": "6231"
+            }
+          ]
+        },
+        {
+          "taluk": "Mayiladuthurai",
+          "lgd_subdistrict_code": 5796,
+          "blocks": [
+            {
+              "block": "Mayiladuthurai",
+              "lgd_block_code": "6232"
+            }
+          ]
+        },
+        {
+          "taluk": "Sirkali",
+          "lgd_subdistrict_code": 5795,
+          "blocks": [
+            {
+              "block": "Kollidam",
+              "lgd_block_code": "6230"
+            },
+            {
+              "block": "Sembanar Koil",
+              "lgd_block_code": "6234"
+            },
+            {
+              "block": "Sirkazhi",
+              "lgd_block_code": "6235"
+            }
+          ]
+        },
+        {
+          "taluk": "Tharangambadi",
+          "lgd_subdistrict_code": 5798,
+          "blocks": [
+            {
+              "block": "Kuttalam",
+              "lgd_block_code": "6231"
+            },
+            {
+              "block": "Sembanar Koil",
+              "lgd_block_code": "6234"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Nagapattinam",
+      "taluks": [
+        {
+          "taluk": "Kilvelur",
+          "lgd_subdistrict_code": 5800,
+          "blocks": [
+            {
+              "block": "Keelaiyur",
+              "lgd_block_code": "6228"
+            },
+            {
+              "block": "Kilvelur",
+              "lgd_block_code": "6229"
+            }
+          ]
+        },
+        {
+          "taluk": "Nagapattinam",
+          "lgd_subdistrict_code": 5799,
+          "blocks": [
+            {
+              "block": "Nagappattinam",
+              "lgd_block_code": "6233"
+            },
+            {
+              "block": "Thirumarugal",
+              "lgd_block_code": "6237"
+            }
+          ]
+        },
+        {
+          "taluk": "Thirukkuvalai",
+          "lgd_subdistrict_code": 5801,
+          "blocks": [
+            {
+              "block": "Keelaiyur",
+              "lgd_block_code": "6228"
+            },
+            {
+              "block": "Kilvelur",
+              "lgd_block_code": "6229"
+            },
+            {
+              "block": "Thalanayar",
+              "lgd_block_code": "6236"
+            }
+          ]
+        },
+        {
+          "taluk": "Vedaranyam",
+          "lgd_subdistrict_code": 5802,
+          "blocks": [
+            {
+              "block": "Thalanayar",
+              "lgd_block_code": "6236"
+            },
+            {
+              "block": "Vedaranyam",
+              "lgd_block_code": "6238"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Namakkal",
+      "taluks": [
+        {
+          "taluk": "Kolli Hills",
+          "lgd_subdistrict_code": 6625,
+          "blocks": [
+            {
+              "block": "Erumapatty",
+              "lgd_block_code": "6240"
+            },
+            {
+              "block": "Kolli Hills",
+              "lgd_block_code": "6242"
+            }
+          ]
+        },
+        {
+          "taluk": "Kumarapalayam",
+          "lgd_subdistrict_code": 6634,
+          "blocks": [
+            {
+              "block": "Pallipalayam",
+              "lgd_block_code": "6247"
+            },
+            {
+              "block": "Tiruchengodu",
+              "lgd_block_code": "6252"
+            }
+          ]
+        },
+        {
+          "taluk": "Mohanur",
+          "lgd_subdistrict_code": 6635,
+          "blocks": [
+            {
+              "block": "Erumapatty",
+              "lgd_block_code": "6240"
+            },
+            {
+              "block": "Mohanur",
+              "lgd_block_code": "6244"
+            }
+          ]
+        },
+        {
+          "taluk": "Namakkal",
+          "lgd_subdistrict_code": 5747,
+          "blocks": [
+            {
+              "block": "Namakkal",
+              "lgd_block_code": "6246"
+            },
+            {
+              "block": "Puduchatram",
+              "lgd_block_code": "6249"
+            }
+          ]
+        },
+        {
+          "taluk": "Paramathi-Velur",
+          "lgd_subdistrict_code": 5748,
+          "blocks": [
+            {
+              "block": "Kabilamalai",
+              "lgd_block_code": "6241"
+            },
+            {
+              "block": "Paramathy",
+              "lgd_block_code": "6248"
+            }
+          ]
+        },
+        {
+          "taluk": "Rasipuram",
+          "lgd_subdistrict_code": 5746,
+          "blocks": [
+            {
+              "block": "Kolli Hills",
+              "lgd_block_code": "6242"
+            },
+            {
+              "block": "Namagiripet",
+              "lgd_block_code": "6245"
+            },
+            {
+              "block": "Rasipuram",
+              "lgd_block_code": "6250"
+            },
+            {
+              "block": "Vennandur",
+              "lgd_block_code": "6253"
+            }
+          ]
+        },
+        {
+          "taluk": "Sendamangalam",
+          "lgd_subdistrict_code": 6632,
+          "blocks": [
+            {
+              "block": "Erumapatty",
+              "lgd_block_code": "6240"
+            },
+            {
+              "block": "Namakkal",
+              "lgd_block_code": "6246"
+            },
+            {
+              "block": "Puduchatram",
+              "lgd_block_code": "6249"
+            },
+            {
+              "block": "Sendamangalam",
+              "lgd_block_code": "6251"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruchengode",
+          "lgd_subdistrict_code": 5745,
+          "blocks": [
+            {
+              "block": "Elacipalayam",
+              "lgd_block_code": "6239"
+            },
+            {
+              "block": "Mallasamudram",
+              "lgd_block_code": "6243"
+            },
+            {
+              "block": "Tiruchengodu",
+              "lgd_block_code": "6252"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Perambalur",
+      "taluks": [
+        {
+          "taluk": "Alathur",
+          "lgd_subdistrict_code": 5951,
+          "blocks": [
+            {
+              "block": "Alathur",
+              "lgd_block_code": "6254"
+            }
+          ]
+        },
+        {
+          "taluk": "Kunnam",
+          "lgd_subdistrict_code": 5976,
+          "blocks": [
+            {
+              "block": "Veppur",
+              "lgd_block_code": "6263"
+            }
+          ]
+        },
+        {
+          "taluk": "Perambalur",
+          "lgd_subdistrict_code": 5973,
+          "blocks": [
+            {
+              "block": "Perambalur",
+              "lgd_block_code": "6258"
+            }
+          ]
+        },
+        {
+          "taluk": "Veppanthattai",
+          "lgd_subdistrict_code": 5974,
+          "blocks": [
+            {
+              "block": "Veppanthattai",
+              "lgd_block_code": "6262"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Pudukkottai",
+      "taluks": [
+        {
+          "taluk": "Alangudi",
+          "lgd_subdistrict_code": 5824,
+          "blocks": [
+            {
+              "block": "Thiruvarankulam",
+              "lgd_block_code": "6274"
+            }
+          ]
+        },
+        {
+          "taluk": "Aranthangi",
+          "lgd_subdistrict_code": 5826,
+          "blocks": [
+            {
+              "block": "Arantangi",
+              "lgd_block_code": "6265"
+            },
+            {
+              "block": "Avadaiyarkovil",
+              "lgd_block_code": "6267"
+            }
+          ]
+        },
+        {
+          "taluk": "Avudayarkoil",
+          "lgd_subdistrict_code": 5828,
+          "blocks": [
+            {
+              "block": "Arimalam",
+              "lgd_block_code": "6266"
+            },
+            {
+              "block": "Avadaiyarkovil",
+              "lgd_block_code": "6267"
+            }
+          ]
+        },
+        {
+          "taluk": "Gandarvakkottai",
+          "lgd_subdistrict_code": 5820,
+          "blocks": [
+            {
+              "block": "Gandaravakottai",
+              "lgd_block_code": "6268"
+            },
+            {
+              "block": "Pudukkottai",
+              "lgd_block_code": "6273"
+            }
+          ]
+        },
+        {
+          "taluk": "Iluppur",
+          "lgd_subdistrict_code": 5818,
+          "blocks": [
+            {
+              "block": "Annavasal",
+              "lgd_block_code": "6264"
+            },
+            {
+              "block": "Kunnandarkoil",
+              "lgd_block_code": "6270"
+            },
+            {
+              "block": "Viralimalai",
+              "lgd_block_code": "6276"
+            }
+          ]
+        },
+        {
+          "taluk": "Karambakudi",
+          "lgd_subdistrict_code": 5825,
+          "blocks": [
+            {
+              "block": "Karambakudi",
+              "lgd_block_code": "6269"
+            }
+          ]
+        },
+        {
+          "taluk": "Kulathur",
+          "lgd_subdistrict_code": 5819,
+          "blocks": [
+            {
+              "block": "Annavasal",
+              "lgd_block_code": "6264"
+            },
+            {
+              "block": "Kunnandarkoil",
+              "lgd_block_code": "6270"
+            },
+            {
+              "block": "Viralimalai",
+              "lgd_block_code": "6276"
+            }
+          ]
+        },
+        {
+          "taluk": "Manamelkudi",
+          "lgd_subdistrict_code": 5827,
+          "blocks": [
+            {
+              "block": "Manalmelkudi",
+              "lgd_block_code": "6271"
+            }
+          ]
+        },
+        {
+          "taluk": "Ponnamaravathi",
+          "lgd_subdistrict_code": 5823,
+          "blocks": [
+            {
+              "block": "Ponnamaravati",
+              "lgd_block_code": "6272"
+            }
+          ]
+        },
+        {
+          "taluk": "Pudukkottai",
+          "lgd_subdistrict_code": 5821,
+          "blocks": [
+            {
+              "block": "Pudukkottai",
+              "lgd_block_code": "6273"
+            }
+          ]
+        },
+        {
+          "taluk": "Thirumayam",
+          "lgd_subdistrict_code": 5822,
+          "blocks": [
+            {
+              "block": "Arimalam",
+              "lgd_block_code": "6266"
+            },
+            {
+              "block": "Tirumayam",
+              "lgd_block_code": "6275"
+            }
+          ]
+        },
+        {
+          "taluk": "Viralimalai",
+          "lgd_subdistrict_code": 6614,
+          "blocks": [
+            {
+              "block": "Kunnandarkoil",
+              "lgd_block_code": "6270"
+            },
+            {
+              "block": "Viralimalai",
+              "lgd_block_code": "6276"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Ramanathapuram",
+      "taluks": [
+        {
+          "taluk": "Kadaladi",
+          "lgd_subdistrict_code": 5859,
+          "blocks": [
+            {
+              "block": "Kadaladi",
+              "lgd_block_code": "6278"
+            }
+          ]
+        },
+        {
+          "taluk": "Kamuthi",
+          "lgd_subdistrict_code": 5858,
+          "blocks": [
+            {
+              "block": "Kamudi",
+              "lgd_block_code": "6279"
+            },
+            {
+              "block": "Mudukulathur",
+              "lgd_block_code": "6281"
+            }
+          ]
+        },
+        {
+          "taluk": "Kilakarai",
+          "lgd_subdistrict_code": 6654,
+          "blocks": [
+            {
+              "block": "Kadaladi",
+              "lgd_block_code": "6278"
+            },
+            {
+              "block": "Tiruppullani",
+              "lgd_block_code": "6286"
+            }
+          ]
+        },
+        {
+          "taluk": "Mudukulathur",
+          "lgd_subdistrict_code": 5857,
+          "blocks": [
+            {
+              "block": "Kadaladi",
+              "lgd_block_code": "6278"
+            },
+            {
+              "block": "Mudukulathur",
+              "lgd_block_code": "6281"
+            }
+          ]
+        },
+        {
+          "taluk": "Paramakudi",
+          "lgd_subdistrict_code": 5856,
+          "blocks": [
+            {
+              "block": "Bogalur",
+              "lgd_block_code": "6277"
+            },
+            {
+              "block": "Kadaladi",
+              "lgd_block_code": "6278"
+            },
+            {
+              "block": "Nainarkoil",
+              "lgd_block_code": "6282"
+            },
+            {
+              "block": "Paramakkudi",
+              "lgd_block_code": "6283"
+            }
+          ]
+        },
+        {
+          "taluk": "Rajasingamangalam",
+          "lgd_subdistrict_code": 6653,
+          "blocks": [
+            {
+              "block": "Nainarkoil",
+              "lgd_block_code": "6282"
+            },
+            {
+              "block": "Rajasingamangalam",
+              "lgd_block_code": "6284"
+            },
+            {
+              "block": "Ramanathapuram",
+              "lgd_block_code": "6285"
+            }
+          ]
+        },
+        {
+          "taluk": "Ramanathapuram",
+          "lgd_subdistrict_code": 5860,
+          "blocks": [
+            {
+              "block": "Mandapam",
+              "lgd_block_code": "6280"
+            },
+            {
+              "block": "Ramanathapuram",
+              "lgd_block_code": "6285"
+            },
+            {
+              "block": "Tiruppullani",
+              "lgd_block_code": "6286"
+            }
+          ]
+        },
+        {
+          "taluk": "Rameswaram",
+          "lgd_subdistrict_code": 5861,
+          "blocks": [
+            {
+              "block": "Mandapam",
+              "lgd_block_code": "6280"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruvadanai",
+          "lgd_subdistrict_code": 5855,
+          "blocks": [
+            {
+              "block": "Rajasingamangalam",
+              "lgd_block_code": "6284"
+            },
+            {
+              "block": "Tiruvadanai",
+              "lgd_block_code": "6287"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Ranipet",
+      "taluks": [
+        {
+          "taluk": "Arakonam",
+          "lgd_subdistrict_code": 5715,
+          "blocks": [
+            {
+              "block": "Arakkonam",
+              "lgd_block_code": "6435"
+            },
+            {
+              "block": "Kaveripakkam",
+              "lgd_block_code": "6443"
+            },
+            {
+              "block": "Nemili",
+              "lgd_block_code": "6446"
+            }
+          ]
+        },
+        {
+          "taluk": "Arcot",
+          "lgd_subdistrict_code": 5716,
+          "blocks": [
+            {
+              "block": "Arcot",
+              "lgd_block_code": "6436"
+            },
+            {
+              "block": "Timiri",
+              "lgd_block_code": "6449"
+            }
+          ]
+        },
+        {
+          "taluk": "Kalavai",
+          "lgd_subdistrict_code": 7059,
+          "blocks": [
+            {
+              "block": "Timiri",
+              "lgd_block_code": "6449"
+            }
+          ]
+        },
+        {
+          "taluk": "Nemili",
+          "lgd_subdistrict_code": 6664,
+          "blocks": [
+            {
+              "block": "Arakkonam",
+              "lgd_block_code": "6435"
+            },
+            {
+              "block": "Kaveripakkam",
+              "lgd_block_code": "6443"
+            },
+            {
+              "block": "Nemili",
+              "lgd_block_code": "6446"
+            }
+          ]
+        },
+        {
+          "taluk": "Sholinghur",
+          "lgd_subdistrict_code": 7060,
+          "blocks": [
+            {
+              "block": "Kaveripakkam",
+              "lgd_block_code": "6443"
+            },
+            {
+              "block": "Sholinghur",
+              "lgd_block_code": "6448"
+            }
+          ]
+        },
+        {
+          "taluk": "Wallajah",
+          "lgd_subdistrict_code": 5714,
+          "blocks": [
+            {
+              "block": "Arcot",
+              "lgd_block_code": "6436"
+            },
+            {
+              "block": "Sholinghur",
+              "lgd_block_code": "6448"
+            },
+            {
+              "block": "Timiri",
+              "lgd_block_code": "6449"
+            },
+            {
+              "block": "Walajapet",
+              "lgd_block_code": "6452"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Salem",
+      "taluks": [
+        {
+          "taluk": "Attur",
+          "lgd_subdistrict_code": 5743,
+          "blocks": [
+            {
+              "block": "Attur",
+              "lgd_block_code": "6288"
+            },
+            {
+              "block": "Peddanaickenpalayam",
+              "lgd_block_code": "6300"
+            }
+          ]
+        },
+        {
+          "taluk": "Edappadi",
+          "lgd_subdistrict_code": 5738,
+          "blocks": [
+            {
+              "block": "Idappadi",
+              "lgd_block_code": "6291"
+            },
+            {
+              "block": "Konganapuram",
+              "lgd_block_code": "6294"
+            }
+          ]
+        },
+        {
+          "taluk": "Gangavalli",
+          "lgd_subdistrict_code": 5744,
+          "blocks": [
+            {
+              "block": "Gangavalli",
+              "lgd_block_code": "6290"
+            }
+          ]
+        },
+        {
+          "taluk": "Kadayampatti",
+          "lgd_subdistrict_code": 6619,
+          "blocks": [
+            {
+              "block": "Kadaiyampatty",
+              "lgd_block_code": "6292"
+            },
+            {
+              "block": "Omalur",
+              "lgd_block_code": "6298"
+            }
+          ]
+        },
+        {
+          "taluk": "Mettur",
+          "lgd_subdistrict_code": 5736,
+          "blocks": [
+            {
+              "block": "Kolathur",
+              "lgd_block_code": "6293"
+            },
+            {
+              "block": "Mecheri",
+              "lgd_block_code": "6296"
+            },
+            {
+              "block": "Nangavalli",
+              "lgd_block_code": "6297"
+            }
+          ]
+        },
+        {
+          "taluk": "Omalur",
+          "lgd_subdistrict_code": 5737,
+          "blocks": [
+            {
+              "block": "Kadaiyampatty",
+              "lgd_block_code": "6292"
+            },
+            {
+              "block": "Omalur",
+              "lgd_block_code": "6298"
+            },
+            {
+              "block": "Taramangalam",
+              "lgd_block_code": "6304"
+            }
+          ]
+        },
+        {
+          "taluk": "Pethanaickanpalayam",
+          "lgd_subdistrict_code": 6618,
+          "blocks": [
+            {
+              "block": "Peddanaickenpalayam",
+              "lgd_block_code": "6300"
+            }
+          ]
+        },
+        {
+          "taluk": "Salem",
+          "lgd_subdistrict_code": 5740,
+          "blocks": [
+            {
+              "block": "Ayodhiyapattinam",
+              "lgd_block_code": "6289"
+            },
+            {
+              "block": "Panamarathupatti",
+              "lgd_block_code": "6299"
+            },
+            {
+              "block": "Salem",
+              "lgd_block_code": "6301"
+            },
+            {
+              "block": "Veerapandi",
+              "lgd_block_code": "6306"
+            }
+          ]
+        },
+        {
+          "taluk": "Salem South",
+          "lgd_subdistrict_code": 5970,
+          "blocks": [
+            {
+              "block": "Panamarathupatti",
+              "lgd_block_code": "6299"
+            },
+            {
+              "block": "Veerapandi",
+              "lgd_block_code": "6306"
+            }
+          ]
+        },
+        {
+          "taluk": "Salem West",
+          "lgd_subdistrict_code": 5971,
+          "blocks": [
+            {
+              "block": "Salem",
+              "lgd_block_code": "6301"
+            },
+            {
+              "block": "Veerapandi",
+              "lgd_block_code": "6306"
+            }
+          ]
+        },
+        {
+          "taluk": "Sankari",
+          "lgd_subdistrict_code": 5739,
+          "blocks": [
+            {
+              "block": "Macdonalds Choultry",
+              "lgd_block_code": "6295"
+            },
+            {
+              "block": "Sankari",
+              "lgd_block_code": "6302"
+            }
+          ]
+        },
+        {
+          "taluk": "Thalaivasal",
+          "lgd_subdistrict_code": 7120,
+          "blocks": [
+            {
+              "block": "Talavasal",
+              "lgd_block_code": "6303"
+            }
+          ]
+        },
+        {
+          "taluk": "Vazhapadi",
+          "lgd_subdistrict_code": 5742,
+          "blocks": [
+            {
+              "block": "Ayodhiyapattinam",
+              "lgd_block_code": "6289"
+            },
+            {
+              "block": "Valapady",
+              "lgd_block_code": "6305"
+            }
+          ]
+        },
+        {
+          "taluk": "Yercaud",
+          "lgd_subdistrict_code": 5741,
+          "blocks": [
+            {
+              "block": "Yercaud",
+              "lgd_block_code": "6307"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Sivaganga",
+      "taluks": [
+        {
+          "taluk": "Devakottai",
+          "lgd_subdistrict_code": 5831,
+          "blocks": [
+            {
+              "block": "Devakottai",
+              "lgd_block_code": "6308"
+            },
+            {
+              "block": "Kallal",
+              "lgd_block_code": "6311"
+            },
+            {
+              "block": "Kannankudi",
+              "lgd_block_code": "6312"
+            }
+          ]
+        },
+        {
+          "taluk": "Ilayangudi",
+          "lgd_subdistrict_code": 5834,
+          "blocks": [
+            {
+              "block": "Ilayankudi",
+              "lgd_block_code": "6309"
+            },
+            {
+              "block": "Manamadurai",
+              "lgd_block_code": "6313"
+            }
+          ]
+        },
+        {
+          "taluk": "Kalaiyarkoil",
+          "lgd_subdistrict_code": 6644,
+          "blocks": [
+            {
+              "block": "Ilayankudi",
+              "lgd_block_code": "6309"
+            },
+            {
+              "block": "Kalaiyarkoil",
+              "lgd_block_code": "6310"
+            },
+            {
+              "block": "Kallal",
+              "lgd_block_code": "6311"
+            },
+            {
+              "block": "Manamadurai",
+              "lgd_block_code": "6313"
+            }
+          ]
+        },
+        {
+          "taluk": "Karaikkudi",
+          "lgd_subdistrict_code": 5830,
+          "blocks": [
+            {
+              "block": "Devakottai",
+              "lgd_block_code": "6308"
+            },
+            {
+              "block": "Kalaiyarkoil",
+              "lgd_block_code": "6310"
+            },
+            {
+              "block": "Kallal",
+              "lgd_block_code": "6311"
+            },
+            {
+              "block": "Kannankudi",
+              "lgd_block_code": "6312"
+            },
+            {
+              "block": "Sakkottai",
+              "lgd_block_code": "6315"
+            },
+            {
+              "block": "Tiruppathur",
+              "lgd_block_code": "6318"
+            }
+          ]
+        },
+        {
+          "taluk": "Manamadurai",
+          "lgd_subdistrict_code": 5833,
+          "blocks": [
+            {
+              "block": "Ilayankudi",
+              "lgd_block_code": "6309"
+            },
+            {
+              "block": "Manamadurai",
+              "lgd_block_code": "6313"
+            },
+            {
+              "block": "Tiruppuvanam",
+              "lgd_block_code": "6319"
+            }
+          ]
+        },
+        {
+          "taluk": "Singampunari",
+          "lgd_subdistrict_code": 5995,
+          "blocks": [
+            {
+              "block": "S. Pudur",
+              "lgd_block_code": "6314"
+            },
+            {
+              "block": "Singampunari",
+              "lgd_block_code": "6316"
+            },
+            {
+              "block": "Tiruppathur",
+              "lgd_block_code": "6318"
+            }
+          ]
+        },
+        {
+          "taluk": "Sivaganga",
+          "lgd_subdistrict_code": 5832,
+          "blocks": [
+            {
+              "block": "Kalaiyarkoil",
+              "lgd_block_code": "6310"
+            },
+            {
+              "block": "Kallal",
+              "lgd_block_code": "6311"
+            },
+            {
+              "block": "Manamadurai",
+              "lgd_block_code": "6313"
+            },
+            {
+              "block": "Sivaganga",
+              "lgd_block_code": "6317"
+            },
+            {
+              "block": "Tiruppuvanam",
+              "lgd_block_code": "6319"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruppathur",
+          "lgd_subdistrict_code": 5829,
+          "blocks": [
+            {
+              "block": "Kalaiyarkoil",
+              "lgd_block_code": "6310"
+            },
+            {
+              "block": "Kallal",
+              "lgd_block_code": "6311"
+            },
+            {
+              "block": "Sakkottai",
+              "lgd_block_code": "6315"
+            },
+            {
+              "block": "Tiruppathur",
+              "lgd_block_code": "6318"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruppuvanam",
+          "lgd_subdistrict_code": 5965,
+          "blocks": [
+            {
+              "block": "Sivaganga",
+              "lgd_block_code": "6317"
+            },
+            {
+              "block": "Tiruppuvanam",
+              "lgd_block_code": "6319"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Tenkasi",
+      "taluks": [
+        {
+          "taluk": "Alangulam",
+          "lgd_subdistrict_code": 5875,
+          "blocks": [
+            {
+              "block": "Alangulam",
+              "lgd_block_code": "6384"
+            },
+            {
+              "block": "Kadayam",
+              "lgd_block_code": "6388"
+            },
+            {
+              "block": "Keelapavoor",
+              "lgd_block_code": "6390"
+            }
+          ]
+        },
+        {
+          "taluk": "Kadayanallur",
+          "lgd_subdistrict_code": 6639,
+          "blocks": [
+            {
+              "block": "Kadaiyanallur",
+              "lgd_block_code": "6387"
+            },
+            {
+              "block": "Melaneelithanallur",
+              "lgd_block_code": "6393"
+            },
+            {
+              "block": "Sankarankovil",
+              "lgd_block_code": "6398"
+            },
+            {
+              "block": "Shencottah",
+              "lgd_block_code": "6399"
+            },
+            {
+              "block": "Vasudevanallur",
+              "lgd_block_code": "6402"
+            }
+          ]
+        },
+        {
+          "taluk": "Sankarankoil",
+          "lgd_subdistrict_code": 5871,
+          "blocks": [
+            {
+              "block": "Kuruvikulam",
+              "lgd_block_code": "6391"
+            },
+            {
+              "block": "Melaneelithanallur",
+              "lgd_block_code": "6393"
+            },
+            {
+              "block": "Sankarankovil",
+              "lgd_block_code": "6398"
+            }
+          ]
+        },
+        {
+          "taluk": "Shenkottai",
+          "lgd_subdistrict_code": 5874,
+          "blocks": [
+            {
+              "block": "Kadaiyanallur",
+              "lgd_block_code": "6387"
+            },
+            {
+              "block": "Shencottah",
+              "lgd_block_code": "6399"
+            },
+            {
+              "block": "Tenkasi",
+              "lgd_block_code": "6400"
+            }
+          ]
+        },
+        {
+          "taluk": "Sivagiri",
+          "lgd_subdistrict_code": 5870,
+          "blocks": [
+            {
+              "block": "Vasudevanallur",
+              "lgd_block_code": "6402"
+            }
+          ]
+        },
+        {
+          "taluk": "Tenkasi",
+          "lgd_subdistrict_code": 5873,
+          "blocks": [
+            {
+              "block": "Kadayam",
+              "lgd_block_code": "6388"
+            },
+            {
+              "block": "Keelapavoor",
+              "lgd_block_code": "6390"
+            },
+            {
+              "block": "Tenkasi",
+              "lgd_block_code": "6400"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruvengadam",
+          "lgd_subdistrict_code": 6642,
+          "blocks": [
+            {
+              "block": "Kuruvikulam",
+              "lgd_block_code": "6391"
+            },
+            {
+              "block": "Melaneelithanallur",
+              "lgd_block_code": "6393"
+            }
+          ]
+        },
+        {
+          "taluk": "Veerakeralamputhur",
+          "lgd_subdistrict_code": 5872,
+          "blocks": [
+            {
+              "block": "Alangulam",
+              "lgd_block_code": "6384"
+            },
+            {
+              "block": "Kadaiyanallur",
+              "lgd_block_code": "6387"
+            },
+            {
+              "block": "Keelapavoor",
+              "lgd_block_code": "6390"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Thanjavur",
+      "taluks": [
+        {
+          "taluk": "Budalur",
+          "lgd_subdistrict_code": 5966,
+          "blocks": [
+            {
+              "block": "Budalur",
+              "lgd_block_code": "6321"
+            },
+            {
+              "block": "Thanjavur",
+              "lgd_block_code": "6329"
+            },
+            {
+              "block": "Thiruvaiyaru",
+              "lgd_block_code": "6331"
+            }
+          ]
+        },
+        {
+          "taluk": "Kumbakonam",
+          "lgd_subdistrict_code": 5811,
+          "blocks": [
+            {
+              "block": "Kumbakonam",
+              "lgd_block_code": "6322"
+            },
+            {
+              "block": "Papanasam",
+              "lgd_block_code": "6325"
+            },
+            {
+              "block": "Pattukkottai",
+              "lgd_block_code": "6326"
+            },
+            {
+              "block": "Sethubhavachatram",
+              "lgd_block_code": "6328"
+            },
+            {
+              "block": "Thanjavur",
+              "lgd_block_code": "6329"
+            },
+            {
+              "block": "Tiruvidaimarudur",
+              "lgd_block_code": "6333"
+            }
+          ]
+        },
+        {
+          "taluk": "Orathanadu",
+          "lgd_subdistrict_code": 5815,
+          "blocks": [
+            {
+              "block": "Orattanadu",
+              "lgd_block_code": "6324"
+            },
+            {
+              "block": "Thiruvonam",
+              "lgd_block_code": "6332"
+            }
+          ]
+        },
+        {
+          "taluk": "Papanasam",
+          "lgd_subdistrict_code": 5812,
+          "blocks": [
+            {
+              "block": "Ammapettai",
+              "lgd_block_code": "6320"
+            },
+            {
+              "block": "Papanasam",
+              "lgd_block_code": "6325"
+            }
+          ]
+        },
+        {
+          "taluk": "Pattukkottai",
+          "lgd_subdistrict_code": 5816,
+          "blocks": [
+            {
+              "block": "Madukkur",
+              "lgd_block_code": "6323"
+            },
+            {
+              "block": "Pattukkottai",
+              "lgd_block_code": "6326"
+            },
+            {
+              "block": "Peravurani",
+              "lgd_block_code": "6327"
+            },
+            {
+              "block": "Sethubhavachatram",
+              "lgd_block_code": "6328"
+            },
+            {
+              "block": "Thiruvonam",
+              "lgd_block_code": "6332"
+            }
+          ]
+        },
+        {
+          "taluk": "Peravurani",
+          "lgd_subdistrict_code": 5817,
+          "blocks": [
+            {
+              "block": "Kumbakonam",
+              "lgd_block_code": "6322"
+            },
+            {
+              "block": "Peravurani",
+              "lgd_block_code": "6327"
+            },
+            {
+              "block": "Sethubhavachatram",
+              "lgd_block_code": "6328"
+            }
+          ]
+        },
+        {
+          "taluk": "Thanjavur",
+          "lgd_subdistrict_code": 5814,
+          "blocks": [
+            {
+              "block": "Thanjavur",
+              "lgd_block_code": "6329"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruvaiyaru",
+          "lgd_subdistrict_code": 5813,
+          "blocks": [
+            {
+              "block": "Thanjavur",
+              "lgd_block_code": "6329"
+            },
+            {
+              "block": "Thiruvaiyaru",
+              "lgd_block_code": "6331"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruvidaimarudur",
+          "lgd_subdistrict_code": 5810,
+          "blocks": [
+            {
+              "block": "Kumbakonam",
+              "lgd_block_code": "6322"
+            },
+            {
+              "block": "Thiruppanandal",
+              "lgd_block_code": "6330"
+            },
+            {
+              "block": "Tiruvidaimarudur",
+              "lgd_block_code": "6333"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruvonam",
+          "lgd_subdistrict_code": 7406,
+          "blocks": [
+            {
+              "block": "Peravurani",
+              "lgd_block_code": "6327"
+            },
+            {
+              "block": "Thiruvonam",
+              "lgd_block_code": "6332"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Theni",
+      "taluks": [
+        {
+          "taluk": "Andipatti",
+          "lgd_subdistrict_code": 5846,
+          "blocks": [
+            {
+              "block": "Andipatti",
+              "lgd_block_code": "6338"
+            },
+            {
+              "block": "Kadamalaikundru Myladumparai",
+              "lgd_block_code": "6341"
+            }
+          ]
+        },
+        {
+          "taluk": "Bodinayakanur",
+          "lgd_subdistrict_code": 5842,
+          "blocks": [
+            {
+              "block": "Bodinayakkanur",
+              "lgd_block_code": "6339"
+            }
+          ]
+        },
+        {
+          "taluk": "Periyakulam",
+          "lgd_subdistrict_code": 5843,
+          "blocks": [
+            {
+              "block": "Chinnamanur",
+              "lgd_block_code": "6340"
+            },
+            {
+              "block": "Periyakulam",
+              "lgd_block_code": "6343"
+            },
+            {
+              "block": "Theni",
+              "lgd_block_code": "6344"
+            }
+          ]
+        },
+        {
+          "taluk": "Theni",
+          "lgd_subdistrict_code": 5844,
+          "blocks": [
+            {
+              "block": "Theni",
+              "lgd_block_code": "6344"
+            }
+          ]
+        },
+        {
+          "taluk": "Uthamapalayam",
+          "lgd_subdistrict_code": 5845,
+          "blocks": [
+            {
+              "block": "Chinnamanur",
+              "lgd_block_code": "6340"
+            },
+            {
+              "block": "Kambam",
+              "lgd_block_code": "6342"
+            },
+            {
+              "block": "Theni",
+              "lgd_block_code": "6344"
+            },
+            {
+              "block": "Uttamapalaiyam",
+              "lgd_block_code": "6345"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "The Nilgiris",
+      "taluks": [
+        {
+          "taluk": "Coonoor",
+          "lgd_subdistrict_code": 5758,
+          "blocks": [
+            {
+              "block": "Coonoor",
+              "lgd_block_code": "6334"
+            }
+          ]
+        },
+        {
+          "taluk": "Gudalur",
+          "lgd_subdistrict_code": 5755,
+          "blocks": [
+            {
+              "block": "Gudalur",
+              "lgd_block_code": "6335"
+            }
+          ]
+        },
+        {
+          "taluk": "Kotagiri",
+          "lgd_subdistrict_code": 5757,
+          "blocks": [
+            {
+              "block": "Kotagiri",
+              "lgd_block_code": "6336"
+            }
+          ]
+        },
+        {
+          "taluk": "Kundah",
+          "lgd_subdistrict_code": 5759,
+          "blocks": [
+            {
+              "block": "Udhagamandalam",
+              "lgd_block_code": "6337"
+            }
+          ]
+        },
+        {
+          "taluk": "Panthalur",
+          "lgd_subdistrict_code": 5754,
+          "blocks": [
+            {
+              "block": "Gudalur",
+              "lgd_block_code": "6335"
+            }
+          ]
+        },
+        {
+          "taluk": "Udhagamandalam",
+          "lgd_subdistrict_code": 5756,
+          "blocks": [
+            {
+              "block": "Gudalur",
+              "lgd_block_code": "6335"
+            },
+            {
+              "block": "Udhagamandalam",
+              "lgd_block_code": "6337"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Thiruvallur",
+      "taluks": [
+        {
+          "taluk": "Avadi",
+          "lgd_subdistrict_code": 6621,
+          "blocks": [
+            {
+              "block": "Poonamallee",
+              "lgd_block_code": "6351"
+            },
+            {
+              "block": "Villivakkam",
+              "lgd_block_code": "6359"
+            }
+          ]
+        },
+        {
+          "taluk": "Gummidipoondi",
+          "lgd_subdistrict_code": 5693,
+          "blocks": [
+            {
+              "block": "Gummidipundi",
+              "lgd_block_code": "6347"
+            },
+            {
+              "block": "Minjur",
+              "lgd_block_code": "6349"
+            }
+          ]
+        },
+        {
+          "taluk": "Pallipattu",
+          "lgd_subdistrict_code": 5697,
+          "blocks": [
+            {
+              "block": "Pallipattu",
+              "lgd_block_code": "6350"
+            }
+          ]
+        },
+        {
+          "taluk": "Ponneri",
+          "lgd_subdistrict_code": 5694,
+          "blocks": [
+            {
+              "block": "Minjur",
+              "lgd_block_code": "6349"
+            },
+            {
+              "block": "Puzhal",
+              "lgd_block_code": "6353"
+            },
+            {
+              "block": "Sholavaram",
+              "lgd_block_code": "6355"
+            }
+          ]
+        },
+        {
+          "taluk": "Poonamallee",
+          "lgd_subdistrict_code": 5699,
+          "blocks": [
+            {
+              "block": "Poonamallee",
+              "lgd_block_code": "6351"
+            },
+            {
+              "block": "Villivakkam",
+              "lgd_block_code": "6359"
+            }
+          ]
+        },
+        {
+          "taluk": "R K Pet",
+          "lgd_subdistrict_code": 6674,
+          "blocks": [
+            {
+              "block": "R.K.Pet",
+              "lgd_block_code": "6354"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruvallur",
+          "lgd_subdistrict_code": 5698,
+          "blocks": [
+            {
+              "block": "Ellapuram",
+              "lgd_block_code": "6346"
+            },
+            {
+              "block": "Kadambathur",
+              "lgd_block_code": "6348"
+            },
+            {
+              "block": "Poondi",
+              "lgd_block_code": "6352"
+            },
+            {
+              "block": "Tiruvallur",
+              "lgd_block_code": "6357"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruttani",
+          "lgd_subdistrict_code": 5696,
+          "blocks": [
+            {
+              "block": "Tiruttani",
+              "lgd_block_code": "6356"
+            },
+            {
+              "block": "Tiruvelangadu",
+              "lgd_block_code": "6358"
+            }
+          ]
+        },
+        {
+          "taluk": "Uthukkottai",
+          "lgd_subdistrict_code": 5695,
+          "blocks": [
+            {
+              "block": "Ellapuram",
+              "lgd_block_code": "6346"
+            },
+            {
+              "block": "Poondi",
+              "lgd_block_code": "6352"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Thiruvarur",
+      "taluks": [
+        {
+          "taluk": "Koothanallur",
+          "lgd_subdistrict_code": 6627,
+          "blocks": [
+            {
+              "block": "Koradacherry",
+              "lgd_block_code": "6361"
+            },
+            {
+              "block": "Kottur",
+              "lgd_block_code": "6362"
+            },
+            {
+              "block": "Mannargudi",
+              "lgd_block_code": "6363"
+            },
+            {
+              "block": "Nidamangalam",
+              "lgd_block_code": "6366"
+            }
+          ]
+        },
+        {
+          "taluk": "Kudavasal",
+          "lgd_subdistrict_code": 5804,
+          "blocks": [
+            {
+              "block": "Kodavasal",
+              "lgd_block_code": "6360"
+            },
+            {
+              "block": "Koradacherry",
+              "lgd_block_code": "6361"
+            }
+          ]
+        },
+        {
+          "taluk": "Mannargudi",
+          "lgd_subdistrict_code": 5808,
+          "blocks": [
+            {
+              "block": "Kottur",
+              "lgd_block_code": "6362"
+            },
+            {
+              "block": "Mannargudi",
+              "lgd_block_code": "6363"
+            },
+            {
+              "block": "Nidamangalam",
+              "lgd_block_code": "6366"
+            }
+          ]
+        },
+        {
+          "taluk": "Muthupettai",
+          "lgd_subdistrict_code": 7408,
+          "blocks": [
+            {
+              "block": "Kottur",
+              "lgd_block_code": "6362"
+            },
+            {
+              "block": "Muthupettai",
+              "lgd_block_code": "6364"
+            }
+          ]
+        },
+        {
+          "taluk": "Nannilam",
+          "lgd_subdistrict_code": 5805,
+          "blocks": [
+            {
+              "block": "Kodavasal",
+              "lgd_block_code": "6360"
+            },
+            {
+              "block": "Koradacherry",
+              "lgd_block_code": "6361"
+            },
+            {
+              "block": "Nannilam",
+              "lgd_block_code": "6365"
+            }
+          ]
+        },
+        {
+          "taluk": "Needamangalam",
+          "lgd_subdistrict_code": 5807,
+          "blocks": [
+            {
+              "block": "Koradacherry",
+              "lgd_block_code": "6361"
+            },
+            {
+              "block": "Nidamangalam",
+              "lgd_block_code": "6366"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruthuraipoondi",
+          "lgd_subdistrict_code": 5809,
+          "blocks": [
+            {
+              "block": "Mannargudi",
+              "lgd_block_code": "6363"
+            },
+            {
+              "block": "Muthupettai",
+              "lgd_block_code": "6364"
+            },
+            {
+              "block": "Tirutturaippundi",
+              "lgd_block_code": "6368"
+            },
+            {
+              "block": "Valangaiman",
+              "lgd_block_code": "6369"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruvarur",
+          "lgd_subdistrict_code": 5806,
+          "blocks": [
+            {
+              "block": "Kodavasal",
+              "lgd_block_code": "6360"
+            },
+            {
+              "block": "Koradacherry",
+              "lgd_block_code": "6361"
+            },
+            {
+              "block": "Thiruvarur",
+              "lgd_block_code": "6367"
+            }
+          ]
+        },
+        {
+          "taluk": "Valangaiman",
+          "lgd_subdistrict_code": 5803,
+          "blocks": [
+            {
+              "block": "Valangaiman",
+              "lgd_block_code": "6369"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Thoothukkudi",
+      "taluks": [
+        {
+          "taluk": "Eral",
+          "lgd_subdistrict_code": 6633,
+          "blocks": [
+            {
+              "block": "Alwarthirunagari",
+              "lgd_block_code": "6421"
+            },
+            {
+              "block": "Srivaikundam",
+              "lgd_block_code": "6428"
+            },
+            {
+              "block": "Tiruchendur",
+              "lgd_block_code": "6430"
+            }
+          ]
+        },
+        {
+          "taluk": "Ettayapuram",
+          "lgd_subdistrict_code": 5863,
+          "blocks": [
+            {
+              "block": "Kayathar",
+              "lgd_block_code": "6423"
+            },
+            {
+              "block": "Kovilpatti",
+              "lgd_block_code": "6424"
+            },
+            {
+              "block": "Pudur",
+              "lgd_block_code": "6426"
+            },
+            {
+              "block": "Vilathikulam",
+              "lgd_block_code": "6432"
+            }
+          ]
+        },
+        {
+          "taluk": "Kayathar",
+          "lgd_subdistrict_code": 6628,
+          "blocks": [
+            {
+              "block": "Kayathar",
+              "lgd_block_code": "6423"
+            },
+            {
+              "block": "Ottapidaram",
+              "lgd_block_code": "6425"
+            }
+          ]
+        },
+        {
+          "taluk": "Kovilpatti",
+          "lgd_subdistrict_code": 5862,
+          "blocks": [
+            {
+              "block": "Kayathar",
+              "lgd_block_code": "6423"
+            },
+            {
+              "block": "Kovilpatti",
+              "lgd_block_code": "6424"
+            }
+          ]
+        },
+        {
+          "taluk": "Ottapidaram",
+          "lgd_subdistrict_code": 5865,
+          "blocks": [
+            {
+              "block": "Kayathar",
+              "lgd_block_code": "6423"
+            },
+            {
+              "block": "Ottapidaram",
+              "lgd_block_code": "6425"
+            }
+          ]
+        },
+        {
+          "taluk": "Sathankulam",
+          "lgd_subdistrict_code": 5869,
+          "blocks": [
+            {
+              "block": "Alwarthirunagari",
+              "lgd_block_code": "6421"
+            },
+            {
+              "block": "Sattankulam",
+              "lgd_block_code": "6427"
+            }
+          ]
+        },
+        {
+          "taluk": "Srivaikuntam",
+          "lgd_subdistrict_code": 5867,
+          "blocks": [
+            {
+              "block": "Karungulam",
+              "lgd_block_code": "6422"
+            },
+            {
+              "block": "Srivaikundam",
+              "lgd_block_code": "6428"
+            }
+          ]
+        },
+        {
+          "taluk": "Thoothukkudi",
+          "lgd_subdistrict_code": 5866,
+          "blocks": [
+            {
+              "block": "Thoothukkudi",
+              "lgd_block_code": "6429"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruchendur",
+          "lgd_subdistrict_code": 5868,
+          "blocks": [
+            {
+              "block": "Alwarthirunagari",
+              "lgd_block_code": "6421"
+            },
+            {
+              "block": "Tiruchendur",
+              "lgd_block_code": "6430"
+            },
+            {
+              "block": "Udangudi",
+              "lgd_block_code": "6431"
+            }
+          ]
+        },
+        {
+          "taluk": "Vilathikulam",
+          "lgd_subdistrict_code": 5864,
+          "blocks": [
+            {
+              "block": "Pudur",
+              "lgd_block_code": "6426"
+            },
+            {
+              "block": "Vilathikulam",
+              "lgd_block_code": "6432"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Tiruchirappalli",
+      "taluks": [
+        {
+          "taluk": "Lalgudi",
+          "lgd_subdistrict_code": 5777,
+          "blocks": [
+            {
+              "block": "Lalgudi",
+              "lgd_block_code": "6371"
+            },
+            {
+              "block": "Pullambadi",
+              "lgd_block_code": "6377"
+            }
+          ]
+        },
+        {
+          "taluk": "Manachanallur",
+          "lgd_subdistrict_code": 5776,
+          "blocks": [
+            {
+              "block": "Manachanellur",
+              "lgd_block_code": "6372"
+            }
+          ]
+        },
+        {
+          "taluk": "Manapparai",
+          "lgd_subdistrict_code": 5781,
+          "blocks": [
+            {
+              "block": "Manapparai",
+              "lgd_block_code": "6373"
+            },
+            {
+              "block": "Marungapuri",
+              "lgd_block_code": "6375"
+            },
+            {
+              "block": "Vaiyampatti",
+              "lgd_block_code": "6383"
+            }
+          ]
+        },
+        {
+          "taluk": "Marungapuri",
+          "lgd_subdistrict_code": 5954,
+          "blocks": [
+            {
+              "block": "Marungapuri",
+              "lgd_block_code": "6375"
+            }
+          ]
+        },
+        {
+          "taluk": "Musiri",
+          "lgd_subdistrict_code": 5774,
+          "blocks": [
+            {
+              "block": "Musiri",
+              "lgd_block_code": "6376"
+            },
+            {
+              "block": "Tattayyangarpettai",
+              "lgd_block_code": "6378"
+            }
+          ]
+        },
+        {
+          "taluk": "Srirangam",
+          "lgd_subdistrict_code": 5778,
+          "blocks": [
+            {
+              "block": "Andanallur",
+              "lgd_block_code": "6370"
+            },
+            {
+              "block": "Manikandam",
+              "lgd_block_code": "6374"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruverumbur",
+          "lgd_subdistrict_code": 5780,
+          "blocks": [
+            {
+              "block": "Thiruverambur",
+              "lgd_block_code": "6379"
+            }
+          ]
+        },
+        {
+          "taluk": "Thottiyam",
+          "lgd_subdistrict_code": 5773,
+          "blocks": [
+            {
+              "block": "Thottiam",
+              "lgd_block_code": "6380"
+            }
+          ]
+        },
+        {
+          "taluk": "Thuraiyur",
+          "lgd_subdistrict_code": 5775,
+          "blocks": [
+            {
+              "block": "Musiri",
+              "lgd_block_code": "6376"
+            },
+            {
+              "block": "Turaiyur",
+              "lgd_block_code": "6381"
+            },
+            {
+              "block": "Uppiliapuram",
+              "lgd_block_code": "6382"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruchirappalli East",
+          "lgd_subdistrict_code": 6620,
+          "blocks": []
+        },
+        {
+          "taluk": "Tiruchirappalli West",
+          "lgd_subdistrict_code": 5779,
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "district": "Tirunelveli",
+      "taluks": [
+        {
+          "taluk": "Ambasamudram",
+          "lgd_subdistrict_code": 5878,
+          "blocks": [
+            {
+              "block": "Ambasamudram",
+              "lgd_block_code": "6385"
+            },
+            {
+              "block": "Cheranmahadevi",
+              "lgd_block_code": "6386"
+            },
+            {
+              "block": "Pappakudi",
+              "lgd_block_code": "6396"
+            }
+          ]
+        },
+        {
+          "taluk": "Cheranmahadevi",
+          "lgd_subdistrict_code": 6648,
+          "blocks": [
+            {
+              "block": "Cheranmahadevi",
+              "lgd_block_code": "6386"
+            },
+            {
+              "block": "Pappakudi",
+              "lgd_block_code": "6396"
+            }
+          ]
+        },
+        {
+          "taluk": "Manur",
+          "lgd_subdistrict_code": 6647,
+          "blocks": [
+            {
+              "block": "Manur",
+              "lgd_block_code": "6392"
+            }
+          ]
+        },
+        {
+          "taluk": "Nanguneri",
+          "lgd_subdistrict_code": 5879,
+          "blocks": [
+            {
+              "block": "Kalakadu",
+              "lgd_block_code": "6389"
+            },
+            {
+              "block": "Nanguneri",
+              "lgd_block_code": "6394"
+            }
+          ]
+        },
+        {
+          "taluk": "Palayamkottai",
+          "lgd_subdistrict_code": 5877,
+          "blocks": [
+            {
+              "block": "Palayamkottai",
+              "lgd_block_code": "6395"
+            }
+          ]
+        },
+        {
+          "taluk": "Radhapuram",
+          "lgd_subdistrict_code": 5880,
+          "blocks": [
+            {
+              "block": "Radhapuram",
+              "lgd_block_code": "6397"
+            },
+            {
+              "block": "Valliyoor",
+              "lgd_block_code": "6401"
+            }
+          ]
+        },
+        {
+          "taluk": "Tirunelveli",
+          "lgd_subdistrict_code": 5876,
+          "blocks": [
+            {
+              "block": "Manur",
+              "lgd_block_code": "6392"
+            },
+            {
+              "block": "Palayamkottai",
+              "lgd_block_code": "6395"
+            },
+            {
+              "block": "Pappakudi",
+              "lgd_block_code": "6396"
+            }
+          ]
+        },
+        {
+          "taluk": "Tisayanvilai",
+          "lgd_subdistrict_code": 6649,
+          "blocks": [
+            {
+              "block": "Nanguneri",
+              "lgd_block_code": "6394"
+            },
+            {
+              "block": "Radhapuram",
+              "lgd_block_code": "6397"
+            },
+            {
+              "block": "Valliyoor",
+              "lgd_block_code": "6401"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Tirupathur",
+      "taluks": [
+        {
+          "taluk": "Ambur",
+          "lgd_subdistrict_code": 5719,
+          "blocks": [
+            {
+              "block": "Alangayan",
+              "lgd_block_code": "6433"
+            },
+            {
+              "block": "Madhanur",
+              "lgd_block_code": "6444"
+            }
+          ]
+        },
+        {
+          "taluk": "Natrampalli",
+          "lgd_subdistrict_code": 5963,
+          "blocks": [
+            {
+              "block": "Jolarpet",
+              "lgd_block_code": "6438"
+            },
+            {
+              "block": "Natrampalli",
+              "lgd_block_code": "6445"
+            }
+          ]
+        },
+        {
+          "taluk": "Tirupathur",
+          "lgd_subdistrict_code": 5720,
+          "blocks": [
+            {
+              "block": "Alangayan",
+              "lgd_block_code": "6433"
+            },
+            {
+              "block": "Jolarpet",
+              "lgd_block_code": "6438"
+            },
+            {
+              "block": "Kandili",
+              "lgd_block_code": "6440"
+            },
+            {
+              "block": "Natrampalli",
+              "lgd_block_code": "6445"
+            },
+            {
+              "block": "Tiruppattur",
+              "lgd_block_code": "6450"
+            }
+          ]
+        },
+        {
+          "taluk": "Vaniyambadi",
+          "lgd_subdistrict_code": 5718,
+          "blocks": [
+            {
+              "block": "Alangayan",
+              "lgd_block_code": "6433"
+            },
+            {
+              "block": "Jolarpet",
+              "lgd_block_code": "6438"
+            },
+            {
+              "block": "Madhanur",
+              "lgd_block_code": "6444"
+            },
+            {
+              "block": "Natrampalli",
+              "lgd_block_code": "6445"
+            },
+            {
+              "block": "Tiruppattur",
+              "lgd_block_code": "6450"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Tiruppur",
+      "taluks": [
+        {
+          "taluk": "Avinashi",
+          "lgd_subdistrict_code": 5903,
+          "blocks": [
+            {
+              "block": "Avanashi",
+              "lgd_block_code": "6103"
+            },
+            {
+              "block": "Tiruppur",
+              "lgd_block_code": "6118"
+            },
+            {
+              "block": "Uttukkuli",
+              "lgd_block_code": "6173"
+            }
+          ]
+        },
+        {
+          "taluk": "Dharapuram",
+          "lgd_subdistrict_code": 5902,
+          "blocks": [
+            {
+              "block": "Dharapuram",
+              "lgd_block_code": "6160"
+            },
+            {
+              "block": "Kundadam",
+              "lgd_block_code": "6165"
+            },
+            {
+              "block": "Mulanur",
+              "lgd_block_code": "6167"
+            },
+            {
+              "block": "Vellakoil",
+              "lgd_block_code": "6174"
+            }
+          ]
+        },
+        {
+          "taluk": "Kangeyam",
+          "lgd_subdistrict_code": 5901,
+          "blocks": [
+            {
+              "block": "Kangayam",
+              "lgd_block_code": "6163"
+            },
+            {
+              "block": "Kundadam",
+              "lgd_block_code": "6165"
+            },
+            {
+              "block": "Vellakoil",
+              "lgd_block_code": "6174"
+            }
+          ]
+        },
+        {
+          "taluk": "Madathukulam",
+          "lgd_subdistrict_code": 5907,
+          "blocks": [
+            {
+              "block": "Madathukulam",
+              "lgd_block_code": "6107"
+            }
+          ]
+        },
+        {
+          "taluk": "Palladam",
+          "lgd_subdistrict_code": 5905,
+          "blocks": [
+            {
+              "block": "Palladam",
+              "lgd_block_code": "6109"
+            },
+            {
+              "block": "Pongalur",
+              "lgd_block_code": "6113"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruppurnorth",
+          "lgd_subdistrict_code": 5967,
+          "blocks": [
+            {
+              "block": "Pongalur",
+              "lgd_block_code": "6113"
+            },
+            {
+              "block": "Tiruppur",
+              "lgd_block_code": "6118"
+            },
+            {
+              "block": "Uttukkuli",
+              "lgd_block_code": "6173"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruppursouth",
+          "lgd_subdistrict_code": 5968,
+          "blocks": [
+            {
+              "block": "Pongalur",
+              "lgd_block_code": "6113"
+            },
+            {
+              "block": "Tiruppur",
+              "lgd_block_code": "6118"
+            }
+          ]
+        },
+        {
+          "taluk": "Udumalaipettai",
+          "lgd_subdistrict_code": 5906,
+          "blocks": [
+            {
+              "block": "Gudimangalam",
+              "lgd_block_code": "6104"
+            },
+            {
+              "block": "Udumalpet",
+              "lgd_block_code": "6119"
+            }
+          ]
+        },
+        {
+          "taluk": "Uthukuli",
+          "lgd_subdistrict_code": 6616,
+          "blocks": [
+            {
+              "block": "Avanashi",
+              "lgd_block_code": "6103"
+            },
+            {
+              "block": "Uttukkuli",
+              "lgd_block_code": "6173"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Tiruvannamalai",
+      "taluks": [
+        {
+          "taluk": "Arani",
+          "lgd_subdistrict_code": 5721,
+          "blocks": [
+            {
+              "block": "Arani",
+              "lgd_block_code": "6404"
+            },
+            {
+              "block": "West Arani",
+              "lgd_block_code": "6420"
+            }
+          ]
+        },
+        {
+          "taluk": "Chengam",
+          "lgd_subdistrict_code": 5725,
+          "blocks": [
+            {
+              "block": "Chengam",
+              "lgd_block_code": "6405"
+            },
+            {
+              "block": "Jawathu Hills",
+              "lgd_block_code": "6408"
+            },
+            {
+              "block": "Kalasapakkam",
+              "lgd_block_code": "6409"
+            },
+            {
+              "block": "Pudupalayam",
+              "lgd_block_code": "6413"
+            },
+            {
+              "block": "Thurinjapuram",
+              "lgd_block_code": "6416"
+            }
+          ]
+        },
+        {
+          "taluk": "Chetpet",
+          "lgd_subdistrict_code": 6617,
+          "blocks": [
+            {
+              "block": "Chetput",
+              "lgd_block_code": "6406"
+            },
+            {
+              "block": "Pernamallur",
+              "lgd_block_code": "6411"
+            },
+            {
+              "block": "West Arani",
+              "lgd_block_code": "6420"
+            }
+          ]
+        },
+        {
+          "taluk": "Cheyyar",
+          "lgd_subdistrict_code": 5722,
+          "blocks": [
+            {
+              "block": "Anakkavur",
+              "lgd_block_code": "6403"
+            },
+            {
+              "block": "Cheyyar",
+              "lgd_block_code": "6407"
+            },
+            {
+              "block": "Vembakkam",
+              "lgd_block_code": "6419"
+            }
+          ]
+        },
+        {
+          "taluk": "Jamunamarathoor",
+          "lgd_subdistrict_code": 6631,
+          "blocks": [
+            {
+              "block": "Jawathu Hills",
+              "lgd_block_code": "6408"
+            }
+          ]
+        },
+        {
+          "taluk": "Kalasapakkam",
+          "lgd_subdistrict_code": 5959,
+          "blocks": [
+            {
+              "block": "Kalasapakkam",
+              "lgd_block_code": "6409"
+            }
+          ]
+        },
+        {
+          "taluk": "Kilpennathur",
+          "lgd_subdistrict_code": 6630,
+          "blocks": [
+            {
+              "block": "Keelpennathur",
+              "lgd_block_code": "6410"
+            },
+            {
+              "block": "Thurinjapuram",
+              "lgd_block_code": "6416"
+            },
+            {
+              "block": "Tiruvannamalai",
+              "lgd_block_code": "6417"
+            }
+          ]
+        },
+        {
+          "taluk": "Polur",
+          "lgd_subdistrict_code": 5724,
+          "blocks": [
+            {
+              "block": "Chetput",
+              "lgd_block_code": "6406"
+            },
+            {
+              "block": "Jawathu Hills",
+              "lgd_block_code": "6408"
+            },
+            {
+              "block": "Kalasapakkam",
+              "lgd_block_code": "6409"
+            },
+            {
+              "block": "Polur",
+              "lgd_block_code": "6412"
+            },
+            {
+              "block": "Tiruvannamalai",
+              "lgd_block_code": "6417"
+            }
+          ]
+        },
+        {
+          "taluk": "Thandrampet",
+          "lgd_subdistrict_code": 5726,
+          "blocks": [
+            {
+              "block": "Chengam",
+              "lgd_block_code": "6405"
+            },
+            {
+              "block": "Thandrampet",
+              "lgd_block_code": "6414"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruvannamalai",
+          "lgd_subdistrict_code": 5727,
+          "blocks": [
+            {
+              "block": "Keelpennathur",
+              "lgd_block_code": "6410"
+            },
+            {
+              "block": "Thurinjapuram",
+              "lgd_block_code": "6416"
+            },
+            {
+              "block": "Tiruvannamalai",
+              "lgd_block_code": "6417"
+            }
+          ]
+        },
+        {
+          "taluk": "Vandavasi",
+          "lgd_subdistrict_code": 5723,
+          "blocks": [
+            {
+              "block": "Chetput",
+              "lgd_block_code": "6406"
+            },
+            {
+              "block": "Pernamallur",
+              "lgd_block_code": "6411"
+            },
+            {
+              "block": "Thellar",
+              "lgd_block_code": "6415"
+            },
+            {
+              "block": "Vandavasi",
+              "lgd_block_code": "6418"
+            }
+          ]
+        },
+        {
+          "taluk": "Vembakkam",
+          "lgd_subdistrict_code": 6624,
+          "blocks": [
+            {
+              "block": "Vembakkam",
+              "lgd_block_code": "6419"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Vellore",
+      "taluks": [
+        {
+          "taluk": "Anaicut",
+          "lgd_subdistrict_code": 5964,
+          "blocks": [
+            {
+              "block": "Anaicut",
+              "lgd_block_code": "6434"
+            },
+            {
+              "block": "Gudiyattam",
+              "lgd_block_code": "6437"
+            },
+            {
+              "block": "Vellore",
+              "lgd_block_code": "6451"
+            }
+          ]
+        },
+        {
+          "taluk": "Gudiyatham",
+          "lgd_subdistrict_code": 5712,
+          "blocks": [
+            {
+              "block": "Anaicut",
+              "lgd_block_code": "6434"
+            },
+            {
+              "block": "Gudiyattam",
+              "lgd_block_code": "6437"
+            },
+            {
+              "block": "K.V.Kuppam",
+              "lgd_block_code": "6439"
+            },
+            {
+              "block": "Peranambattu",
+              "lgd_block_code": "6447"
+            }
+          ]
+        },
+        {
+          "taluk": "K V Kuppam",
+          "lgd_subdistrict_code": 7052,
+          "blocks": [
+            {
+              "block": "K.V.Kuppam",
+              "lgd_block_code": "6439"
+            }
+          ]
+        },
+        {
+          "taluk": "Katpadi",
+          "lgd_subdistrict_code": 5713,
+          "blocks": [
+            {
+              "block": "Anaicut",
+              "lgd_block_code": "6434"
+            },
+            {
+              "block": "K.V.Kuppam",
+              "lgd_block_code": "6439"
+            },
+            {
+              "block": "Katpadi",
+              "lgd_block_code": "6442"
+            }
+          ]
+        },
+        {
+          "taluk": "Pernambut",
+          "lgd_subdistrict_code": 6663,
+          "blocks": [
+            {
+              "block": "Gudiyattam",
+              "lgd_block_code": "6437"
+            },
+            {
+              "block": "Peranambattu",
+              "lgd_block_code": "6447"
+            }
+          ]
+        },
+        {
+          "taluk": "Vellore",
+          "lgd_subdistrict_code": 5717,
+          "blocks": [
+            {
+              "block": "Anaicut",
+              "lgd_block_code": "6434"
+            },
+            {
+              "block": "Kaniyambadi",
+              "lgd_block_code": "6441"
+            },
+            {
+              "block": "Katpadi",
+              "lgd_block_code": "6442"
+            },
+            {
+              "block": "Vellore",
+              "lgd_block_code": "6451"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Viluppuram",
+      "taluks": [
+        {
+          "taluk": "Gingee",
+          "lgd_subdistrict_code": 5728,
+          "blocks": [
+            {
+              "block": "Gingee",
+              "lgd_block_code": "6454"
+            },
+            {
+              "block": "Melmalayanur",
+              "lgd_block_code": "6462"
+            },
+            {
+              "block": "Vallam",
+              "lgd_block_code": "6472"
+            },
+            {
+              "block": "Vikravandi",
+              "lgd_block_code": "6474"
+            }
+          ]
+        },
+        {
+          "taluk": "Kandachipuram",
+          "lgd_subdistrict_code": 6651,
+          "blocks": [
+            {
+              "block": "Mugaiyur",
+              "lgd_block_code": "6463"
+            },
+            {
+              "block": "Thiruvennainallur",
+              "lgd_block_code": "6468"
+            }
+          ]
+        },
+        {
+          "taluk": "Marakanam",
+          "lgd_subdistrict_code": 6650,
+          "blocks": [
+            {
+              "block": "Marakkanam",
+              "lgd_block_code": "6461"
+            }
+          ]
+        },
+        {
+          "taluk": "Melmalaiyanur",
+          "lgd_subdistrict_code": 6652,
+          "blocks": [
+            {
+              "block": "Melmalayanur",
+              "lgd_block_code": "6462"
+            }
+          ]
+        },
+        {
+          "taluk": "Thiruvennainallur",
+          "lgd_subdistrict_code": 7053,
+          "blocks": [
+            {
+              "block": "Mugaiyur",
+              "lgd_block_code": "6463"
+            },
+            {
+              "block": "Thiruvennainallur",
+              "lgd_block_code": "6468"
+            }
+          ]
+        },
+        {
+          "taluk": "Tindivanam",
+          "lgd_subdistrict_code": 5729,
+          "blocks": [
+            {
+              "block": "Gingee",
+              "lgd_block_code": "6454"
+            },
+            {
+              "block": "Mailam",
+              "lgd_block_code": "6460"
+            },
+            {
+              "block": "Marakkanam",
+              "lgd_block_code": "6461"
+            },
+            {
+              "block": "Olakkur",
+              "lgd_block_code": "6464"
+            }
+          ]
+        },
+        {
+          "taluk": "Vanur",
+          "lgd_subdistrict_code": 5730,
+          "blocks": [
+            {
+              "block": "Olakkur",
+              "lgd_block_code": "6464"
+            },
+            {
+              "block": "Vanur",
+              "lgd_block_code": "6473"
+            }
+          ]
+        },
+        {
+          "taluk": "Vikravandi",
+          "lgd_subdistrict_code": 5978,
+          "blocks": [
+            {
+              "block": "Kanai",
+              "lgd_block_code": "6457"
+            },
+            {
+              "block": "Kandamangalam",
+              "lgd_block_code": "6458"
+            },
+            {
+              "block": "Koliyanur",
+              "lgd_block_code": "6459"
+            },
+            {
+              "block": "Vikravandi",
+              "lgd_block_code": "6474"
+            }
+          ]
+        },
+        {
+          "taluk": "Viluppuram",
+          "lgd_subdistrict_code": 5731,
+          "blocks": [
+            {
+              "block": "Gingee",
+              "lgd_block_code": "6454"
+            },
+            {
+              "block": "Kanai",
+              "lgd_block_code": "6457"
+            },
+            {
+              "block": "Kandamangalam",
+              "lgd_block_code": "6458"
+            },
+            {
+              "block": "Koliyanur",
+              "lgd_block_code": "6459"
+            },
+            {
+              "block": "Vikravandi",
+              "lgd_block_code": "6474"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Virudhunagar",
+      "taluks": [
+        {
+          "taluk": "Aruppukkottai",
+          "lgd_subdistrict_code": 5853,
+          "blocks": [
+            {
+              "block": "Aruppukottai",
+              "lgd_block_code": "6475"
+            },
+            {
+              "block": "Tiruchuli",
+              "lgd_block_code": "6482"
+            }
+          ]
+        },
+        {
+          "taluk": "Kariapatti",
+          "lgd_subdistrict_code": 5851,
+          "blocks": [
+            {
+              "block": "Kariapatti",
+              "lgd_block_code": "6476"
+            },
+            {
+              "block": "Narikudi",
+              "lgd_block_code": "6477"
+            }
+          ]
+        },
+        {
+          "taluk": "Rajapalayam",
+          "lgd_subdistrict_code": 5847,
+          "blocks": [
+            {
+              "block": "Rajapalaiyam",
+              "lgd_block_code": "6478"
+            },
+            {
+              "block": "Srivilliputtur",
+              "lgd_block_code": "6481"
+            }
+          ]
+        },
+        {
+          "taluk": "Sattur",
+          "lgd_subdistrict_code": 5854,
+          "blocks": [
+            {
+              "block": "Sattur",
+              "lgd_block_code": "6479"
+            },
+            {
+              "block": "Virudhunagar",
+              "lgd_block_code": "6484"
+            }
+          ]
+        },
+        {
+          "taluk": "Sivakasi",
+          "lgd_subdistrict_code": 5849,
+          "blocks": [
+            {
+              "block": "Sivakasi",
+              "lgd_block_code": "6480"
+            },
+            {
+              "block": "Srivilliputtur",
+              "lgd_block_code": "6481"
+            },
+            {
+              "block": "Vembakottai",
+              "lgd_block_code": "6483"
+            }
+          ]
+        },
+        {
+          "taluk": "Srivilliputhur",
+          "lgd_subdistrict_code": 5848,
+          "blocks": [
+            {
+              "block": "Srivilliputtur",
+              "lgd_block_code": "6481"
+            },
+            {
+              "block": "Watrap",
+              "lgd_block_code": "6485"
+            }
+          ]
+        },
+        {
+          "taluk": "Tiruchuli",
+          "lgd_subdistrict_code": 5852,
+          "blocks": [
+            {
+              "block": "Kariapatti",
+              "lgd_block_code": "6476"
+            },
+            {
+              "block": "Narikudi",
+              "lgd_block_code": "6477"
+            },
+            {
+              "block": "Tiruchuli",
+              "lgd_block_code": "6482"
+            }
+          ]
+        },
+        {
+          "taluk": "Vembakottai",
+          "lgd_subdistrict_code": 6640,
+          "blocks": [
+            {
+              "block": "Rajapalaiyam",
+              "lgd_block_code": "6478"
+            },
+            {
+              "block": "Sivakasi",
+              "lgd_block_code": "6480"
+            },
+            {
+              "block": "Srivilliputtur",
+              "lgd_block_code": "6481"
+            },
+            {
+              "block": "Vembakottai",
+              "lgd_block_code": "6483"
+            }
+          ]
+        },
+        {
+          "taluk": "Virudhunagar",
+          "lgd_subdistrict_code": 5850,
+          "blocks": [
+            {
+              "block": "Virudhunagar",
+              "lgd_block_code": "6484"
+            }
+          ]
+        },
+        {
+          "taluk": "Watrap",
+          "lgd_subdistrict_code": 6675,
+          "blocks": [
+            {
+              "block": "Srivilliputtur",
+              "lgd_block_code": "6481"
+            },
+            {
+              "block": "Watrap",
+              "lgd_block_code": "6485"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "district": "Chennai",
+      "taluks": [
+        {
+          "taluk": "Alandur",
+          "lgd_subdistrict_code": 5704,
+          "blocks": []
+        },
+        {
+          "taluk": "Ambattur",
+          "lgd_subdistrict_code": 5700,
+          "blocks": []
+        },
+        {
+          "taluk": "Aminjikarai",
+          "lgd_subdistrict_code": 7161,
+          "blocks": []
+        },
+        {
+          "taluk": "Ayanavaram",
+          "lgd_subdistrict_code": 7163,
+          "blocks": []
+        },
+        {
+          "taluk": "Egmore",
+          "lgd_subdistrict_code": 7164,
+          "blocks": []
+        },
+        {
+          "taluk": "Guindy",
+          "lgd_subdistrict_code": 7169,
+          "blocks": []
+        },
+        {
+          "taluk": "Kolathur",
+          "lgd_subdistrict_code": 7514,
+          "blocks": []
+        },
+        {
+          "taluk": "Maduravoyal",
+          "lgd_subdistrict_code": 5981,
+          "blocks": []
+        },
+        {
+          "taluk": "Mambalam",
+          "lgd_subdistrict_code": 7165,
+          "blocks": []
+        },
+        {
+          "taluk": "Mathavaram",
+          "lgd_subdistrict_code": 5701,
+          "blocks": []
+        },
+        {
+          "taluk": "Mylapore",
+          "lgd_subdistrict_code": 7170,
+          "blocks": []
+        },
+        {
+          "taluk": "Perambur",
+          "lgd_subdistrict_code": 7166,
+          "blocks": []
+        },
+        {
+          "taluk": "Purasawalkam",
+          "lgd_subdistrict_code": 7167,
+          "blocks": []
+        },
+        {
+          "taluk": "Sholinganallur",
+          "lgd_subdistrict_code": 5705,
+          "blocks": []
+        },
+        {
+          "taluk": "Tiruvottiyur",
+          "lgd_subdistrict_code": 5982,
+          "blocks": []
+        },
+        {
+          "taluk": "Tondiarpet",
+          "lgd_subdistrict_code": 7168,
+          "blocks": []
+        },
+        {
+          "taluk": "Velachery",
+          "lgd_subdistrict_code": 7171,
+          "blocks": []
+        }
+      ]
+    }
+  ]
+}

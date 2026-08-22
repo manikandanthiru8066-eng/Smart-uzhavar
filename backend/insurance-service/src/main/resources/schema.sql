@@ -4,6 +4,28 @@ CREATE TABLE IF NOT EXISTS districts (
     name VARCHAR(100) UNIQUE NOT NULL
 );
 
+-- Ensure taluks table exists
+CREATE TABLE IF NOT EXISTS taluks (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lgd_subdistrict_code INT UNIQUE NOT NULL,
+    district_id BIGINT NOT NULL REFERENCES districts(id) ON DELETE CASCADE
+);
+
+-- Ensure blocks table exists
+CREATE TABLE IF NOT EXISTS blocks (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lgd_block_code VARCHAR(20) UNIQUE NOT NULL
+);
+
+-- Ensure taluk_blocks join table exists
+CREATE TABLE IF NOT EXISTS taluk_blocks (
+    taluk_id BIGINT NOT NULL REFERENCES taluks(id) ON DELETE CASCADE,
+    block_id BIGINT NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+    PRIMARY KEY (taluk_id, block_id)
+);
+
 -- Ensure farmers table exists so foreign keys do not fail
 CREATE TABLE IF NOT EXISTS farmers (
     id BIGSERIAL PRIMARY KEY,
@@ -61,6 +83,9 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE farmer_profiles ADD COLUMN IF NOT EXISTS taluk_id BIGINT REFERENCES taluks(id) ON DELETE SET NULL;
+ALTER TABLE farmer_profiles ADD COLUMN IF NOT EXISTS block_id BIGINT REFERENCES blocks(id) ON DELETE SET NULL;
+
 
 -- Insurance Schemes table
 CREATE TABLE IF NOT EXISTS insurance_schemes (

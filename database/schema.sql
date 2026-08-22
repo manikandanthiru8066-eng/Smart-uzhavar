@@ -3,8 +3,35 @@
 -- 1. Districts table
 CREATE TABLE IF NOT EXISTS districts (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL
+    name VARCHAR(100) UNIQUE NOT NULL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION
 );
+ALTER TABLE districts ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;
+ALTER TABLE districts ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
+
+-- 1b. Taluks table
+CREATE TABLE IF NOT EXISTS taluks (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lgd_subdistrict_code INTEGER UNIQUE NOT NULL,
+    district_id INTEGER NOT NULL REFERENCES districts(id) ON DELETE CASCADE
+);
+
+-- 1c. Blocks table
+CREATE TABLE IF NOT EXISTS blocks (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lgd_block_code VARCHAR(20) UNIQUE NOT NULL
+);
+
+-- 1d. Taluk Blocks join table (many-to-many relationship)
+CREATE TABLE IF NOT EXISTS taluk_blocks (
+    taluk_id INTEGER NOT NULL REFERENCES taluks(id) ON DELETE CASCADE,
+    block_id INTEGER NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+    PRIMARY KEY (taluk_id, block_id)
+);
+
 
 -- 2. Farmers table (Authentication details)
 CREATE TABLE IF NOT EXISTS farmers (
@@ -63,6 +90,9 @@ CREATE TABLE IF NOT EXISTS farmer_profiles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE farmer_profiles ADD COLUMN IF NOT EXISTS taluk_id INTEGER REFERENCES taluks(id) ON DELETE SET NULL;
+ALTER TABLE farmer_profiles ADD COLUMN IF NOT EXISTS block_id INTEGER REFERENCES blocks(id) ON DELETE SET NULL;
+
 
 
 

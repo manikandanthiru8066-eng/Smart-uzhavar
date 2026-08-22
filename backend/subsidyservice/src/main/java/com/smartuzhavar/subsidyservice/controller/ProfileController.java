@@ -32,14 +32,24 @@ public class ProfileController {
     private final FarmerRepository farmerRepository;
     private final FarmerProfileRepository farmerProfileRepository;
     private final DistrictRepository districtRepository;
+<<<<<<< HEAD
+    private final com.smartuzhavar.subsidyservice.repository.TalukRepository talukRepository;
+    private final com.smartuzhavar.subsidyservice.repository.BlockRepository blockRepository;
+=======
     private final TalukRepository talukRepository;
     private final BlockRepository blockRepository;
+>>>>>>> origin/dev
 
     public ProfileController(FarmerRepository farmerRepository,
                              FarmerProfileRepository farmerProfileRepository,
                              DistrictRepository districtRepository,
+<<<<<<< HEAD
+                             com.smartuzhavar.subsidyservice.repository.TalukRepository talukRepository,
+                             com.smartuzhavar.subsidyservice.repository.BlockRepository blockRepository) {
+=======
                              TalukRepository talukRepository,
                              BlockRepository blockRepository) {
+>>>>>>> origin/dev
         this.farmerRepository = farmerRepository;
         this.farmerProfileRepository = farmerProfileRepository;
         this.districtRepository = districtRepository;
@@ -106,6 +116,7 @@ public class ProfileController {
         return new CropProfileDto(
                 profile.getId(),
                 profile.getCropGrown(),
+                profile.getDistrict() != null ? profile.getDistrict().getId() : null,
                 profile.getDistrict() != null ? profile.getDistrict().getName() : null,
                 talukId,
                 talukName,
@@ -182,8 +193,29 @@ public class ProfileController {
         cropProfile.setLandSizeAcres(acres);
         cropProfile.setLandSizeHectares(hectares);
 
+<<<<<<< HEAD
+        if (request.getDistrictId() != null) {
+            districtRepository.findById(request.getDistrictId()).ifPresent(cropProfile::setDistrict);
+        } else if (request.getDistrictName() != null) {
+            cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
+        }
+=======
         District district = resolveDistrict(request.getDistrictName());
         resolveLocationEntities(request, cropProfile, district);
+>>>>>>> origin/dev
+
+        if (request.getTalukId() != null) {
+            talukRepository.findById(request.getTalukId()).ifPresent(cropProfile::setTaluk);
+        }
+
+        if (request.getBlockId() != null) {
+            blockRepository.findById(request.getBlockId()).ifPresent(b -> {
+                cropProfile.setBlockEntity(b);
+                cropProfile.setBlock(b.getName());
+            });
+        } else if (request.getBlock() != null) {
+            cropProfile.setBlock(request.getBlock().trim());
+        }
 
         farmerProfileRepository.save(cropProfile);
 
@@ -217,8 +249,30 @@ public class ProfileController {
             cropProfile.setIrrigationType(request.getIrrigationType().trim());
         }
 
+<<<<<<< HEAD
+        if (request.getDistrictId() != null) {
+            districtRepository.findById(request.getDistrictId()).ifPresent(cropProfile::setDistrict);
+        } else if (request.getDistrictName() != null) {
+            cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
+        }
+=======
         District district = request.getDistrictName() != null ? resolveDistrict(request.getDistrictName()) : cropProfile.getDistrict();
         resolveLocationEntities(request, cropProfile, district);
+>>>>>>> origin/dev
+
+        if (request.getTalukId() != null) {
+            talukRepository.findById(request.getTalukId()).ifPresent(cropProfile::setTaluk);
+        }
+
+        if (request.getBlockId() != null) {
+            blockRepository.findById(request.getBlockId()).ifPresent(b -> {
+                cropProfile.setBlockEntity(b);
+                cropProfile.setBlock(b.getName());
+            });
+        } else if (request.getBlock() != null) {
+            cropProfile.setBlock(request.getBlock().trim());
+        }
+
 
         if (request.getLandSizeAcres() != null) {
             BigDecimal acres = request.getLandSizeAcres();
