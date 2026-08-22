@@ -4,7 +4,11 @@ import { subsidyApi } from '../api/client';
 export interface FarmerCropItem {
   id?: number;
   cropGrown: string;
+  districtId?: number;
   districtName?: string;
+  talukId?: number;
+  talukName?: string;
+  blockId?: number;
   block?: string;
   landSizeAcres?: number;
   landSizeHectares?: number;
@@ -12,6 +16,7 @@ export interface FarmerCropItem {
   cropDurationMonths?: number;
   season?: string;
 }
+
 
 export interface FarmerProfileData {
   username: string;

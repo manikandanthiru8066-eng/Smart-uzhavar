@@ -2,16 +2,44 @@ DROP TABLE IF EXISTS subsidy_applications CASCADE;
 DROP TABLE IF EXISTS subsidy_schemes CASCADE;
 DROP TABLE IF EXISTS farmer_profiles CASCADE;
 DROP TABLE IF EXISTS farmers CASCADE;
+DROP TABLE IF EXISTS taluk_blocks CASCADE;
+DROP TABLE IF EXISTS blocks CASCADE;
+DROP TABLE IF EXISTS taluks CASCADE;
 DROP TABLE IF EXISTS districts CASCADE;
 
 -- 1. Districts table
-CREATE TABLE districts (
+CREATE TABLE IF NOT EXISTS districts (
     id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL
+    name VARCHAR(100) UNIQUE NOT NULL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION
 );
 
+-- 1b. Taluks table
+CREATE TABLE IF NOT EXISTS taluks (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lgd_subdistrict_code INT UNIQUE NOT NULL,
+    district_id BIGINT NOT NULL REFERENCES districts(id) ON DELETE CASCADE
+);
+
+-- 1c. Blocks table
+CREATE TABLE IF NOT EXISTS blocks (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lgd_block_code VARCHAR(20) UNIQUE NOT NULL
+);
+
+-- 1d. Taluk Blocks join table
+CREATE TABLE IF NOT EXISTS taluk_blocks (
+    taluk_id BIGINT NOT NULL REFERENCES taluks(id) ON DELETE CASCADE,
+    block_id BIGINT NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+    PRIMARY KEY (taluk_id, block_id)
+);
+
+
 -- 2. Farmers table (Authentication details)
-CREATE TABLE farmers (
+CREATE TABLE IF NOT EXISTS farmers (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
@@ -23,11 +51,13 @@ CREATE TABLE farmers (
 
 
 -- 3. Farmer Profiles table (One farmer can have MULTIPLE crop profiles)
-CREATE TABLE farmer_profiles (
+CREATE TABLE IF NOT EXISTS farmer_profiles (
     id BIGSERIAL PRIMARY KEY,
     farmer_id BIGINT NOT NULL REFERENCES farmers(id) ON DELETE CASCADE,
     full_name VARCHAR(100),
     district_id BIGINT REFERENCES districts(id) ON DELETE SET NULL,
+    taluk_id BIGINT REFERENCES taluks(id) ON DELETE SET NULL,
+    block_id BIGINT REFERENCES blocks(id) ON DELETE SET NULL,
     block VARCHAR(100),
     crop_grown VARCHAR(100),
     crop_duration_months INT,
@@ -38,6 +68,7 @@ CREATE TABLE farmer_profiles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
 
 
 -- 4. Subsidy Schemes table

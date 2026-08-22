@@ -27,13 +27,19 @@ public class ProfileController {
     private final FarmerRepository farmerRepository;
     private final FarmerProfileRepository farmerProfileRepository;
     private final DistrictRepository districtRepository;
+    private final com.smartuzhavar.subsidyservice.repository.TalukRepository talukRepository;
+    private final com.smartuzhavar.subsidyservice.repository.BlockRepository blockRepository;
 
     public ProfileController(FarmerRepository farmerRepository,
                              FarmerProfileRepository farmerProfileRepository,
-                             DistrictRepository districtRepository) {
+                             DistrictRepository districtRepository,
+                             com.smartuzhavar.subsidyservice.repository.TalukRepository talukRepository,
+                             com.smartuzhavar.subsidyservice.repository.BlockRepository blockRepository) {
         this.farmerRepository = farmerRepository;
         this.farmerProfileRepository = farmerProfileRepository;
         this.districtRepository = districtRepository;
+        this.talukRepository = talukRepository;
+        this.blockRepository = blockRepository;
     }
 
     private Farmer getAuthenticatedFarmer() {
@@ -58,11 +64,16 @@ public class ProfileController {
     }
 
     private CropProfileDto convertToCropDto(FarmerProfile profile) {
+        String blockName = profile.getBlockEntity() != null ? profile.getBlockEntity().getName() : profile.getBlock();
         return new CropProfileDto(
                 profile.getId(),
                 profile.getCropGrown(),
+                profile.getDistrict() != null ? profile.getDistrict().getId() : null,
                 profile.getDistrict() != null ? profile.getDistrict().getName() : null,
-                profile.getBlock(),
+                profile.getTaluk() != null ? profile.getTaluk().getId() : null,
+                profile.getTaluk() != null ? profile.getTaluk().getName() : null,
+                profile.getBlockEntity() != null ? profile.getBlockEntity().getId() : null,
+                blockName,
                 profile.getLandSizeAcres(),
                 profile.getLandSizeHectares(),
                 profile.getIrrigationType(),
@@ -114,7 +125,6 @@ public class ProfileController {
         cropProfile.setFarmer(farmer);
         cropProfile.setFullName(farmer.getUsername());
         cropProfile.setCropGrown(request.getCropGrown() != null ? request.getCropGrown().trim() : "Paddy");
-        cropProfile.setBlock(request.getBlock() != null ? request.getBlock().trim() : null);
         cropProfile.setCropDurationMonths(request.getCropDurationMonths() != null ? request.getCropDurationMonths() : 4);
         cropProfile.setSeason(request.getSeason() != null ? request.getSeason().trim() : "Kharif");
         cropProfile.setIrrigationType(request.getIrrigationType() != null ? request.getIrrigationType().trim() : "Canal");
@@ -135,8 +145,23 @@ public class ProfileController {
         cropProfile.setLandSizeAcres(acres);
         cropProfile.setLandSizeHectares(hectares);
 
-        if (request.getDistrictName() != null) {
+        if (request.getDistrictId() != null) {
+            districtRepository.findById(request.getDistrictId()).ifPresent(cropProfile::setDistrict);
+        } else if (request.getDistrictName() != null) {
             cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
+        }
+
+        if (request.getTalukId() != null) {
+            talukRepository.findById(request.getTalukId()).ifPresent(cropProfile::setTaluk);
+        }
+
+        if (request.getBlockId() != null) {
+            blockRepository.findById(request.getBlockId()).ifPresent(b -> {
+                cropProfile.setBlockEntity(b);
+                cropProfile.setBlock(b.getName());
+            });
+        } else if (request.getBlock() != null) {
+            cropProfile.setBlock(request.getBlock().trim());
         }
 
         farmerProfileRepository.save(cropProfile);
@@ -161,9 +186,6 @@ public class ProfileController {
         if (request.getCropGrown() != null) {
             cropProfile.setCropGrown(request.getCropGrown().trim());
         }
-        if (request.getBlock() != null) {
-            cropProfile.setBlock(request.getBlock().trim());
-        }
         if (request.getCropDurationMonths() != null) {
             cropProfile.setCropDurationMonths(request.getCropDurationMonths());
         }
@@ -173,9 +195,26 @@ public class ProfileController {
         if (request.getIrrigationType() != null) {
             cropProfile.setIrrigationType(request.getIrrigationType().trim());
         }
-        if (request.getDistrictName() != null) {
+
+        if (request.getDistrictId() != null) {
+            districtRepository.findById(request.getDistrictId()).ifPresent(cropProfile::setDistrict);
+        } else if (request.getDistrictName() != null) {
             cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
         }
+
+        if (request.getTalukId() != null) {
+            talukRepository.findById(request.getTalukId()).ifPresent(cropProfile::setTaluk);
+        }
+
+        if (request.getBlockId() != null) {
+            blockRepository.findById(request.getBlockId()).ifPresent(b -> {
+                cropProfile.setBlockEntity(b);
+                cropProfile.setBlock(b.getName());
+            });
+        } else if (request.getBlock() != null) {
+            cropProfile.setBlock(request.getBlock().trim());
+        }
+
 
         if (request.getLandSizeAcres() != null) {
             BigDecimal acres = request.getLandSizeAcres();

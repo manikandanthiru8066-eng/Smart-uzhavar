@@ -4,7 +4,11 @@ import java.math.BigDecimal;
 
 public class CropProfileRequest {
     private String cropGrown;
+    private Long districtId;
     private String districtName;
+    private Long talukId;
+    private String talukName;
+    private Long blockId;
     private String block;
     private BigDecimal landSizeAcres;
     private BigDecimal landSizeHectares;
@@ -13,6 +17,39 @@ public class CropProfileRequest {
     private String season;
 
     public CropProfileRequest() {}
+
+    public Long getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Long districtId) {
+        this.districtId = districtId;
+    }
+
+    public Long getTalukId() {
+        return talukId;
+    }
+
+    public void setTalukId(Long talukId) {
+        this.talukId = talukId;
+    }
+
+    public String getTalukName() {
+        return talukName;
+    }
+
+    public void setTalukName(String talukName) {
+        this.talukName = talukName;
+    }
+
+    public Long getBlockId() {
+        return blockId;
+    }
+
+    public void setBlockId(Long blockId) {
+        this.blockId = blockId;
+    }
+
 
     public String getCropGrown() {
         return cropGrown;

@@ -23,8 +23,17 @@ public class FarmerProfile {
     @JoinColumn(name = "district_id")
     private District district;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "taluk_id")
+    private Taluk taluk;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "block_id")
+    private Block blockEntity;
+
     @Column(name = "block", length = 100)
     private String block;
+
 
     @Column(name = "crop_grown", length = 100)
     private String cropGrown;
@@ -96,6 +105,23 @@ public class FarmerProfile {
     public void setDistrict(District district) {
         this.district = district;
     }
+
+    public Taluk getTaluk() {
+        return taluk;
+    }
+
+    public void setTaluk(Taluk taluk) {
+        this.taluk = taluk;
+    }
+
+    public Block getBlockEntity() {
+        return blockEntity;
+    }
+
+    public void setBlockEntity(Block blockEntity) {
+        this.blockEntity = blockEntity;
+    }
+
 
     public String getCropGrown() {
         return cropGrown;
