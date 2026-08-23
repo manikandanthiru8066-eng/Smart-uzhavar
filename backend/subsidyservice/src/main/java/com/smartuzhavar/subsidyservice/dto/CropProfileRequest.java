@@ -67,30 +67,6 @@ public class CropProfileRequest {
         this.districtName = districtName;
     }
 
-    public Long getTalukId() {
-        return talukId;
-    }
-
-    public void setTalukId(Long talukId) {
-        this.talukId = talukId;
-    }
-
-    public String getTalukName() {
-        return talukName;
-    }
-
-    public void setTalukName(String talukName) {
-        this.talukName = talukName;
-    }
-
-    public Long getBlockId() {
-        return blockId;
-    }
-
-    public void setBlockId(Long blockId) {
-        this.blockId = blockId;
-    }
-
     public String getBlock() {
         return block;
     }

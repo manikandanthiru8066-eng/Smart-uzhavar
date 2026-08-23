@@ -180,22 +180,6 @@ public class FarmerProfile {
     }
 
 
-    public Taluk getTaluk() {
-        return taluk;
-    }
-
-    public void setTaluk(Taluk taluk) {
-        this.taluk = taluk;
-    }
-
-    public Block getBlockEntity() {
-        return blockEntity;
-    }
-
-    public void setBlockEntity(Block blockEntity) {
-        this.blockEntity = blockEntity;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
     }

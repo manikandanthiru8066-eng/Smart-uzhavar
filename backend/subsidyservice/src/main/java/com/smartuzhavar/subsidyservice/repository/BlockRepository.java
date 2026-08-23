@@ -18,5 +18,8 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
 
     @Query("SELECT b FROM Block b JOIN b.taluks t WHERE t.id = :talukId ORDER BY b.name ASC")
     List<Block> findByTalukIdOrderByNameAsc(@Param("talukId") Long talukId);
+
+    @Query("SELECT b FROM Block b JOIN b.taluks t WHERE LOWER(b.name) = LOWER(:name) AND t.id = :talukId")
+    Optional<Block> findByNameIgnoreCaseAndTalukId(@Param("name") String name, @Param("talukId") Long talukId);
 }
 

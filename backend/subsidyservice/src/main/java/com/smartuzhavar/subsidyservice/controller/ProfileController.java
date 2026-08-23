@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -32,24 +31,14 @@ public class ProfileController {
     private final FarmerRepository farmerRepository;
     private final FarmerProfileRepository farmerProfileRepository;
     private final DistrictRepository districtRepository;
-<<<<<<< HEAD
-    private final com.smartuzhavar.subsidyservice.repository.TalukRepository talukRepository;
-    private final com.smartuzhavar.subsidyservice.repository.BlockRepository blockRepository;
-=======
     private final TalukRepository talukRepository;
     private final BlockRepository blockRepository;
->>>>>>> origin/dev
 
     public ProfileController(FarmerRepository farmerRepository,
                              FarmerProfileRepository farmerProfileRepository,
                              DistrictRepository districtRepository,
-<<<<<<< HEAD
-                             com.smartuzhavar.subsidyservice.repository.TalukRepository talukRepository,
-                             com.smartuzhavar.subsidyservice.repository.BlockRepository blockRepository) {
-=======
                              TalukRepository talukRepository,
                              BlockRepository blockRepository) {
->>>>>>> origin/dev
         this.farmerRepository = farmerRepository;
         this.farmerProfileRepository = farmerProfileRepository;
         this.districtRepository = districtRepository;
@@ -76,6 +65,15 @@ public class ProfileController {
                             d.setName(targetDist);
                             return districtRepository.save(d);
                         }));
+    }
+
+    private District resolveDistrictFromRequest(CropProfileRequest request, District fallback) {
+        if (request.getDistrictId() != null) {
+            return districtRepository.findById(request.getDistrictId()).orElse(fallback);
+        } else if (request.getDistrictName() != null && !request.getDistrictName().trim().isEmpty()) {
+            return resolveDistrict(request.getDistrictName());
+        }
+        return fallback;
     }
 
     private void resolveLocationEntities(CropProfileRequest request, FarmerProfile cropProfile, District district) {
@@ -138,7 +136,6 @@ public class ProfileController {
                 .map(this::convertToCropDto)
                 .collect(Collectors.toList());
 
-
         String fullName = (farmer.getFullName() != null && !farmer.getFullName().trim().isEmpty())
                 ? farmer.getFullName()
                 : profiles.stream()
@@ -146,7 +143,6 @@ public class ProfileController {
                         .map(FarmerProfile::getFullName)
                         .findFirst()
                         .orElse(farmer.getUsername());
-
 
         return new ProfileResponse(
                 farmer.getUsername(),
@@ -162,7 +158,6 @@ public class ProfileController {
         Farmer farmer = getAuthenticatedFarmer();
         return ResponseEntity.ok(buildProfileResponse(farmer));
     }
-
 
     // POST /api/profile/crops - Add a new crop profile for the logged-in farmer
     @PostMapping("/crops")
@@ -193,29 +188,8 @@ public class ProfileController {
         cropProfile.setLandSizeAcres(acres);
         cropProfile.setLandSizeHectares(hectares);
 
-<<<<<<< HEAD
-        if (request.getDistrictId() != null) {
-            districtRepository.findById(request.getDistrictId()).ifPresent(cropProfile::setDistrict);
-        } else if (request.getDistrictName() != null) {
-            cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
-        }
-=======
-        District district = resolveDistrict(request.getDistrictName());
+        District district = resolveDistrictFromRequest(request, null);
         resolveLocationEntities(request, cropProfile, district);
->>>>>>> origin/dev
-
-        if (request.getTalukId() != null) {
-            talukRepository.findById(request.getTalukId()).ifPresent(cropProfile::setTaluk);
-        }
-
-        if (request.getBlockId() != null) {
-            blockRepository.findById(request.getBlockId()).ifPresent(b -> {
-                cropProfile.setBlockEntity(b);
-                cropProfile.setBlock(b.getName());
-            });
-        } else if (request.getBlock() != null) {
-            cropProfile.setBlock(request.getBlock().trim());
-        }
 
         farmerProfileRepository.save(cropProfile);
 
@@ -249,30 +223,8 @@ public class ProfileController {
             cropProfile.setIrrigationType(request.getIrrigationType().trim());
         }
 
-<<<<<<< HEAD
-        if (request.getDistrictId() != null) {
-            districtRepository.findById(request.getDistrictId()).ifPresent(cropProfile::setDistrict);
-        } else if (request.getDistrictName() != null) {
-            cropProfile.setDistrict(resolveDistrict(request.getDistrictName()));
-        }
-=======
-        District district = request.getDistrictName() != null ? resolveDistrict(request.getDistrictName()) : cropProfile.getDistrict();
+        District district = resolveDistrictFromRequest(request, cropProfile.getDistrict());
         resolveLocationEntities(request, cropProfile, district);
->>>>>>> origin/dev
-
-        if (request.getTalukId() != null) {
-            talukRepository.findById(request.getTalukId()).ifPresent(cropProfile::setTaluk);
-        }
-
-        if (request.getBlockId() != null) {
-            blockRepository.findById(request.getBlockId()).ifPresent(b -> {
-                cropProfile.setBlockEntity(b);
-                cropProfile.setBlock(b.getName());
-            });
-        } else if (request.getBlock() != null) {
-            cropProfile.setBlock(request.getBlock().trim());
-        }
-
 
         if (request.getLandSizeAcres() != null) {
             BigDecimal acres = request.getLandSizeAcres();
@@ -316,7 +268,7 @@ public class ProfileController {
         if (profiles.isEmpty()) {
             primaryProfile = new FarmerProfile();
             primaryProfile.setFarmer(farmer);
-            primaryProfile.setFullName(updateRequest.getFullName() != null && !updateRequest.getFullName().trim().isEmpty() 
+            primaryProfile.setFullName(updateRequest.getFullName() != null && !updateRequest.getFullName().trim().isEmpty()
                     ? updateRequest.getFullName().trim() : farmer.getUsername());
         } else {
             primaryProfile = profiles.get(0);
@@ -346,7 +298,7 @@ public class ProfileController {
 
         // Update core farmer account details
         if (updateRequest.getEmail() != null && !updateRequest.getEmail().trim().isEmpty()) {
-            if (!updateRequest.getEmail().equalsIgnoreCase(farmer.getEmail()) && 
+            if (!updateRequest.getEmail().equalsIgnoreCase(farmer.getEmail()) &&
                     farmerRepository.existsByEmail(updateRequest.getEmail())) {
                 throw new IllegalArgumentException("Email is already in use by another user");
             }
@@ -354,7 +306,7 @@ public class ProfileController {
         }
 
         if (updateRequest.getPhoneNumber() != null && !updateRequest.getPhoneNumber().trim().isEmpty()) {
-            if (!updateRequest.getPhoneNumber().equalsIgnoreCase(farmer.getPhoneNumber()) && 
+            if (!updateRequest.getPhoneNumber().equalsIgnoreCase(farmer.getPhoneNumber()) &&
                     farmerRepository.existsByPhoneNumber(updateRequest.getPhoneNumber())) {
                 throw new IllegalArgumentException("Phone number is already in use by another user");
             }
