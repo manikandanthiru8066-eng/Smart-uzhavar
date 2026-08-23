@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,6 @@ import java.util.Optional;
 public class DatabaseSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseSeeder.class);
-    private static final String SCHEMES_CLASSPATH = "insurance_schemes.json";
     private static final long EXPECTED_SCHEME_COUNT = 5;
 
     private final InsuranceSchemeRepository insuranceSchemeRepository;
@@ -55,6 +55,59 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedInsuranceSchemes();
     }
 
+    private InputStream openResourceStream(String filename) {
+        // 1. Try classpath: database/<filename>
+        try {
+            ClassPathResource cpr = new ClassPathResource("database/" + filename);
+            if (cpr.exists()) {
+                log.info("Loading seed resource from classpath: database/{}", filename);
+                return cpr.getInputStream();
+            }
+        } catch (Exception ignored) {}
+
+        // 2. Try classpath: <filename>
+        try {
+            ClassPathResource cpr = new ClassPathResource(filename);
+            if (cpr.exists()) {
+                log.info("Loading seed resource from classpath: {}", filename);
+                return cpr.getInputStream();
+            }
+        } catch (Exception ignored) {}
+
+        // 3. Try classLoader getResourceAsStream
+        try {
+            InputStream is = getClass().getClassLoader().getResourceAsStream("database/" + filename);
+            if (is != null) {
+                log.info("Loading seed resource via classLoader: database/{}", filename);
+                return is;
+            }
+            is = getClass().getClassLoader().getResourceAsStream(filename);
+            if (is != null) {
+                log.info("Loading seed resource via classLoader: {}", filename);
+                return is;
+            }
+        } catch (Exception ignored) {}
+
+        // 4. Try filesystem paths as fallback
+        String[] paths = {
+            "database/" + filename,
+            "backend/insurance-service/src/main/resources/database/" + filename,
+            "../../database/" + filename,
+            "../database/" + filename
+        };
+        for (String p : paths) {
+            File f = new File(p);
+            if (f.exists()) {
+                try {
+                    log.info("Loading seed resource from filesystem path: {}", f.getAbsolutePath());
+                    return new FileInputStream(f);
+                } catch (Exception ignored) {}
+            }
+        }
+
+        log.warn("Could not find seed resource for filename in insurance-service: {}", filename);
+        return null;
+    }
 
     private void seedDistricts() {
         try {
@@ -69,20 +122,22 @@ public class DatabaseSeeder implements CommandLineRunner {
                 districtRepository.deleteAll();
             }
 
-            java.io.File file = findFile("database/tn_district_coordinates.json");
-            if (file == null || !file.exists()) {
-                file = findFile("database/tn_districts.json");
+            InputStream is = openResourceStream("tn_district_coordinates.json");
+            if (is == null) {
+                is = openResourceStream("tn_districts.json");
             }
 
-            if (file != null && file.exists()) {
-                List<District> districts = objectMapper.readValue(file, new TypeReference<List<District>>() {});
-                districtRepository.saveAll(districts);
-                log.info("Successfully seeded {} districts with coordinates from {} in insurance-service.", districts.size(), file.getName());
+            if (is != null) {
+                try (InputStream stream = is) {
+                    List<District> districts = objectMapper.readValue(stream, new TypeReference<List<District>>() {});
+                    districtRepository.saveAll(districts);
+                    log.info("Successfully seeded {} districts with coordinates into insurance-service.", districts.size());
+                }
             } else {
-                log.error("Could not find tn_district_coordinates.json file for insurance-service seeding!");
+                log.error("Could not find tn_district_coordinates.json resource for insurance-service seeding!");
             }
         } catch (Exception e) {
-            log.warn("District seeding skipped or completed by parallel service: {}", e.getMessage());
+            log.warn("District seeding note in insurance-service: {}", e.getMessage());
         }
     }
 
@@ -93,14 +148,14 @@ public class DatabaseSeeder implements CommandLineRunner {
             return;
         }
 
-        File file = findFile("database/tn_taluk_block_hierarchy.json");
-        if (file == null || !file.exists()) {
-            log.error("Could not find tn_taluk_block_hierarchy.json file for insurance-service seeding!");
+        InputStream is = openResourceStream("tn_taluk_block_hierarchy.json");
+        if (is == null) {
+            log.error("Could not find tn_taluk_block_hierarchy.json resource for insurance-service seeding!");
             return;
         }
 
-        try {
-            JsonNode rootNode = objectMapper.readTree(file);
+        try (InputStream stream = is) {
+            JsonNode rootNode = objectMapper.readTree(stream);
             JsonNode districtsNode = rootNode.get("districts");
             if (districtsNode == null || !districtsNode.isArray()) {
                 log.error("Invalid format in tn_taluk_block_hierarchy.json: missing districts array.");
@@ -156,18 +211,6 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
     }
 
-
-    private java.io.File findFile(String relativePath) {
-        java.io.File f1 = new java.io.File(relativePath);
-        if (f1.exists()) return f1;
-        java.io.File f2 = new java.io.File("../../" + relativePath);
-        if (f2.exists()) return f2;
-        java.io.File f3 = new java.io.File("../" + relativePath);
-        if (f3.exists()) return f3;
-        return null;
-    }
-
-
     private void seedInsuranceSchemes() {
         long currentCount = insuranceSchemeRepository.count();
         boolean hasMissingTa = insuranceSchemeRepository.findAll().stream().anyMatch(s -> s.getNameTa() == null);
@@ -182,20 +225,17 @@ public class DatabaseSeeder implements CommandLineRunner {
             insuranceSchemeRepository.deleteAll();
         }
 
-        try {
-            ClassPathResource resource = new ClassPathResource(SCHEMES_CLASSPATH);
-            if (!resource.exists()) {
-                log.error("Classpath resource '{}' not found. Cannot seed insurance schemes.", SCHEMES_CLASSPATH);
-                return;
-            }
+        InputStream is = openResourceStream("insurance_schemes.json");
+        if (is == null) {
+            log.error("Could not find insurance_schemes.json resource for insurance-service seeding!");
+            return;
+        }
 
-            try (InputStream is = resource.getInputStream()) {
-                List<InsuranceScheme> schemes = objectMapper.readValue(is,
-                        new TypeReference<List<InsuranceScheme>>() {});
-                insuranceSchemeRepository.saveAll(schemes);
-                log.info("Successfully seeded {} insurance schemes from classpath:{}",
-                        schemes.size(), SCHEMES_CLASSPATH);
-            }
+        try (InputStream stream = is) {
+            List<InsuranceScheme> schemes = objectMapper.readValue(stream,
+                    new TypeReference<List<InsuranceScheme>>() {});
+            insuranceSchemeRepository.saveAll(schemes);
+            log.info("Successfully seeded {} insurance schemes into insurance-service.", schemes.size());
         } catch (Exception e) {
             log.error("Error reading or seeding insurance schemes: {}", e.getMessage(), e);
         }

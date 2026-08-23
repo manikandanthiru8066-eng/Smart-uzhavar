@@ -16,11 +16,14 @@ import com.smartuzhavar.subsidyservice.repository.TalukRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +62,60 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedSubsidySchemes();
     }
 
+    private InputStream openResourceStream(String filename) {
+        // 1. Try classpath: database/<filename>
+        try {
+            ClassPathResource cpr = new ClassPathResource("database/" + filename);
+            if (cpr.exists()) {
+                log.info("Loading seed resource from classpath: database/{}", filename);
+                return cpr.getInputStream();
+            }
+        } catch (Exception ignored) {}
+
+        // 2. Try classpath: <filename>
+        try {
+            ClassPathResource cpr = new ClassPathResource(filename);
+            if (cpr.exists()) {
+                log.info("Loading seed resource from classpath: {}", filename);
+                return cpr.getInputStream();
+            }
+        } catch (Exception ignored) {}
+
+        // 3. Try classLoader getResourceAsStream
+        try {
+            InputStream is = getClass().getClassLoader().getResourceAsStream("database/" + filename);
+            if (is != null) {
+                log.info("Loading seed resource via classLoader: database/{}", filename);
+                return is;
+            }
+            is = getClass().getClassLoader().getResourceAsStream(filename);
+            if (is != null) {
+                log.info("Loading seed resource via classLoader: {}", filename);
+                return is;
+            }
+        } catch (Exception ignored) {}
+
+        // 4. Try filesystem paths as fallback
+        String[] paths = {
+            "database/" + filename,
+            "backend/subsidyservice/src/main/resources/database/" + filename,
+            "../../database/" + filename,
+            "../database/" + filename
+        };
+        for (String p : paths) {
+            File f = new File(p);
+            if (f.exists()) {
+                try {
+                    log.info("Loading seed resource from filesystem path: {}", f.getAbsolutePath());
+                    return new FileInputStream(f);
+                } catch (Exception ignored) {}
+            }
+        }
+
+        log.warn("Could not find seed resource for filename: {}", filename);
+        return null;
+    }
+
     private void seedDistricts() {
         try {
             long existing = districtRepository.count();
@@ -72,21 +129,23 @@ public class DatabaseSeeder implements CommandLineRunner {
                 districtRepository.deleteAll();
             }
 
-            File file = findFile("database/tn_district_coordinates.json");
-            if (file == null || !file.exists()) {
-                file = findFile("database/tn_districts.json");
+            InputStream is = openResourceStream("tn_district_coordinates.json");
+            if (is == null) {
+                is = openResourceStream("tn_districts.json");
             }
 
-            if (file == null || !file.exists()) {
-                log.error("Could not find district JSON file for seeding!");
+            if (is == null) {
+                log.error("Could not find district JSON resource for seeding!");
                 return;
             }
 
-            List<District> districts = objectMapper.readValue(file, new TypeReference<List<District>>() {});
-            districtRepository.saveAll(districts);
-            log.info("Successfully seeded {} districts with coordinates from {}.", districts.size(), file.getName());
+            try (InputStream stream = is) {
+                List<District> districts = objectMapper.readValue(stream, new TypeReference<List<District>>() {});
+                districtRepository.saveAll(districts);
+                log.info("Successfully seeded {} districts with coordinates into subsidyservice.", districts.size());
+            }
         } catch (Exception e) {
-            log.warn("District seeding skipped or completed by parallel service: {}", e.getMessage());
+            log.warn("District seeding encountered note: {}", e.getMessage());
         }
     }
 
@@ -106,14 +165,14 @@ public class DatabaseSeeder implements CommandLineRunner {
             return;
         }
 
-        File file = findFile("database/tn_taluk_block_hierarchy.json");
-        if (file == null || !file.exists()) {
-            log.error("Could not find tn_taluk_block_hierarchy.json file for seeding!");
+        InputStream is = openResourceStream("tn_taluk_block_hierarchy.json");
+        if (is == null) {
+            log.error("Could not find tn_taluk_block_hierarchy.json resource for seeding!");
             return;
         }
 
-        try {
-            JsonNode rootNode = objectMapper.readTree(file);
+        try (InputStream stream = is) {
+            JsonNode rootNode = objectMapper.readTree(stream);
             JsonNode districtsNode = rootNode.get("districts");
             if (districtsNode == null || !districtsNode.isArray()) {
                 districtsNode = rootNode;
@@ -178,40 +237,42 @@ public class DatabaseSeeder implements CommandLineRunner {
             log.info("Seeding District Crop Stats from tn_district_crop_data.json...");
             districtCropStatRepository.deleteAll();
 
-            File file = findFile("database/tn_district_crop_data.json");
-            if (file == null || !file.exists()) {
-                log.error("Could not find tn_district_crop_data.json file for seeding!");
+            InputStream is = openResourceStream("tn_district_crop_data.json");
+            if (is == null) {
+                log.error("Could not find tn_district_crop_data.json resource for seeding!");
                 return;
             }
 
-            JsonNode rootNode = objectMapper.readTree(file);
-            int statCount = 0;
+            try (InputStream stream = is) {
+                JsonNode rootNode = objectMapper.readTree(stream);
+                int statCount = 0;
 
-            for (JsonNode distNode : rootNode) {
-                String distName = distNode.path("district").asText();
-                District district = getOrCreateDistrict(distName);
-                if (district == null) {
-                    continue;
+                for (JsonNode distNode : rootNode) {
+                    String distName = distNode.path("district").asText();
+                    District district = getOrCreateDistrict(distName);
+                    if (district == null) {
+                        continue;
+                    }
+
+                    JsonNode statsNode = distNode.path("cropStats");
+                    for (JsonNode statNode : statsNode) {
+                        DistrictCropStat stat = new DistrictCropStat();
+                        stat.setDistrict(district);
+                        stat.setCrop(statNode.path("crop").asText());
+                        stat.setSeason(statNode.path("season").asText());
+                        stat.setYear(statNode.path("year").asText("2024-25"));
+                        stat.setAreaHectares(new BigDecimal(statNode.path("areaHectares").asText("0")));
+                        stat.setProductionTonnes(new BigDecimal(statNode.path("productionTonnes").asText("0")));
+                        stat.setYieldKgPerHa(new BigDecimal(statNode.path("yieldKgPerHa").asText("0")));
+                        stat.setIsTopCrop(statNode.path("isTopCrop").asBoolean(false));
+
+                        districtCropStatRepository.save(stat);
+                        statCount++;
+                    }
                 }
 
-                JsonNode statsNode = distNode.path("cropStats");
-                for (JsonNode statNode : statsNode) {
-                    DistrictCropStat stat = new DistrictCropStat();
-                    stat.setDistrict(district);
-                    stat.setCrop(statNode.path("crop").asText());
-                    stat.setSeason(statNode.path("season").asText());
-                    stat.setYear(statNode.path("year").asText("2024-25"));
-                    stat.setAreaHectares(new BigDecimal(statNode.path("areaHectares").asText("0")));
-                    stat.setProductionTonnes(new BigDecimal(statNode.path("productionTonnes").asText("0")));
-                    stat.setYieldKgPerHa(new BigDecimal(statNode.path("yieldKgPerHa").asText("0")));
-                    stat.setIsTopCrop(statNode.path("isTopCrop").asBoolean(false));
-
-                    districtCropStatRepository.save(stat);
-                    statCount++;
-                }
+                log.info("Successfully seeded {} district crop yield stat records.", statCount);
             }
-
-            log.info("Successfully seeded {} district crop yield stat records.", statCount);
         } catch (Exception e) {
             log.error("Error seeding District Crop Stats: {}", e.getMessage(), e);
         }
@@ -227,38 +288,18 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         subsidySchemeRepository.deleteAll();
 
-        File file = findFile("database/subsidy_schemes.json");
-        if (file == null || !file.exists()) {
-            log.error("Could not find subsidy_schemes.json file for seeding!");
+        InputStream is = openResourceStream("subsidy_schemes.json");
+        if (is == null) {
+            log.error("Could not find subsidy_schemes.json resource for seeding!");
             return;
         }
 
-        try {
-            List<SubsidyScheme> schemes = objectMapper.readValue(file, new TypeReference<List<SubsidyScheme>>() {});
+        try (InputStream stream = is) {
+            List<SubsidyScheme> schemes = objectMapper.readValue(stream, new TypeReference<List<SubsidyScheme>>() {});
             subsidySchemeRepository.saveAll(schemes);
             log.info("Successfully seeded {} subsidy schemes.", schemes.size());
         } catch (IOException e) {
             log.error("Error reading or seeding subsidy schemes: {}", e.getMessage(), e);
         }
-    }
-
-    private File findFile(String relativePath) {
-        File f1 = new File(relativePath);
-        if (f1.exists()) {
-            log.info("Found file at: {}", f1.getAbsolutePath());
-            return f1;
-        }
-        File f2 = new File("../../" + relativePath);
-        if (f2.exists()) {
-            log.info("Found file at: {}", f2.getAbsolutePath());
-            return f2;
-        }
-        File f3 = new File("../" + relativePath);
-        if (f3.exists()) {
-            log.info("Found file at: {}", f3.getAbsolutePath());
-            return f3;
-        }
-        log.warn("File not found in paths: {}, {}, {}", f1.getAbsolutePath(), f2.getAbsolutePath(), f3.getAbsolutePath());
-        return null;
     }
 }

@@ -1,0 +1,85 @@
+[
+  {
+    "district": "Thanjavur",
+    "cropStats": [
+      { "crop": "Paddy", "season": "Kharif", "year": "2024-25", "areaHectares": 175000, "productionTonnes": 680000, "yieldKgPerHa": 3885, "isTopCrop": true },
+      { "crop": "Sugarcane", "season": "Annual", "year": "2024-25", "areaHectares": 12000, "productionTonnes": 1100000, "yieldKgPerHa": 91666, "isTopCrop": true },
+      { "crop": "Pulses", "season": "Rabi", "year": "2024-25", "areaHectares": 45000, "productionTonnes": 32000, "yieldKgPerHa": 711, "isTopCrop": false },
+      { "crop": "Groundnut", "season": "Kharif", "year": "2024-25", "areaHectares": 8500, "productionTonnes": 22100, "yieldKgPerHa": 2600, "isTopCrop": false }
+    ]
+  },
+  {
+    "district": "Erode",
+    "cropStats": [
+      { "crop": "Sugarcane", "season": "Annual", "year": "2024-25", "areaHectares": 28000, "productionTonnes": 2940000, "yieldKgPerHa": 105000, "isTopCrop": true },
+      { "crop": "Turmeric", "season": "Kharif", "year": "2024-25", "areaHectares": 14500, "productionTonnes": 87000, "yieldKgPerHa": 6000, "isTopCrop": true },
+      { "crop": "Cotton", "season": "Rabi", "year": "2024-25", "areaHectares": 9500, "productionTonnes": 19000, "yieldKgPerHa": 2000, "isTopCrop": true },
+      { "crop": "Maize", "season": "Kharif", "year": "2024-25", "areaHectares": 18000, "productionTonnes": 108000, "yieldKgPerHa": 6000, "isTopCrop": false }
+    ]
+  },
+  {
+    "district": "Tiruvarur",
+    "cropStats": [
+      { "crop": "Paddy", "season": "Kharif", "year": "2024-25", "areaHectares": 148000, "productionTonnes": 560000, "yieldKgPerHa": 3783, "isTopCrop": true },
+      { "crop": "Pulses", "season": "Rabi", "year": "2024-25", "areaHectares": 62000, "productionTonnes": 41000, "yieldKgPerHa": 661, "isTopCrop": true },
+      { "crop": "Cotton", "season": "Summer", "year": "2024-25", "areaHectares": 7200, "productionTonnes": 12960, "yieldKgPerHa": 1800, "isTopCrop": false }
+    ]
+  },
+  {
+    "district": "Coimbatore",
+    "cropStats": [
+      { "crop": "Coconut", "season": "Perennial", "year": "2024-25", "areaHectares": 85000, "productionTonnes": 1105000, "yieldKgPerHa": 13000, "isTopCrop": true },
+      { "crop": "Maize", "season": "Kharif", "year": "2024-25", "areaHectares": 22000, "productionTonnes": 143000, "yieldKgPerHa": 6500, "isTopCrop": true },
+      { "crop": "Banana", "season": "Annual", "year": "2024-25", "areaHectares": 9800, "productionTonnes": 441000, "yieldKgPerHa": 45000, "isTopCrop": true },
+      { "crop": "Vegetables", "season": "All", "year": "2024-25", "areaHectares": 16000, "productionTonnes": 320000, "yieldKgPerHa": 20000, "isTopCrop": false }
+    ]
+  },
+  {
+    "district": "Tiruchirappalli",
+    "cropStats": [
+      { "crop": "Paddy", "season": "Kharif", "year": "2024-25", "areaHectares": 58000, "productionTonnes": 232000, "yieldKgPerHa": 4000, "isTopCrop": true },
+      { "crop": "Banana", "season": "Annual", "year": "2024-25", "areaHectares": 8500, "productionTonnes": 408000, "yieldKgPerHa": 48000, "isTopCrop": true },
+      { "crop": "Pulses", "season": "Rabi", "year": "2024-25", "areaHectares": 24000, "productionTonnes": 18000, "yieldKgPerHa": 750, "isTopCrop": false }
+    ]
+  },
+  {
+    "district": "Salem",
+    "cropStats": [
+      { "crop": "Tapioca", "season": "Annual", "year": "2024-25", "areaHectares": 32000, "productionTonnes": 1120000, "yieldKgPerHa": 35000, "isTopCrop": true },
+      { "crop": "Sugarcane", "season": "Annual", "year": "2024-25", "areaHectares": 18500, "productionTonnes": 1850000, "yieldKgPerHa": 100000, "isTopCrop": true },
+      { "crop": "Groundnut", "season": "Kharif", "year": "2024-25", "areaHectares": 19000, "productionTonnes": 53200, "yieldKgPerHa": 2800, "isTopCrop": false },
+      { "crop": "Mango", "season": "Summer", "year": "2024-25", "areaHectares": 14000, "productionTonnes": 112000, "yieldKgPerHa": 8000, "isTopCrop": false }
+    ]
+  },
+  {
+    "district": "Madurai",
+    "cropStats": [
+      { "crop": "Paddy", "season": "Kharif", "year": "2024-25", "areaHectares": 42000, "productionTonnes": 163800, "yieldKgPerHa": 3900, "isTopCrop": true },
+      { "crop": "Sugarcane", "season": "Annual", "year": "2024-25", "areaHectares": 9200, "productionTonnes": 874000, "yieldKgPerHa": 95000, "isTopCrop": true },
+      { "crop": "Jasmine", "season": "Perennial", "year": "2024-25", "areaHectares": 3500, "productionTonnes": 28000, "yieldKgPerHa": 8000, "isTopCrop": true }
+    ]
+  },
+  {
+    "district": "Nagapattinam",
+    "cropStats": [
+      { "crop": "Paddy", "season": "Kharif", "year": "2024-25", "areaHectares": 125000, "productionTonnes": 462500, "yieldKgPerHa": 3700, "isTopCrop": true },
+      { "crop": "Pulses", "season": "Rabi", "year": "2024-25", "areaHectares": 52000, "productionTonnes": 33800, "yieldKgPerHa": 650, "isTopCrop": true }
+    ]
+  },
+  {
+    "district": "Cuddalore",
+    "cropStats": [
+      { "crop": "Paddy", "season": "Kharif", "year": "2024-25", "areaHectares": 118000, "productionTonnes": 460200, "yieldKgPerHa": 3900, "isTopCrop": true },
+      { "crop": "Sugarcane", "season": "Annual", "year": "2024-25", "areaHectares": 24000, "productionTonnes": 2400000, "yieldKgPerHa": 100000, "isTopCrop": true },
+      { "crop": "Cashew", "season": "Perennial", "year": "2024-25", "areaHectares": 31000, "productionTonnes": 27900, "yieldKgPerHa": 900, "isTopCrop": true }
+    ]
+  },
+  {
+    "district": "Dharmapuri",
+    "cropStats": [
+      { "crop": "Ragi / Millets", "season": "Kharif", "year": "2024-25", "areaHectares": 35000, "productionTonnes": 105000, "yieldKgPerHa": 3000, "isTopCrop": true },
+      { "crop": "Tomato", "season": "Annual", "year": "2024-25", "areaHectares": 11500, "productionTonnes": 345000, "yieldKgPerHa": 30000, "isTopCrop": true },
+      { "crop": "Paddy", "season": "Kharif", "year": "2024-25", "areaHectares": 22000, "productionTonnes": 83600, "yieldKgPerHa": 3800, "isTopCrop": false }
+    ]
+  }
+]

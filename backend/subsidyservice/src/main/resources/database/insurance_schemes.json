@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif",
+    "nameTa": "பிரதம மந்திரி பயிர் காப்பீட்டு திட்டம் (PMFBY) - கார்/காரீஃப்",
+    "description": "Yield-based crop insurance scheme covering crop loss due to non-preventable natural risks during Kharif season. Premium rate is 2% of sum insured.",
+    "descriptionTa": "காரீஃப் பருவத்தில் இயற்கையான இடர்பாடுகளால் ஏற்படும் பயிர் இழப்பை ஈடுசெய்யும் விளைச்சல் சார்ந்த காப்பீட்டுத் திட்டம். பிரீமியம் விகிதம் 2%.",
+    "schemeType": "YIELD_BASED",
+    "applicableCrops": "Paddy, Maize, Millets, Pulses",
+    "applicableCropsTa": "நெல், மக்காச்சோளம், சிறுதானியங்கள், பருப்பு வகைகள்",
+    "premiumRatePercentage": 2.00,
+    "sumInsuredPerAcre": 35000.00
+  },
+  {
+    "name": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Rabi",
+    "nameTa": "பிரதம மந்திரி பயிர் காப்பீட்டு திட்டம் (PMFBY) - ரபி",
+    "description": "Yield-based crop insurance scheme covering crop loss due to non-preventable natural risks during Rabi season. Premium rate is 1.5% of sum insured.",
+    "descriptionTa": "ரபி பருவத்தில் ஏற்படும் பயிர் இழப்பை ஈடுசெய்யும் காப்பீட்டுத் திட்டம். பிரீமியம் விகிதம் 1.5%.",
+    "schemeType": "YIELD_BASED",
+    "applicableCrops": "Wheat, Barley, Mustard, Pulses",
+    "applicableCropsTa": "கோதுமை, பார்லி, கடுகு, பருப்பு வகைகள்",
+    "premiumRatePercentage": 1.50,
+    "sumInsuredPerAcre": 30000.00
+  },
+  {
+    "name": "Restructured Weather Based Crop Insurance Scheme (RWBCIS) - Rainfall Index",
+    "nameTa": "சீரமைக்கப்பட்ட வானிலை சார்ந்த பயிர் காப்பீட்டு திட்டம் (RWBCIS) - மழைக் குறியீடு",
+    "description": "Weather-index based insurance addressing crop losses due to adverse rainfall (deficit/excess) and temperature anomalies. Premium rate is 5.0% of sum insured.",
+    "descriptionTa": "மழைப்பொழிவு மாறுபாடுகளால் ஏற்படும் இழப்புகளை ஈடுசெய்யும் வானிலை குறியீட்டு காப்பீடு. பிரீமியம் 5.0%.",
+    "schemeType": "WEATHER_BASED",
+    "applicableCrops": "Cotton, Groundnut, Sugarcane",
+    "applicableCropsTa": "பருத்தி, நிலக்கடலை, கரும்பு",
+    "premiumRatePercentage": 5.00,
+    "sumInsuredPerAcre": 40000.00
+  },
+  {
+    "name": "Unified Package Insurance Scheme (UPIS) - Revenue Guard",
+    "nameTa": "ஒருங்கிணைந்த தொகுப்பு காப்பீட்டு திட்டம் (UPIS) - வருவாய் பாதுகாப்பு",
+    "description": "Protects farmers against post-harvest loss and market price fluctuations. Premium rate is 4.5% of sum insured.",
+    "descriptionTa": "அறுவடைக்குப் பிந்தைய இழப்பு மற்றும் சந்தை விலை ஏற்ற இறக்கங்களிலிருந்து விவசாயிகளைப் பாதுகாக்கிறது.",
+    "schemeType": "REVENUE_BASED",
+    "applicableCrops": "Banana, Mango, Turmeric, Potato, Ginger",
+    "applicableCropsTa": "வாழை, மாம்பழம், மஞ்சள், உருளைக்கிழங்கு, இஞ்சி",
+    "premiumRatePercentage": 4.50,
+    "sumInsuredPerAcre": 55000.00
+  },
+  {
+    "name": "Coconut Palm Insurance Scheme (CPIS)",
+    "nameTa": "தென்னை மர காப்பீட்டு திட்டம் (CPIS)",
+    "description": "Insures individual coconut palms against natural calamities, pest and disease attack, and fire damage. Offered jointly by the Coconut Development Board and empanelled insurers. Premium rate is 3.5% of sum insured.",
+    "descriptionTa": "இயற்கை சீற்றங்கள், பூச்சி மற்றும் நோய் தாக்குதல்களுக்கு எதிராக தென்னை மரங்களுக்கு காப்பீடு.",
+    "schemeType": "YIELD_BASED",
+    "applicableCrops": "Coconut",
+    "applicableCropsTa": "தென்னை",
+    "premiumRatePercentage": 3.50,
+    "sumInsuredPerAcre": 50000.00
+  }
+]
