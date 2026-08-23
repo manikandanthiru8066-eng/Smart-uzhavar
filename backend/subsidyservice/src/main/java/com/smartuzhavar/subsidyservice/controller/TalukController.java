@@ -3,15 +3,13 @@ package com.smartuzhavar.subsidyservice.controller;
 import com.smartuzhavar.subsidyservice.entity.Block;
 import com.smartuzhavar.subsidyservice.repository.BlockRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/taluks")
+@CrossOrigin(origins = "*")
 public class TalukController {
 
     private final BlockRepository blockRepository;
@@ -22,7 +20,7 @@ public class TalukController {
 
     @GetMapping("/{talukId}/blocks")
     public ResponseEntity<List<Block>> getBlocksByTaluk(@PathVariable("talukId") Long talukId) {
-        List<Block> blocks = blockRepository.findByTalukId(talukId);
+        List<Block> blocks = blockRepository.findByTalukIdOrderByNameAsc(talukId);
         return ResponseEntity.ok(blocks);
     }
 }
