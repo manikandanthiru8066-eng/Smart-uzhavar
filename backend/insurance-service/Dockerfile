@@ -22,5 +22,5 @@ COPY --from=builder /app/target/*.jar app.jar
 # Expose insurance-service port
 EXPOSE 8081
 
-# Run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the Spring Boot application with dynamic PORT binding
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8081} -jar app.jar"]
