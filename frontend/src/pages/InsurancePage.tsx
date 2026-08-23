@@ -11,7 +11,6 @@ import {
   Search,
   Sprout,
 } from 'lucide-react';
-import { InsightsPanel } from '../components/InsightsPanel';
 
 interface InsuranceSchemeItem {
   id: number;
@@ -182,9 +181,6 @@ export const InsurancePage: React.FC = () => {
           </span>
         </div>
       )}
-
-      {/* Actionable Risk-Mitigation & Yield Protection Insights */}
-      <InsightsPanel context="insurance" />
 
       {/* Render Grouped Recommendations per Crop Profile */}
       {cropGroups.length > 0 ? (
