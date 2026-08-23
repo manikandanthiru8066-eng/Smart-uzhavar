@@ -1,6 +1,14 @@
 target/
+*.class
+.git/
+.gitignore
 .mvn/
 mvnw
 mvnw.cmd
-.git/
-.gitignore
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
+scratch/
