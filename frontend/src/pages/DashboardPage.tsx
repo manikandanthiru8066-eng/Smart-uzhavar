@@ -11,6 +11,8 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { InsightsPanel } from '../components/InsightsPanel';
+import { useMachineryActivity } from '../hooks/useMachineryActivity';
+import { MachineryToast } from '../components/MachineryToast';
 
 export const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
@@ -40,6 +42,16 @@ export const DashboardPage: React.FC = () => {
   const defaultDistrict = firstCrop?.districtName || '';
 
   const [selectedWeatherDistrict, setSelectedWeatherDistrict] = useState<string>(defaultDistrict);
+
+  const farmerBlock = firstCrop?.block || profile?.block;
+  const farmerDistrict = firstCrop?.districtName || profile?.districtName;
+
+  const { latestNotification, dismissNotification } = useMachineryActivity({
+    block: farmerBlock,
+    district: farmerDistrict,
+    enabled: Boolean(farmerBlock || farmerDistrict),
+    pollIntervalMs: 15000,
+  });
 
   // Sync default weather district whenever profile updates
   useEffect(() => {
@@ -348,6 +360,12 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Real-time Nearby Machinery Booking Notification Toast */}
+      <MachineryToast
+        notification={latestNotification}
+        onDismiss={dismissNotification}
+      />
 
     </div>
   );

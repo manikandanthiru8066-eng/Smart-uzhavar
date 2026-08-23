@@ -106,3 +106,21 @@ CREATE TABLE IF NOT EXISTS subsidy_applications (
     remarks TEXT,
     CONSTRAINT unique_farmer_scheme UNIQUE (farmer_id, scheme_id)
 );
+
+-- 6. Machinery Bookings table
+CREATE TABLE IF NOT EXISTS machinery_bookings (
+    id BIGSERIAL PRIMARY KEY,
+    farmer_id BIGINT REFERENCES farmers(id) ON DELETE SET NULL,
+    farmer_name VARCHAR(100),
+    farmer_username VARCHAR(50),
+    block_id BIGINT,
+    block_name VARCHAR(100),
+    district_name VARCHAR(100),
+    village VARCHAR(100),
+    machine_type VARCHAR(100) NOT NULL,
+    acres DECIMAL(10, 2),
+    required_date VARCHAR(50),
+    status VARCHAR(50) DEFAULT 'REQUESTED',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+

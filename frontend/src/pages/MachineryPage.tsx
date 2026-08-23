@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { insuranceApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { TranslatedText } from '../components/TranslatedText';
-import { Search, Users, Phone, ChevronRight } from 'lucide-react';
+import { useMachineryActivity } from '../hooks/useMachineryActivity';
+import { MachineryToast } from '../components/MachineryToast';
+import { Search, Users, Phone, ChevronRight, CheckCircle2, Clock, Activity } from 'lucide-react';
 
 interface NearbyMachineryItem {
   id: number;
@@ -20,24 +22,43 @@ interface NearbyMachineryItem {
 }
 
 export const MachineryPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTa = i18n.language === 'ta';
   const { profile } = useAuth();
 
   const [machineType, setMachineType] = useState('Tractor');
   const [requiredDate, setRequiredDate] = useState('2026-08-15');
   const [village, setVillage] = useState('Kondiyur');
   const [acres, setAcres] = useState('2.5');
-  const [district, setDistrict] = useState(profile?.districtName || 'Thanjavur');
-  const [block, setBlock] = useState('Thiruvaiyaru');
+  
+  const initialDistrict = profile?.crops?.[0]?.districtName || profile?.districtName || 'Thanjavur';
+  const initialBlock = profile?.crops?.[0]?.block || profile?.block || 'Thiruvaiyaru';
+
+  const [district, setDistrict] = useState(initialDistrict);
+  const [block, setBlock] = useState(initialBlock);
 
   const [showGroupResult, setShowGroupResult] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [requestSuccess, setRequestSuccess] = useState<string | null>(null);
   const [apiNearbyList, setApiNearbyList] = useState<NearbyMachineryItem[]>([]);
 
+  // Real-time polling for nearby booking activity in this block
+  const { latestNotification, activities, dismissNotification } = useMachineryActivity({
+    block,
+    district,
+    enabled: true,
+    pollIntervalMs: 15000,
+  });
+
   useEffect(() => {
-    if (profile?.districtName) {
+    if (profile?.crops && profile.crops.length > 0) {
+      if (profile.crops[0].districtName) setDistrict(profile.crops[0].districtName);
+      if (profile.crops[0].block) setBlock(profile.crops[0].block);
+    } else if (profile?.districtName) {
       setDistrict(profile.districtName);
+      if (profile.block) setBlock(profile.block);
     }
-    fetchNearbyMachinery(profile?.districtName || 'Thanjavur', 'Thiruvaiyaru');
+    fetchNearbyMachinery(initialDistrict, initialBlock);
   }, [profile]);
 
   const fetchNearbyMachinery = async (districtName: string, blockName: string) => {
@@ -54,6 +75,32 @@ export const MachineryPage: React.FC = () => {
   };
 
   const handleSearchNearby = async () => {
+    setIsSubmitting(true);
+    setRequestSuccess(null);
+
+    try {
+      // 1. Post machinery booking request to record with block & timestamp
+      await insuranceApi.post('/api/machinery/request', {
+        machineType,
+        requiredDate,
+        village,
+        acres: parseFloat(acres) || 2.5,
+        district,
+        block,
+        farmerName: profile?.fullName || profile?.username || 'Farmer',
+      });
+
+      setRequestSuccess(
+        isTa
+          ? `${machineType} முன்பதிவு கோரிக்கை ${block} வட்டாரத்தில் வெற்றிகரமாக பதிவு செய்யப்பட்டது!`
+          : `Booking request for ${machineType} in ${block} block successfully recorded!`
+      );
+    } catch (err) {
+      console.error('Failed to record machinery booking request:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
+
     setShowGroupResult(true);
     await fetchNearbyMachinery(district, block);
   };
@@ -69,6 +116,13 @@ export const MachineryPage: React.FC = () => {
       <div className="card p-6">
         <h4 className="text-base font-semibold mb-4">{t('requestMachineTitle')}</h4>
 
+        {requestSuccess && (
+          <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
+            <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
+            <span>{requestSuccess}</span>
+          </div>
+        )}
+
         <div className="field-row">
           <div className="field">
             <label>{t('machineTypeLabel')}</label>
@@ -79,6 +133,7 @@ export const MachineryPage: React.FC = () => {
               <option value="Tractor">Tractor</option>
               <option value="Harvester">Harvester</option>
               <option value="Rotavator">Rotavator</option>
+              <option value="Power Tiller">Power Tiller</option>
             </select>
           </div>
 
@@ -114,9 +169,12 @@ export const MachineryPage: React.FC = () => {
         <button
           className="btn btn-primary btn-lg"
           onClick={handleSearchNearby}
+          disabled={isSubmitting}
         >
           <Search size={16} />
-          {t('searchNearbyBtn')}
+          {isSubmitting
+            ? (isTa ? 'பதிவு செய்யப்படுகிறது...' : 'Processing...')
+            : t('searchNearbyBtn')}
         </button>
 
         {/* Group Result Card */}
@@ -161,6 +219,46 @@ export const MachineryPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Live Recent Pooling Activity in the Block */}
+      {activities.length > 0 && (
+        <div className="my-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Activity size={18} className="text-emerald-600" />
+            <h3 className="text-sm font-bold text-ink">
+              {isTa
+                ? `${block} வட்டாரத்தில் அண்மைக்கால பகிர்வு முன்பதிவுகள் (24 மணி நேரம்)`
+                : `Live Pooling Activity in ${block} Block (Last 24 Hours)`}
+            </h3>
+            <span className="badge badge-green text-[10px] ml-auto">Live</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {activities.map((act) => (
+              <div
+                key={act.id}
+                className="card p-3.5 rounded-xl border border-border/80 bg-surface flex items-start justify-between gap-2 shadow-sm hover:border-emerald-500/40 transition-all"
+              >
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-bold text-xs text-ink">{act.farmerName}</span>
+                    <span className="badge badge-neutral text-[10px] py-0 px-1.5 font-mono">
+                      {act.machineType}
+                    </span>
+                  </div>
+                  <p className="text-xs text-ink-soft">
+                    {act.village ? `${act.village} · ` : ''}{act.acres || 2.5} acres · Needed: {act.requiredDate || 'Soon'}
+                  </p>
+                </div>
+                <span className="text-[11px] text-ink-faint flex items-center gap-1 shrink-0 font-mono">
+                  <Clock size={11} />
+                  {act.timeAgo}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Government Machinery Availability */}
       <h3 className="text-sm font-semibold my-5">
@@ -214,6 +312,12 @@ export const MachineryPage: React.FC = () => {
           {t('viewAllMachineryBtn')} <ChevronRight size={14} />
         </button>
       </div>
+
+      {/* Real-time Nearby Machinery Booking Notification Toast */}
+      <MachineryToast
+        notification={latestNotification}
+        onDismiss={dismissNotification}
+      />
     </div>
   );
 };
