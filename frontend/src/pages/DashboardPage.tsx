@@ -10,6 +10,7 @@ import {
   Tractor,
   UserPlus,
 } from 'lucide-react';
+import { InsightsPanel } from '../components/InsightsPanel';
 
 export const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
@@ -194,41 +195,12 @@ export const DashboardPage: React.FC = () => {
         </button>
       </div>
 
-      {/* District Crop Yield Insights Card */}
-      {selectedWeatherDistrict && districtCropStats.length > 0 && (
-        <div className="card p-5 mb-6 bg-gradient-to-r from-emerald-900 to-emerald-950 text-white rounded-2xl shadow-sm border border-emerald-800">
-          <div className="flex items-center justify-between mb-3 border-b border-emerald-800/80 pb-2">
-            <h4 className="text-sm font-bold flex items-center gap-2 text-emerald-300">
-              <Tractor size={18} className="text-emerald-400" />
-              District Crop Yield Context ({selectedWeatherDistrict})
-            </h4>
-            <span className="text-[11px] font-medium bg-emerald-800/80 text-emerald-200 px-2.5 py-0.5 rounded-full border border-emerald-700">
-              tn_district_crop_data 2024-25
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            {districtCropStats.map((stat, idx) => (
-              <div key={stat.id || idx} className="bg-emerald-900/60 border border-emerald-800 rounded-xl p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-sm text-white">{stat.crop}</span>
-                  {stat.isTopCrop && (
-                    <span className="text-[10px] font-bold bg-amber-400 text-gray-950 px-1.5 py-0.5 rounded">
-                      TOP CROP
-                    </span>
-                  )}
-                </div>
-                <div className="text-xs text-emerald-200 font-mono">
-                  Yield: <strong>{Number(stat.yieldKgPerHa).toLocaleString()} kg/ha</strong>
-                </div>
-                <div className="text-[11px] text-emerald-300/80 mt-0.5">
-                  Area: {Number(stat.areaHectares).toLocaleString()} Ha ({stat.season})
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Actionable Insights & Recommendations Section */}
+      <InsightsPanel
+        context="dashboard"
+        districtCropStats={districtCropStats}
+        defaultDistrict={selectedWeatherDistrict}
+      />
 
 
       {/* Module Grid (4 Columns) */}

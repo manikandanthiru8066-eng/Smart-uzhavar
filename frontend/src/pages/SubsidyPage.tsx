@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { subsidyApi } from '../api/client';
 import { useAuth, FarmerCropItem } from '../context/AuthContext';
 import { Info, FileText, ExternalLink, MapPin, Search, Sprout } from 'lucide-react';
+import { InsightsPanel } from '../components/InsightsPanel';
 
 interface SubsidyItem {
   id: number;
@@ -136,6 +137,9 @@ export const SubsidyPage: React.FC = () => {
           </span>
         </div>
       )}
+
+      {/* Actionable Agronomic & Storage Support Insights */}
+      <InsightsPanel context="subsidy" />
 
       {/* Render Grouped Recommendations per Crop Profile */}
       {cropGroups.length > 0 ? (

@@ -1,0 +1,291 @@
+{
+  "_metadata": {
+    "source": "Tamil Nadu Agricultural University (TNAU) Agritech Portal",
+    "sourceUrl": "https://agritech.tnau.ac.in",
+    "description": "General best-practice extension guidelines and post-harvest management advisories for major Tamil Nadu crops.",
+    "version": "1.0",
+    "updatedAt": "2026-08-23"
+  },
+  "crops": {
+    "Paddy": {
+      "cropName": "Paddy",
+      "cropNameTa": "நெல்",
+      "seasonAdvisories": {
+        "Kharif": {
+          "seasonLabel": "Kharif / Kuruvai",
+          "seasonLabelTa": "கார் / குறுவை",
+          "commonRisks": "Stem borer, leaf folder, blast disease (Pyricularia oryzae), and early vegetative water fluctuations.",
+          "commonRisksTa": "தண்டு துளைப்பான், இலை சுருட்டுப் புழு, குலை நோய் மற்றும் ஆரம்ப நிலை நீர் பற்றாக்குறை.",
+          "preventivePractices": "Adopt seed treatment with Pseudomonas fluorescens (10g/kg seed). Maintain 2-3 cm water level; practice Alternate Wetting and Drying (AWD). Apply balanced nitrogen in split doses (basal, tillering, panicle initiation) with Zinc Sulphate (25 kg/ha) to prevent khaira disease.",
+          "preventivePracticesTa": "சூடோமோனாஸ் கொண்டு விதை நேர்த்தி செய்க (10 கிராம்/கிலோ). மாற்று நீர் பாய்ச்சல் முறையை (AWD) பின்பற்றவும். தழைச்சத்தை பிரித்து இடவும்; துத்தநாக சல்பேட் (25 கிலோ/ஹெக்) இடவும்.",
+          "relevantInsuranceScheme": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif",
+          "relevantSubsidyScheme": "National Food Security Mission (NFSM)"
+        },
+        "Rabi": {
+          "seasonLabel": "Rabi / Samba / Thaladi",
+          "seasonLabelTa": "சம்பா / தாளடி",
+          "commonRisks": "Bacterial leaf blight, brown plant hopper (BPH), lodging during cyclone/monsoon rain, and sheath rot.",
+          "commonRisksTa": "பாக்டீரியா இலைக்கருகல், புகையான் வண்டு, மழைக்கால பயிர் சாய்வு மற்றும் உறை அழுகல் நோய்.",
+          "preventivePractices": "Choose flood/submergence-tolerant varieties (e.g. CR 1009 Sub 1, CO 52). Provide alleyways (30 cm every 2 m) to avoid BPH. Spray Neem oil 3% at pest initiation. Ensure proper field drainage during northeast monsoon.",
+          "preventivePracticesTa": "மூழ்கும் தன்மையைத் தாங்கும் ரகங்களைப் பயன்படுத்தவும் (CR 1009 Sub 1). புகையான் வண்டு தடுப்பிற்கு 2 மீட்டருக்கு 30 செ.மீ பாத்தி இடைவெளி விடவும். வடகிழக்கு பருவமழை வடிகால் வசதி செய்க.",
+          "relevantInsuranceScheme": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Rabi",
+          "relevantSubsidyScheme": "National Food Security Mission (NFSM)"
+        },
+        "Summer": {
+          "seasonLabel": "Summer / Navarai",
+          "seasonLabelTa": "நவரை / கோடை",
+          "commonRisks": "High temperature stress, salinity build-up, and moisture deficiency at grain filling.",
+          "commonRisksTa": "அதிக வெப்ப தாக்கம், உவர்த்தன்மை அதிகரிப்பு மற்றும் தானிய நிரம்பல் நிலை நீர் பற்றாக்குறை.",
+          "preventivePractices": "Foliar spray of 1% Potassium Chloride (KCl) or PPFM bacteria to mitigate heat stress. Maintain shallow submergence during flowering.",
+          "preventivePracticesTa": "வெப்ப அழுத்தத்தை சமாளிக்க 1% பொட்டாசியம் குளோரைடு அல்லது பிபிஎஃப்எம் தெளிக்கவும். பூக்கும் பருவத்தில் தகுந்த நீர் பராமரிக்கவும்.",
+          "relevantInsuranceScheme": "Restructured Weather Based Crop Insurance Scheme (RWBCIS) - Rainfall Index",
+          "relevantSubsidyScheme": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "12% - 14%",
+        "bestPractices": "Sun dry harvested paddy on clean threshing floor to 12-14% moisture before bagging. Store in high-density polyethylene (HDPE) or hermetic bags on raised wooden pallets (15 cm above ground, 50 cm away from walls) to avoid moisture migration. Use aluminum phosphide fumigation only with trained supervision for warehouse storage. Utilize TN CSC Direct Purchase Centres (DPC) for timely procurement.",
+        "bestPracticesTa": "நெல்லை சேமிப்பதற்கு முன் 12-14% ஈரப்பதத்திற்கு காயவைக்கவும். தரையிலிருந்து 15 செ.மீ உயரத்தில் மரப்பலகை மீது அடுக்கி வைக்கவும். நேரடி நெல் கொள்முதல் நிலையங்களை (DPC) உரிய காலத்தில் பயன்படுத்தவும்.",
+        "relevantScheme": "Sub-Mission on Agricultural Mechanization (SMAM)"
+      }
+    },
+    "Sugarcane": {
+      "cropName": "Sugarcane",
+      "cropNameTa": "கரும்பு",
+      "seasonAdvisories": {
+        "Annual": {
+          "seasonLabel": "Main Season / Annual",
+          "seasonLabelTa": "முக்கிய பருவம் / ஆண்டுப் பயிர்",
+          "commonRisks": "Early shoot borer, red rot disease, internode borer, and waterlogging/drought cycles.",
+          "commonRisksTa": "இளம் குருத்து துளைப்பான், செவ்வழுகல் நோய், இடைக்கணு துளைப்பான் மற்றும் நீர் தேக்கம்.",
+          "preventivePractices": "Adopt Single Bud Chip / Sustainable Sugarcane Initiative (SSI) with drip fertigation. Release Trichogramma chilonis egg parasitoids (5 cc/ha) at 30th day. Trash mulching to conserve moisture and suppress weeds.",
+          "preventivePracticesTa": "சொட்டு நீர் பாசனத்துடன் கூடிய நிலையான கரும்பு சாகுபடி (SSI) முறையை பின்பற்றவும். 30 ஆம் நாளில் டிரைக்கோகிரம்மா முட்டை ஒட்டுண்ணிகளை வெளியிடவும். சோகை மூடாக்கு இடவும்.",
+          "relevantInsuranceScheme": "Restructured Weather Based Crop Insurance Scheme (RWBCIS) - Rainfall Index",
+          "relevantSubsidyScheme": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "Immediate Crush within 24-48 hours",
+        "bestPractices": "Harvest millable cane close to ground level. Transport harvested cane to the sugar factory or jaggery processing unit within 24-48 hours to prevent sugar inversion and sucrose loss. Clean trash before weighment.",
+        "bestPracticesTa": "அறுவடை செய்த கரும்பை 24-48 மணி நேரத்திற்குள் சர்க்கரை ஆலைக்கு கொண்டு செல்ல வேண்டும். சுக்ரோஸ் இழப்பைத் தவிர்க்க உடனுக்குடன் அரவை செய்க.",
+        "relevantScheme": "Sub-Mission on Agricultural Mechanization (SMAM)"
+      }
+    },
+    "Cotton": {
+      "cropName": "Cotton",
+      "cropNameTa": "பருத்தி",
+      "seasonAdvisories": {
+        "Kharif": {
+          "seasonLabel": "Kharif / Winter Comb",
+          "seasonLabelTa": "கார் பருவம் / குளிர்கால பருத்தி",
+          "commonRisks": "Pink bollworm, sucking pests (jassids, aphids, thrips), and square dropping.",
+          "commonRisksTa": "இளஞ்சிவப்பு காய் புழு, சாறு உறிஞ்சும் பூச்சிகள் மற்றும் பூ மொட்டு உதிர்தல்.",
+          "preventivePractices": "Install pheromone traps (12/ha) for pink bollworm monitoring. Spray 2% DAP + 1% Potassium Chloride (KCl) at square formation and boll development to prevent boll shedding.",
+          "preventivePracticesTa": "இளஞ்சிவப்பு காய்ப்புழுவிற்கு இனக்கவர்ச்சி பொறி (ஹெக்டேருக்கு 12) அமைக்கவும். காய் உதிர்வதை தடுக்க 2% டிஏபி + 1% பொட்டாசியம் குளோரைடு தெளிக்கவும்.",
+          "relevantInsuranceScheme": "Restructured Weather Based Crop Insurance Scheme (RWBCIS) - Rainfall Index",
+          "relevantSubsidyScheme": "National Food Security Mission (NFSM)"
+        },
+        "Rabi": {
+          "seasonLabel": "Rabi / Summer Comb",
+          "seasonLabelTa": "ரபி / கோடை பருத்தி",
+          "commonRisks": "Boll rot, root rot under water deficit, and whitefly infestations.",
+          "commonRisksTa": "காய் அழுகல், வேர் அழுகல் மற்றும் வெள்ளை ஈ தாக்குதல்.",
+          "preventivePractices": "Drip irrigation with 80% ETc schedule. Apply neem cake (250 kg/ha) at last ploughing.",
+          "preventivePracticesTa": "சொட்டு நீர் பாசன முறையைப் பயன்படுத்தவும். கடைசி உழவில் வேப்பம் புண்ணாக்கு (250 கிலோ/ஹெக்) இடவும்.",
+          "relevantInsuranceScheme": "Restructured Weather Based Crop Insurance Scheme (RWBCIS) - Rainfall Index",
+          "relevantSubsidyScheme": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "7% - 8%",
+        "bestPractices": "Pick seed cotton (kapas) during dry noon hours when dew has evaporated. Remove stained/yellow bolls. Dry kapas to 7-8% moisture before storing in clean cotton fabric bales or well-ventilated dry rooms to avoid lint discoloration.",
+        "bestPracticesTa": "பனியில்லாத மதிய வேளையில் பருத்தி எடுக்கவும். 7-8% ஈரப்பதத்தில் சுத்தமான காட்டன் பைகளில் சேமிக்கவும்.",
+        "relevantScheme": "Sub-Mission on Agricultural Mechanization (SMAM)"
+      }
+    },
+    "Groundnut": {
+      "cropName": "Groundnut",
+      "cropNameTa": "நிலக்கடலை",
+      "seasonAdvisories": {
+        "Kharif": {
+          "seasonLabel": "Kharif / Rainfed",
+          "seasonLabelTa": "மானாவாரி / கார் பருவம்",
+          "commonRisks": "Tikka leaf spot, rust disease, root rot, and dry root rot during moisture deficit.",
+          "commonRisksTa": "டிக்கா இலைப்புள்ளி நோய், துரு நோய் மற்றும் வறட்சியினால் ஏற்படும் வேர் அழுகல்.",
+          "preventivePractices": "Treat kernels with Trichoderma viride (4g/kg) or Carbendazim (2g/kg). Apply gypsum (400 kg/ha) at 40-45 days after sowing (peg formation stage) to ensure full pod filling and oil development.",
+          "preventivePracticesTa": "விதைக்கடலையை டிரைக்கோடெர்மா விரிடி கொண்டு விதை நேர்த்தி செய்க. காய் பிடிக்கும் பருவத்தில் (40-45 ஆம் நாள்) ஜிப்சம் (400 கிலோ/ஹெக்) இடவும்.",
+          "relevantInsuranceScheme": "Restructured Weather Based Crop Insurance Scheme (RWBCIS) - Rainfall Index",
+          "relevantSubsidyScheme": "Tamil Nadu Mission on Sustainable Dryland Agriculture (TNMSDA)"
+        },
+        "Rabi": {
+          "seasonLabel": "Rabi / Irrigated Groundnut",
+          "seasonLabelTa": "ரபி / இறவை நிலக்கடலை",
+          "commonRisks": "Spodoptera litura, leaf miner, and collar rot in heavy soils.",
+          "commonRisksTa": "இலை தின்னும் புழு, இலை சுருட்டுப் புழு மற்றும் தண்டு அழுகல்.",
+          "preventivePractices": "Apply light, frequent irrigations during peg penetration and pod development. Use sprinkler irrigation for water saving.",
+          "preventivePracticesTa": "விழுது இறங்கும் போது மிதமான நீர் பாய்ச்சவும். தெளிப்பு நீர் பாசனம் நீர் சேமிப்பிற்கு ஏற்றது.",
+          "relevantInsuranceScheme": "Restructured Weather Based Crop Insurance Scheme (RWBCIS) - Rainfall Index",
+          "relevantSubsidyScheme": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "8% - 9%",
+        "bestPractices": "Dry harvested pods thoroughly until pods make a rattling sound when shaken (8-9% kernel moisture). This prevents Aspergillus flavus fungal infection and toxic aflatoxin accumulation. Store unshelled pods in gunny bags over dunnage in cool, dry godowns.",
+        "bestPracticesTa": "பருப்பு ஆடும் அளவுக்கு 8-9% ஈரப்பதத்தில் உலர்த்தவும். அஃப்லாடாக்சின் நச்சு பூஞ்சை வராமல் பாதுகாக்க இது மிக அவசியம்.",
+        "relevantScheme": "Sub-Mission on Agricultural Mechanization (SMAM)"
+      }
+    },
+    "Pulses": {
+      "cropName": "Pulses (Blackgram / Greengram / Redgram)",
+      "cropNameTa": "பயறு வகைகள் (உளுந்து / பாசிப்பயறு / துவரை)",
+      "seasonAdvisories": {
+        "Kharif": {
+          "seasonLabel": "Kharif / Rainfed Pulses",
+          "seasonLabelTa": "கார் / மானாவாரி பயறு",
+          "commonRisks": "Yellow mosaic virus (YMV) transmitted by whitefly, root rot, and pod borer complex.",
+          "commonRisksTa": "வெள்ளை ஈ பரப்பும் மஞ்சள் தேமல் நோய், வேர் அழுகல் மற்றும் காய் துளைப்பான்.",
+          "preventivePractices": "Sow YMV resistant varieties (e.g. VBN 6, VBN 8 blackgram). Treat seed with Rhizobium and Phosphobacteria (30g/kg). Foliar spray of 2% DAP or TNAU Pulse Wonder at flower initiation to reduce flower drop.",
+          "preventivePracticesTa": "மஞ்சள் தேமல் நோய் எதிர்ப்பு ரகங்களைப் பயிரிடவும் (VBN 6, VBN 8). பூக்கும் பருவத்தில் டிஎன்ஏயு பல்ஸ் வொண்டர் அல்லது 2% டிஏபி தெளிக்கவும்.",
+          "relevantInsuranceScheme": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif",
+          "relevantSubsidyScheme": "National Food Security Mission (NFSM)"
+        },
+        "Rabi": {
+          "seasonLabel": "Rabi / Rice Fallow Pulses",
+          "seasonLabelTa": "ரபி / நெல் தரிசு பயறு",
+          "commonRisks": "Powdery mildew, leaf crinkle virus, and terminal drought.",
+          "commonRisksTa": "சாம்பல் நோய், இலை சுருள் நோய் மற்றும் அறுவடைக்கால வறட்சி.",
+          "preventivePractices": "Broadcast seeds 4-6 days before paddy harvest into waxy soil moisture. Spray wettable sulphur (1 kg/ha) at powdery mildew appearance.",
+          "preventivePracticesTa": "நெல் அறுவடைக்கு 4-6 நாட்களுக்கு முன் மெழுகு பதத்தில் விதைக்கவும். சாம்பல் நோய்க்கு நனையும் கந்தகம் தெளிக்கவும்.",
+          "relevantInsuranceScheme": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Rabi",
+          "relevantSubsidyScheme": "National Food Security Mission (NFSM)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "9% - 10%",
+        "bestPractices": "Sun dry seeds to 9-10% moisture. Mix with activated clay (1 kg/100 kg seed) or neem oil (5 ml/kg) to deter pulse beetle (Callosobruchus maculatus) damage during storage.",
+        "bestPracticesTa": "விதைகளை 9-10% ஈரப்பதத்திற்கு உலர்த்தவும். பயறு வண்டு தாக்காமல் இருக்க வேப்ப எண்ணெய் (5 மிலி/கிலோ) கலந்து சேமிக்கவும்.",
+        "relevantScheme": "Sub-Mission on Agricultural Mechanization (SMAM)"
+      }
+    },
+    "Maize": {
+      "cropName": "Maize",
+      "cropNameTa": "மக்காச்சோளம்",
+      "seasonAdvisories": {
+        "Kharif": {
+          "seasonLabel": "Kharif / Monsoon",
+          "seasonLabelTa": "கார் / பருவமழை",
+          "commonRisks": "Fall Armyworm (Spodoptera frugiperda), downy mildew, and nitrogen leaching.",
+          "commonRisksTa": "படைப்புழு (Fall Armyworm), அடிச்சாம்பல் நோய் மற்றும் தழைச்சத்து கசிவு.",
+          "preventivePractices": "Whorl application of sand + neem cake (9:1) at 15-20 DAS for armyworm control. Apply Recommended Dose of Fertilizer (135:62.5:50 N:P:K kg/ha) with Zinc Sulphate 25 kg/ha.",
+          "preventivePracticesTa": "படைப்புழுவுக்கு குருத்தில் மணல் + வேப்பம் புண்ணாக்கு (9:1) கலவை இடவும். துத்தநாக சல்பேட் 25 கிலோ/ஹெக் இடவும்.",
+          "relevantInsuranceScheme": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif",
+          "relevantSubsidyScheme": "National Food Security Mission (NFSM)"
+        },
+        "Rabi": {
+          "seasonLabel": "Rabi / Winter Maize",
+          "seasonLabelTa": "ரபி / குளிர்கால மக்காச்சோளம்",
+          "commonRisks": "Stem borer and post-flowering stalk rot.",
+          "commonRisksTa": "தண்டு துளைப்பான் மற்றும் தண்டு அழுகல் நோய்.",
+          "preventivePractices": "Maintain optimum plant population (60 x 20 cm spacing). Apply potash in 2 splits to strengthen stalks.",
+          "preventivePracticesTa": "சரியான பயிர் இடைவெளி (60 x 20 செ.மீ) பராமரிக்கவும். தண்டு வலிமைக்கு சாம்பல் சத்தை இரு பிரிவாக இடவும்.",
+          "relevantInsuranceScheme": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Rabi",
+          "relevantSubsidyScheme": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "12%",
+        "bestPractices": "Dry harvested cobs or shelled grains to 12% moisture. Inspect periodically for weevils. Store in clean aerated silos or hermetic bags.",
+        "bestPracticesTa": "தானியங்களை 12% ஈரப்பதத்திற்கு உலர்த்தி காற்றுப்புகா பைகளில் சேமிக்கவும்.",
+        "relevantScheme": "Sub-Mission on Agricultural Mechanization (SMAM)"
+      }
+    },
+    "Banana": {
+      "cropName": "Banana",
+      "cropNameTa": "வாழை",
+      "seasonAdvisories": {
+        "Annual": {
+          "seasonLabel": "Annual / Main Crop",
+          "seasonLabelTa": "ஆண்டுப் பயிர்",
+          "commonRisks": "Sigatoka leaf spot, Panama wilt (Fusarium oxysporum), pseudostem weevil, and gale wind lodging.",
+          "commonRisksTa": "சிகடோகா இலைப்புள்ளி நோய், பனாமா வாடல் நோய், தண்டு வண்டு மற்றும் பலத்த காற்று சாய்வு.",
+          "preventivePractices": "Use disease-free tissue culture plantlets or dip suckers in Carbendazim 0.1%. Drip fertigation with 200:30:300g NPK/plant. Provide bamboo or casuarina staking before shooting to prevent wind breakage.",
+          "preventivePracticesTa": "நோயற்ற திசு வளர்ப்பு கன்றுகளைப் பயன்படுத்தவும். தார் வெளிவரும் முன் பலத்த காற்றில் சாயாமல் இருக்க முட்டு கொடுக்கவும்.",
+          "relevantInsuranceScheme": "Unified Package Insurance Scheme (UPIS) - Revenue Guard",
+          "relevantSubsidyScheme": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "Cold Chain: 13-14°C, 85-90% RH",
+        "bestPractices": "Harvest bunches at 75-80% maturity for distant transport. Wash hands in alum/citric solution to prevent latex staining. Pre-cool bunches within 6 hours of harvest. Avoid direct sunlight during field transit.",
+        "bestPracticesTa": "75-80% முதிர்ச்சியில் அறுவடை செய்யவும். அறுவடை செய்த 6 மணி நேரத்திற்குள் நிழலில் வைக்கவும்.",
+        "relevantScheme": "Rashtriya Krishi Vikas Yojana (RKVY)"
+      }
+    },
+    "Turmeric": {
+      "cropName": "Turmeric",
+      "cropNameTa": "மஞ்சள்",
+      "seasonAdvisories": {
+        "Kharif": {
+          "seasonLabel": "Kharif / Main Crop",
+          "seasonLabelTa": "கார் / முக்கிய பயிர்",
+          "commonRisks": "Rhizome rot (Pythium), leaf blotch (Taphrina), and shoot borer.",
+          "commonRisksTa": "கிழங்கு அழுகல் நோய், இலைப்புள்ளி நோய் மற்றும் தண்டு துளைப்பான்.",
+          "preventivePractices": "Raised bed planting (120 cm width) with drip fertigation to prevent water stagnation. Treat seed rhizomes with Trichoderma harzianum (10g/kg) and Pseudomonas fluorescens before planting.",
+          "preventivePracticesTa": "நீர் தேங்குவதைத் தடுக்க மேட்டுப்பாத்தி முறையில் நடவு செய்யவும். விதைக் கிழங்குகளை டிரைக்கோடெர்மா கொண்டு நேர்த்தி செய்யவும்.",
+          "relevantInsuranceScheme": "Unified Package Insurance Scheme (UPIS) - Revenue Guard",
+          "relevantSubsidyScheme": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "8% - 10% after curing",
+        "bestPractices": "Boil finger rhizomes in TNAU improved turmeric boiler until soft and fingers emit characteristic aroma. Sun dry for 10-15 days on clean tarpaulins. Polish using mechanical polisher and store in moisture-proof gunny bags.",
+        "bestPracticesTa": "மஞ்சள் அவிப்பான் மூலம் பதப்படுத்தி 8-10% ஈரப்பதம் வரை உலர்த்தி பாலிஷ் செய்து சேமிக்கவும்.",
+        "relevantScheme": "Sub-Mission on Agricultural Mechanization (SMAM)"
+      }
+    },
+    "Millets": {
+      "cropName": "Ragi / Millets",
+      "cropNameTa": "சிறுதானியங்கள் / கேழ்வரகு",
+      "seasonAdvisories": {
+        "Kharif": {
+          "seasonLabel": "Kharif / Monsoon",
+          "seasonLabelTa": "கார் / பருவமழை",
+          "commonRisks": "Blast disease in ragi, shoot fly in sorghum/pearl millet, and weed competition.",
+          "commonRisksTa": "குலை நோய், குருத்து ஈ மற்றும் களைகளின் ஆதிக்கம்.",
+          "preventivePractices": "Adopt seed treatment with Azospirillum and Phosphobacteria (600g/ha). Practice line sowing with tractor-drawn seed drill. Apply FYM 12.5 t/ha.",
+          "preventivePracticesTa": "அசோஸ்பைரில்லம் கொண்டு விதை நேர்த்தி செய்க. வரிசை விதைப்பு முறையைப் பின்பற்றவும்.",
+          "relevantInsuranceScheme": "Pradhan Mantri Fasal Bima Yojana (PMFBY) - Kharif",
+          "relevantSubsidyScheme": "Tamil Nadu Mission on Sustainable Dryland Agriculture (TNMSDA)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "10% - 12%",
+        "bestPractices": "Millets store exceptionally well when dried to <10-12% moisture. Store in traditional mud bins coated with cow dung or sealed metal bins for prolonged grain longevity.",
+        "bestPracticesTa": "10-12% ஈரப்பதத்திற்கு உலர்த்தி காற்றுப்புகா சேமிப்பு கலன்களில் வைக்கவும்.",
+        "relevantScheme": "Tamil Nadu Mission on Sustainable Dryland Agriculture (TNMSDA)"
+      }
+    },
+    "Coconut": {
+      "cropName": "Coconut",
+      "cropNameTa": "தென்னை",
+      "seasonAdvisories": {
+        "Perennial": {
+          "seasonLabel": "Perennial / Year-round",
+          "seasonLabelTa": "பல்லாண்டு பயிர்",
+          "commonRisks": "Rhinoceros beetle, red palm weevil, black headed caterpillar, Tanjore wilt (basal stem rot), and drought nut dropping.",
+          "commonRisksTa": "காண்டாமிருக வண்டு, சிவப்பு கூன் வண்டு, கருந்தலை புழு மற்றும் தஞ்சாவூர் வாடல் நோய்.",
+          "preventivePractices": "Hook out rhinoceros beetles using iron hook and place 1:1 mixture of sand and neem cake in topmost leaf axils. Root feed with TNAU Coconut Tonic (200 ml/palm every 6 months) for nut yield enhancement.",
+          "preventivePracticesTa": "வண்டு தடுப்பிற்கு மடல் இடுக்கில் வேப்பம் புண்ணாக்கு + மணல் வைக்கவும். 6 மாதத்திற்கு ஒருமுறை டிஎன்ஏயு தென்னை டானிக் வேர் மூலம் செலுத்தவும்.",
+          "relevantInsuranceScheme": "Coconut Palm Insurance Scheme (CPIS)",
+          "relevantSubsidyScheme": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)"
+        }
+      },
+      "storageAdvisories": {
+        "targetMoisturePercent": "Copra moisture: 6%",
+        "bestPractices": "Store harvested dry coconuts in raised platforms under shed. For copra processing, sun dry or use solar copra dryers to achieve 6% moisture to prevent aflatoxin and rancidity.",
+        "bestPracticesTa": "கொப்பரை உலர்த்தலுக்கு சோலார் டிரையர் பயன்படுத்தி 6% ஈரப்பதத்தில் சேமிக்கவும்.",
+        "relevantScheme": "Sub-Mission on Agricultural Mechanization (SMAM)"
+      }
+    }
+  }
+}
