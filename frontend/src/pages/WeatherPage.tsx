@@ -212,7 +212,7 @@ export const WeatherPage: React.FC = () => {
           {t('viewOtherDistrictsLabel')}
         </label>
         <select
-          className="p-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none"
+          className="w-full sm:max-w-xs p-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none min-h-[44px]"
           value={selectedDistrict}
           onChange={handleDistrictChange}
         >

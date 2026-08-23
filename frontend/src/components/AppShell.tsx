@@ -15,6 +15,8 @@ import {
   Moon,
   Sun,
   LogOut,
+  Menu,
+  X,
 } from 'lucide-react';
 
 interface AppShellProps {
@@ -38,6 +40,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const navigate = useNavigate();
   const { profile, username, logout } = useAuth();
   const [isDark, setIsDark] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const displayName = profile?.fullName || profile?.username || username || 'Farmer';
   const initialLetter = displayName.charAt(0).toUpperCase();
@@ -49,6 +52,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   const currentPath = location.pathname;
   const currentMeta = pageTitles[currentPath] || { titleKey: 'brandName', subKey: 'subDashboard' };
+
+  // Close mobile drawer whenever route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (isDark) {
@@ -69,14 +77,33 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   return (
     <div id="appShell" className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="brandmark">
-          <span className="dot"></span>
-          <span>{t('brandName')}</span>
+      {/* Mobile Drawer Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="mobile-drawer-backdrop"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar / Slide-over Drawer on Mobile */}
+      <aside className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+        <div className="flex items-center justify-between brandmark">
+          <div className="flex items-center gap-2">
+            <span className="dot"></span>
+            <span>{t('brandName')}</span>
+          </div>
+          {/* Close button on mobile */}
+          <button
+            className="md:hidden icon-btn p-1.5"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            <X size={18} />
+          </button>
         </div>
 
-        <nav className="flex flex-col gap-1">
+        <nav className="flex flex-col gap-1 mt-2">
           <NavLink
             to="/"
             end
@@ -162,7 +189,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           </NavLink>
         </nav>
 
-        <div className="side-foot whitespace-pre-line">
+        <div className="side-foot whitespace-pre-line mt-auto">
           {t('sideFoot')}
         </div>
       </aside>
@@ -172,8 +199,19 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         {/* Topbar */}
         <header className="topbar">
           <div className="topbar-left">
-            <h3>{t(currentMeta.titleKey)}</h3>
-            <p>{t(currentMeta.subKey)}</p>
+            {/* Hamburger Button for Mobile */}
+            <button
+              className="md:hidden icon-btn"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu size={20} />
+            </button>
+
+            <div>
+              <h3>{t(currentMeta.titleKey)}</h3>
+              <p>{t(currentMeta.subKey)}</p>
+            </div>
           </div>
 
           <div className="topbar-actions">
@@ -181,29 +219,31 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               className="icon-btn"
               onClick={toggleLanguage}
               title="Language"
+              aria-label="Toggle language"
             >
-              <Languages />
+              <Languages size={18} />
             </button>
 
             <button
               className="icon-btn"
               onClick={toggleTheme}
               title="Theme"
+              aria-label="Toggle theme"
             >
-              {isDark ? <Sun /> : <Moon />}
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            <button className="icon-btn" title="Notifications">
-              <Bell />
+            <NavLink to="/notifications" className="icon-btn" title="Notifications" aria-label="Notifications">
+              <Bell size={18} />
               <span className="dot-alert"></span>
-            </button>
+            </NavLink>
 
-            <div className="avatar-chip">
+            <NavLink to="/profile" className="avatar-chip" title="Profile">
               <div className="av">{initialLetter}</div>
               <span>{displayName}</span>
-            </div>
+            </NavLink>
 
-            <button className="icon-btn" title="Logout" onClick={handleLogout}>
+            <button className="icon-btn" title="Logout" onClick={handleLogout} aria-label="Logout">
               <LogOut size={18} />
             </button>
           </div>
@@ -214,6 +254,60 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar (< 768px) */}
+      <nav className="mobile-bottom-nav md:hidden">
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) =>
+            `mobile-nav-item ${isActive ? 'active' : ''}`
+          }
+        >
+          <LayoutDashboard />
+          <span>{t('navDashboard')}</span>
+        </NavLink>
+
+        <NavLink
+          to="/subsidy"
+          className={({ isActive }) =>
+            `mobile-nav-item ${isActive ? 'active' : ''}`
+          }
+        >
+          <HandCoins />
+          <span>{t('navSubsidy')}</span>
+        </NavLink>
+
+        <NavLink
+          to="/insurance"
+          className={({ isActive }) =>
+            `mobile-nav-item ${isActive ? 'active' : ''}`
+          }
+        >
+          <ShieldCheck />
+          <span>{t('navInsurance')}</span>
+        </NavLink>
+
+        <NavLink
+          to="/machinery"
+          className={({ isActive }) =>
+            `mobile-nav-item ${isActive ? 'active' : ''}`
+          }
+        >
+          <Tractor />
+          <span>{t('navMachinery')}</span>
+        </NavLink>
+
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            `mobile-nav-item ${isActive ? 'active' : ''}`
+          }
+        >
+          <UserRound />
+          <span>{t('navProfile')}</span>
+        </NavLink>
+      </nav>
     </div>
   );
 };

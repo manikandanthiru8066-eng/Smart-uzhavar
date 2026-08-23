@@ -41,7 +41,7 @@ export const MachineryToast: React.FC<MachineryToastProps> = ({
   const block = notification.block || notification.village || 'your block';
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 max-w-sm w-full animate-bounce-short fade-in">
+    <div className="fixed bottom-20 md:bottom-5 right-3 md:right-5 left-3 md:left-auto max-w-sm z-50 animate-bounce-short fade-in">
       <div className="bg-surface border-2 border-emerald-500/80 shadow-2xl rounded-2xl p-4 flex flex-col gap-3 backdrop-blur-md">
         {/* Header with Icon and Close */}
         <div className="flex items-start justify-between gap-2">

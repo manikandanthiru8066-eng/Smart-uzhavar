@@ -580,11 +580,11 @@ export const ProfilePage: React.FC = () => {
                 </select>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   type="submit"
                   disabled={cropSaving}
-                  className="btn btn-emerald btn-md flex items-center gap-2 cursor-pointer"
+                  className="btn btn-primary btn-md flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
                 >
                   <Save size={16} />
                   {cropSaving ? 'Saving...' : editingCropId !== null ? 'Update Crop' : 'Save Crop Profile'}
@@ -592,7 +592,7 @@ export const ProfilePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="btn btn-ghost btn-md cursor-pointer"
+                  className="btn btn-ghost btn-md cursor-pointer justify-center w-full sm:w-auto"
                 >
                   Cancel
                 </button>

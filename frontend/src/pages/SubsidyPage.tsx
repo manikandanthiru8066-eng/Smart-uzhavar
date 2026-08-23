@@ -145,12 +145,14 @@ export const SubsidyPage: React.FC = () => {
 
           return (
             <div key={cropItem.id || groupIdx} className="mb-8 border-b border-gray-200 pb-6">
-              <div className="flex items-center gap-2 mb-3 bg-emerald-50/80 p-3 rounded-2xl border border-emerald-200">
-                <Sprout className="text-emerald-700 shrink-0" size={20} />
-                <h3 className="text-sm font-bold text-emerald-950">
-                  Recommendations for {cropItem.cropGrown || 'Crop'} ({cropItem.districtName || 'District'} - {cropAcres} Acres)
-                </h3>
-                <span className="ml-auto text-xs font-semibold px-2.5 py-1 bg-emerald-700 text-white rounded-full">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 bg-emerald-50/80 p-3 rounded-2xl border border-emerald-200">
+                <div className="flex items-center gap-2">
+                  <Sprout className="text-emerald-700 shrink-0" size={20} />
+                  <h3 className="text-sm font-bold text-emerald-950">
+                    Recommendations for {cropItem.cropGrown || 'Crop'} ({cropItem.districtName || 'District'} - {cropAcres} Acres)
+                  </h3>
+                </div>
+                <span className="self-start sm:self-auto text-xs font-semibold px-2.5 py-1 bg-emerald-700 text-white rounded-full">
                   Crop Profile #{groupIdx + 1}
                 </span>
               </div>
@@ -192,7 +194,7 @@ export const SubsidyPage: React.FC = () => {
                   <p className="rec-desc">{(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}</p>
                   <div className="rec-actions">
                     <button
-                      className="btn btn-emerald btn-sm cursor-pointer"
+                      className="btn btn-primary btn-sm cursor-pointer"
                       onClick={() => setShowOfficeIndex(showOfficeIndex === (groupIdx * 100 + idx) ? null : (groupIdx * 100 + idx))}
                     >
                       <FileText size={14} /> Application Guide & Offices
@@ -209,7 +211,7 @@ export const SubsidyPage: React.FC = () => {
                           href="https://tntagrisnet.tn.gov.in"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn btn-emerald btn-sm text-xs flex items-center gap-1"
+                          className="btn btn-primary btn-sm text-xs flex items-center gap-1"
                         >
                           <ExternalLink size={12} /> Apply on TN AG RISNET
                         </a>

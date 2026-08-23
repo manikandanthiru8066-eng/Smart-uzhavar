@@ -278,7 +278,7 @@ export const MachineryPage: React.FC = () => {
         apiNearbyList.map((item) => (
           <div
             key={item.id}
-            className="card p-4 flex justify-between items-center mb-2.5"
+            className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2.5"
           >
             <div>
               <b className="text-sm"><TranslatedText text={item.name} taField={item.nameTa} /></b>
@@ -286,21 +286,21 @@ export const MachineryPage: React.FC = () => {
                 <TranslatedText text={item.type} taField={item.typeTa} /> · Owner: {item.ownerName} (₹{item.ratePerHour}/hr)
               </div>
             </div>
-            <button className="btn btn-ghost btn-sm">
+            <button className="btn btn-ghost btn-sm self-start sm:self-auto min-h-[38px]">
               <Phone size={13} />
               {item.ownerPhone}
             </button>
           </div>
         ))
       ) : (
-        <div className="card p-4 flex justify-between items-center mb-2.5">
+        <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2.5">
           <div>
             <b className="text-sm"><TranslatedText text="Murugan Agro Services" /></b>
             <div className="text-xs text-gray-500">
               <TranslatedText text="Tractor + Rotavator · Custom Hiring" />
             </div>
           </div>
-          <button className="btn btn-ghost btn-sm">
+          <button className="btn btn-ghost btn-sm self-start sm:self-auto min-h-[38px]">
             <Phone size={13} />
             9876543210
           </button>
