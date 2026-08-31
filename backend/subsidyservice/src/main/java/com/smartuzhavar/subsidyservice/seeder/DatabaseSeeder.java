@@ -124,10 +124,6 @@ public class DatabaseSeeder implements CommandLineRunner {
                 log.info("Districts table already has {} districts with coordinates — skipping seed.", existing);
                 return;
             }
-            if (existing > 0) {
-                log.info("Districts table needs re-seeding/updating with coordinates (count={}, missingCoords={}).", existing, missingCoordinates);
-                districtRepository.deleteAll();
-            }
 
             InputStream is = openResourceStream("tn_district_coordinates.json");
             if (is == null) {
@@ -140,9 +136,19 @@ public class DatabaseSeeder implements CommandLineRunner {
             }
 
             try (InputStream stream = is) {
-                List<District> districts = objectMapper.readValue(stream, new TypeReference<List<District>>() {});
-                districtRepository.saveAll(districts);
-                log.info("Successfully seeded {} districts with coordinates into subsidyservice.", districts.size());
+                List<District> seedDistricts = objectMapper.readValue(stream, new TypeReference<List<District>>() {});
+                for (District seed : seedDistricts) {
+                    Optional<District> existingOpt = districtRepository.findByNameIgnoreCase(seed.getName());
+                    if (existingOpt.isPresent()) {
+                        District d = existingOpt.get();
+                        d.setLatitude(seed.getLatitude());
+                        d.setLongitude(seed.getLongitude());
+                        districtRepository.save(d);
+                    } else {
+                        districtRepository.save(seed);
+                    }
+                }
+                log.info("Successfully seeded/updated {} districts with coordinates into subsidyservice.", seedDistricts.size());
             }
         } catch (Exception e) {
             log.warn("District seeding encountered note: {}", e.getMessage());
