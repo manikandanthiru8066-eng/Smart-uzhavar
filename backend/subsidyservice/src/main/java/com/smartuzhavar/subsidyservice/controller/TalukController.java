@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/taluks")
-@CrossOrigin(origins = "*")
 public class TalukController {
 
     private final BlockRepository blockRepository;

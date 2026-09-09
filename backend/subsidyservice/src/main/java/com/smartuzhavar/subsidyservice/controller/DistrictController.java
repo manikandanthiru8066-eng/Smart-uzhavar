@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/districts")
-@CrossOrigin(origins = "*")
 public class DistrictController {
 
     private final DistrictRepository districtRepository;
