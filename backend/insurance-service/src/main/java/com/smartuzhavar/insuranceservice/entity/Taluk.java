@@ -24,7 +24,7 @@ public class Taluk {
     private District district;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "taluk_blocks",
         joinColumns = @JoinColumn(name = "taluk_id"),

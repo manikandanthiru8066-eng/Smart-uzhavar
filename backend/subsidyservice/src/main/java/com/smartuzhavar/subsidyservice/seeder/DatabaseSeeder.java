@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Transactional
 public class DatabaseSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseSeeder.class);
@@ -55,6 +56,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         seedDistricts();
         seedTalukBlockHierarchy();
@@ -304,8 +306,9 @@ public class DatabaseSeeder implements CommandLineRunner {
                                 Block block = blockRepository.findByLgdBlockCode(lgdBlockCode)
                                         .orElseGet(() -> blockRepository.save(new Block(blockName, lgdBlockCode)));
                                 block.setName(blockName);
-                                blockRepository.save(block);
-
+                                if (taluk.getBlocks() == null) {
+                                    taluk.setBlocks(new java.util.HashSet<>());
+                                }
                                 if (!taluk.getBlocks().contains(block)) {
                                     taluk.getBlocks().add(block);
                                 }

@@ -20,7 +20,7 @@ public class SubsidyApplication {
     @JoinColumn(name = "farmer_id", nullable = false)
     private Farmer farmer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "scheme_id", nullable = false)
     private SubsidyScheme scheme;
 
