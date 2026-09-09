@@ -120,8 +120,8 @@ public class DatabaseSeeder implements CommandLineRunner {
         try {
             long existing = districtRepository.count();
             boolean missingCoordinates = existing > 0 && districtRepository.findAll().stream().anyMatch(d -> d.getLatitude() == null);
-            if (existing >= 38 && !missingCoordinates) {
-                log.info("Districts table already has {} districts with coordinates — skipping seed.", existing);
+            if (existing == 38 && !missingCoordinates) {
+                log.info("Districts table already has 38 districts with coordinates — skipping seed.");
                 return;
             }
 
@@ -155,21 +155,102 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
     }
 
+    public static String normalizeDistrictName(String name) {
+        if (name == null) return null;
+        String trimmed = name.trim();
+        String lower = trimmed.toLowerCase();
+        switch (lower) {
+            case "thoothukkudi":
+            case "tuticorin":
+                return "Thoothukudi";
+            case "kancheepuram":
+                return "Kanchipuram";
+            case "kanniyakumari":
+            case "kanya kumari":
+                return "Kanyakumari";
+            case "the nilgiris":
+            case "the nilgiri":
+            case "nilgiri":
+                return "Nilgiris";
+            case "thiruvallur":
+                return "Tiruvallur";
+            case "thiruvarur":
+                return "Tiruvarur";
+            case "trichy":
+            case "tiruchy":
+                return "Tiruchirappalli";
+            case "tirupattur":
+                return "Tirupathur";
+            case "villupuram":
+                return "Viluppuram";
+            case "sivagangai":
+                return "Sivaganga";
+            default:
+                return trimmed;
+        }
+    }
+
     private District getOrCreateDistrict(String distName) {
         if (distName == null || distName.trim().isEmpty()) {
             return null;
         }
-        String name = distName.trim();
+        String name = normalizeDistrictName(distName);
         return districtRepository.findByNameIgnoreCase(name)
                 .orElseGet(() -> districtRepository.save(new District(name)));
     }
 
     @Transactional
+    public void cleanupDuplicateDistricts() {
+        try {
+            List<District> allDistricts = districtRepository.findAll();
+            for (District d : allDistricts) {
+                String canonicalName = normalizeDistrictName(d.getName());
+                if (canonicalName != null && !canonicalName.equalsIgnoreCase(d.getName())) {
+                    Optional<District> canonicalOpt = districtRepository.findByNameIgnoreCase(canonicalName);
+                    if (canonicalOpt.isPresent() && !canonicalOpt.get().getId().equals(d.getId())) {
+                        District canonicalDist = canonicalOpt.get();
+                        log.info("Merging duplicate district '{}' (id={}) into canonical district '{}' (id={})",
+                                d.getName(), d.getId(), canonicalName, canonicalDist.getId());
+
+                        // Reassign taluks
+                        List<Taluk> taluks = talukRepository.findByDistrictIdOrderByNameAsc(d.getId());
+                        for (Taluk t : taluks) {
+                            t.setDistrict(canonicalDist);
+                            talukRepository.save(t);
+                        }
+
+                        // Reassign crop stats
+                        List<DistrictCropStat> stats = districtCropStatRepository.findByDistrictId(d.getId());
+                        for (DistrictCropStat s : stats) {
+                            s.setDistrict(canonicalDist);
+                            districtCropStatRepository.save(s);
+                        }
+
+                        districtRepository.delete(d);
+                    } else if (canonicalOpt.isEmpty()) {
+                        d.setName(canonicalName);
+                        districtRepository.save(d);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Duplicate district cleanup note in subsidyservice: {}", e.getMessage());
+        }
+    }
+
+    @Transactional
     public void seedTalukBlockHierarchy() {
-        if (talukRepository.count() > 0 && blockRepository.count() > 0) {
-            log.info("Taluks and Blocks tables already seeded (taluks={}, blocks={}).", talukRepository.count(), blockRepository.count());
+        long talukCount = talukRepository.count();
+        long blockCount = blockRepository.count();
+        long distCount = districtRepository.count();
+
+        if (talukCount == 317 && blockCount >= 675 && distCount == 38) {
+            log.info("Taluk & Block hierarchy already fully seeded (taluks={}, blocks={}, districts={}) — skipping seed.",
+                    talukCount, blockCount, distCount);
             return;
         }
+
+        cleanupDuplicateDistricts();
 
         InputStream is = openResourceStream("tn_taluk_block_hierarchy.json");
         if (is == null) {
@@ -185,7 +266,8 @@ public class DatabaseSeeder implements CommandLineRunner {
             }
 
             for (JsonNode distNode : districtsNode) {
-                String distName = distNode.get("district").asText();
+                String rawDistName = distNode.get("district").asText();
+                String distName = normalizeDistrictName(rawDistName);
                 Optional<District> districtOpt = districtRepository.findByNameIgnoreCase(distName);
                 if (districtOpt.isEmpty()) {
                     District newDist = new District();
@@ -200,13 +282,17 @@ public class DatabaseSeeder implements CommandLineRunner {
                         String talukName = talukNode.has("taluk") ? talukNode.get("taluk").asText() : talukNode.get("name").asText();
                         Integer lgdSubdistrictCode = talukNode.has("lgd_subdistrict_code") ? talukNode.get("lgd_subdistrict_code").asInt() : null;
 
-                        Taluk taluk = (lgdSubdistrictCode != null)
+                        Taluk taluk = (lgdSubdistrictCode != null && lgdSubdistrictCode > 0)
                                 ? talukRepository.findByLgdSubdistrictCode(lgdSubdistrictCode).orElse(null)
                                 : null;
 
                         if (taluk == null) {
                             taluk = talukRepository.findByNameIgnoreCaseAndDistrictId(talukName, district.getId())
                                     .orElseGet(() -> talukRepository.save(new Taluk(talukName, lgdSubdistrictCode != null ? lgdSubdistrictCode : 0, district)));
+                        } else {
+                            taluk.setName(talukName);
+                            taluk.setDistrict(district);
+                            talukRepository.save(taluk);
                         }
 
                         JsonNode blocksNode = talukNode.get("blocks");
@@ -217,8 +303,12 @@ public class DatabaseSeeder implements CommandLineRunner {
 
                                 Block block = blockRepository.findByLgdBlockCode(lgdBlockCode)
                                         .orElseGet(() -> blockRepository.save(new Block(blockName, lgdBlockCode)));
+                                block.setName(blockName);
+                                blockRepository.save(block);
 
-                                taluk.getBlocks().add(block);
+                                if (!taluk.getBlocks().contains(block)) {
+                                    taluk.getBlocks().add(block);
+                                }
                             }
                             talukRepository.save(taluk);
                         }
@@ -226,8 +316,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 }
             }
 
-            log.info("Successfully seeded LGD hierarchy: {} taluks and {} unique blocks across districts.",
-                    talukRepository.count(), blockRepository.count());
+            log.info("Successfully seeded/synced LGD hierarchy: {} taluks and {} unique blocks across {} districts in subsidyservice.",
+                    talukRepository.count(), blockRepository.count(), districtRepository.count());
         } catch (Exception e) {
             log.error("Error seeding taluk and block hierarchy: {}", e.getMessage(), e);
         }
@@ -285,14 +375,12 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedSubsidySchemes() {
-        boolean needsReseed = subsidySchemeRepository.count() == 0 ||
-                subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getNameTa() == null);
-        if (!needsReseed) {
-            log.info("Subsidy schemes table already seeded with Tamil translations.");
+        long currentCount = subsidySchemeRepository.count();
+        boolean hasMissingTa = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getNameTa() == null);
+        if (currentCount == 10 && !hasMissingTa) {
+            log.info("Subsidy schemes table already has 10 schemes with Tamil translations — skipping seed.");
             return;
         }
-
-        subsidySchemeRepository.deleteAll();
 
         InputStream is = openResourceStream("subsidy_schemes.json");
         if (is == null) {
@@ -302,8 +390,23 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         try (InputStream stream = is) {
             List<SubsidyScheme> schemes = objectMapper.readValue(stream, new TypeReference<List<SubsidyScheme>>() {});
-            subsidySchemeRepository.saveAll(schemes);
-            log.info("Successfully seeded {} subsidy schemes.", schemes.size());
+            for (SubsidyScheme scheme : schemes) {
+                Optional<SubsidyScheme> existing = subsidySchemeRepository.findByNameIgnoreCase(scheme.getName());
+                if (existing.isPresent()) {
+                    SubsidyScheme s = existing.get();
+                    s.setNameTa(scheme.getNameTa());
+                    s.setDescription(scheme.getDescription());
+                    s.setDescriptionTa(scheme.getDescriptionTa());
+                    s.setApplicableCrops(scheme.getApplicableCrops());
+                    s.setApplicableCropsTa(scheme.getApplicableCropsTa());
+                    s.setApplicableDistricts(scheme.getApplicableDistricts());
+                    s.setSubsidyAmount(scheme.getSubsidyAmount());
+                    subsidySchemeRepository.save(s);
+                } else {
+                    subsidySchemeRepository.save(scheme);
+                }
+            }
+            log.info("Successfully seeded/synced {} subsidy schemes.", schemes.size());
         } catch (IOException e) {
             log.error("Error reading or seeding subsidy schemes: {}", e.getMessage(), e);
         }

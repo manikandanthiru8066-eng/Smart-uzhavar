@@ -35,27 +35,13 @@ CREATE TABLE IF NOT EXISTS taluk_blocks (
 
 -- 2. Farmers table (Authentication details)
 CREATE TABLE IF NOT EXISTS farmers (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     phone_number VARCHAR(20) UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- 3. Taluks table
-CREATE TABLE IF NOT EXISTS taluks (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    district_id INTEGER NOT NULL REFERENCES districts(id) ON DELETE CASCADE
-);
-
--- 4. Blocks table
-CREATE TABLE IF NOT EXISTS blocks (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    taluk_id INTEGER NOT NULL REFERENCES taluks(id) ON DELETE CASCADE
 );
 
 -- 5. District Crop Statistics table

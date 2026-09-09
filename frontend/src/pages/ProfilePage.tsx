@@ -74,17 +74,55 @@ export const ProfilePage: React.FC = () => {
     try {
       const res = await subsidyApi.get<DistrictItem[]>('/api/districts');
       if (Array.isArray(res.data) && res.data.length > 0) {
-        setDistricts(res.data);
+        const seen = new Set<string>();
+        const unique = res.data.filter(d => {
+          const lower = d.name.toLowerCase();
+          if (seen.has(lower)) return false;
+          seen.add(lower);
+          return true;
+        });
+        setDistricts(unique);
       }
     } catch {
       setDistricts([
-        { id: 1, name: 'Thanjavur' },
-        { id: 2, name: 'Erode' },
-        { id: 3, name: 'Thiruvarur' },
-        { id: 4, name: 'Nagapattinam' },
-        { id: 5, name: 'Trichy' },
-        { id: 6, name: 'Coimbatore' },
-        { id: 7, name: 'Salem' },
+        { id: 1, name: 'Ariyalur' },
+        { id: 2, name: 'Chengalpattu' },
+        { id: 3, name: 'Chennai' },
+        { id: 4, name: 'Coimbatore' },
+        { id: 5, name: 'Cuddalore' },
+        { id: 6, name: 'Dharmapuri' },
+        { id: 7, name: 'Dindigul' },
+        { id: 8, name: 'Erode' },
+        { id: 9, name: 'Kallakurichi' },
+        { id: 10, name: 'Kanchipuram' },
+        { id: 11, name: 'Kanyakumari' },
+        { id: 12, name: 'Karur' },
+        { id: 13, name: 'Krishnagiri' },
+        { id: 14, name: 'Madurai' },
+        { id: 15, name: 'Mayiladuthurai' },
+        { id: 16, name: 'Nagapattinam' },
+        { id: 17, name: 'Namakkal' },
+        { id: 18, name: 'Nilgiris' },
+        { id: 19, name: 'Perambalur' },
+        { id: 20, name: 'Pudukkottai' },
+        { id: 21, name: 'Ramanathapuram' },
+        { id: 22, name: 'Ranipet' },
+        { id: 23, name: 'Salem' },
+        { id: 24, name: 'Sivaganga' },
+        { id: 25, name: 'Tenkasi' },
+        { id: 26, name: 'Thanjavur' },
+        { id: 27, name: 'Theni' },
+        { id: 28, name: 'Thoothukudi' },
+        { id: 29, name: 'Tiruchirappalli' },
+        { id: 30, name: 'Tirunelveli' },
+        { id: 31, name: 'Tirupathur' },
+        { id: 32, name: 'Tiruppur' },
+        { id: 33, name: 'Tiruvallur' },
+        { id: 34, name: 'Tiruvannamalai' },
+        { id: 35, name: 'Tiruvarur' },
+        { id: 36, name: 'Vellore' },
+        { id: 37, name: 'Viluppuram' },
+        { id: 38, name: 'Virudhunagar' }
       ]);
     }
   };
@@ -113,7 +151,14 @@ export const ProfilePage: React.FC = () => {
     setLoadingBlocks(true);
     try {
       const res = await subsidyApi.get<BlockItem[]>(`/api/taluks/${talukIdStr}/blocks`);
-      setBlocks(Array.isArray(res.data) ? res.data : []);
+      const fetched = Array.isArray(res.data) ? res.data : [];
+      if (fetched.length === 0) {
+        const foundTaluk = taluks.find(t => String(t.id) === talukIdStr);
+        const fallbackName = foundTaluk ? `${foundTaluk.name} (Urban)` : 'Urban Block';
+        setBlocks([{ id: parseInt(talukIdStr) * 1000, name: fallbackName }]);
+      } else {
+        setBlocks(fetched);
+      }
     } catch {
       setBlocks([]);
     } finally {

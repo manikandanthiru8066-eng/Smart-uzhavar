@@ -7,10 +7,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InsuranceSchemeRepository extends JpaRepository<InsuranceScheme, Long> {
 
     @Query("SELECT s FROM InsuranceScheme s WHERE LOWER(s.applicableCrops) = 'all' OR LOWER(s.applicableCrops) LIKE LOWER(CONCAT('%', :crop, '%'))")
     List<InsuranceScheme> findByCrop(@Param("crop") String crop);
+
+    Optional<InsuranceScheme> findByName(String name);
+    Optional<InsuranceScheme> findByNameIgnoreCase(String name);
 }

@@ -1,12 +1,7 @@
-DROP TABLE IF EXISTS subsidy_applications CASCADE;
-DROP TABLE IF EXISTS subsidy_schemes CASCADE;
-DROP TABLE IF EXISTS farmer_profiles CASCADE;
-DROP TABLE IF EXISTS district_crop_stats CASCADE;
-DROP TABLE IF EXISTS farmers CASCADE;
-DROP TABLE IF EXISTS taluk_blocks CASCADE;
-DROP TABLE IF EXISTS blocks CASCADE;
-DROP TABLE IF EXISTS taluks CASCADE;
-DROP TABLE IF EXISTS districts CASCADE;
+-- ============================================================
+-- Smart Uzhavar - Subsidy Service DDL Schema
+-- Safe, Non-Destructive Table Definitions with Constraints
+-- ============================================================
 
 -- 1. Districts table
 CREATE TABLE IF NOT EXISTS districts (

@@ -1041,10 +1041,10 @@
       ]
     },
     {
-      "district": "Kancheepuram",
+      "district": "Kanchipuram",
       "taluks": [
         {
-          "taluk": "Kancheepuram",
+          "taluk": "Kanchipuram",
           "lgd_subdistrict_code": 5707,
           "blocks": [
             {
@@ -1112,7 +1112,7 @@
       ]
     },
     {
-      "district": "Kanniyakumari",
+      "district": "Kanyakumari",
       "taluks": [
         {
           "taluk": "Agastheeswaram",
@@ -3066,7 +3066,7 @@
       ]
     },
     {
-      "district": "The Nilgiris",
+      "district": "Nilgiris",
       "taluks": [
         {
           "taluk": "Coonoor",
@@ -3135,7 +3135,7 @@
       ]
     },
     {
-      "district": "Thiruvallur",
+      "district": "Tiruvallur",
       "taluks": [
         {
           "taluk": "Avadi",
@@ -3218,7 +3218,7 @@
           ]
         },
         {
-          "taluk": "Thiruvallur",
+          "taluk": "Tiruvallur",
           "lgd_subdistrict_code": 5698,
           "blocks": [
             {
@@ -3270,7 +3270,7 @@
       ]
     },
     {
-      "district": "Thiruvarur",
+      "district": "Tiruvarur",
       "taluks": [
         {
           "taluk": "Koothanallur",
@@ -3395,7 +3395,7 @@
           ]
         },
         {
-          "taluk": "Thiruvarur",
+          "taluk": "Tiruvarur",
           "lgd_subdistrict_code": 5806,
           "blocks": [
             {
@@ -3425,7 +3425,7 @@
       ]
     },
     {
-      "district": "Thoothukkudi",
+      "district": "Thoothukudi",
       "taluks": [
         {
           "taluk": "Eral",
@@ -3538,11 +3538,11 @@
           ]
         },
         {
-          "taluk": "Thoothukkudi",
+          "taluk": "Thoothukudi",
           "lgd_subdistrict_code": 5866,
           "blocks": [
             {
-              "block": "Thoothukkudi",
+              "block": "Thoothukudi",
               "lgd_block_code": "6429"
             }
           ]
@@ -3705,12 +3705,22 @@
         {
           "taluk": "Tiruchirappalli East",
           "lgd_subdistrict_code": 6620,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Tiruchirappalli East (Urban)",
+              "lgd_block_code": "URB-6620"
+            }
+          ]
         },
         {
           "taluk": "Tiruchirappalli West",
           "lgd_subdistrict_code": 5779,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Tiruchirappalli West (Urban)",
+              "lgd_block_code": "URB-5779"
+            }
+          ]
         }
       ]
     },
@@ -4707,87 +4717,172 @@
         {
           "taluk": "Alandur",
           "lgd_subdistrict_code": 5704,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Alandur (Urban)",
+              "lgd_block_code": "URB-5704"
+            }
+          ]
         },
         {
           "taluk": "Ambattur",
           "lgd_subdistrict_code": 5700,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Ambattur (Urban)",
+              "lgd_block_code": "URB-5700"
+            }
+          ]
         },
         {
           "taluk": "Aminjikarai",
           "lgd_subdistrict_code": 7161,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Aminjikarai (Urban)",
+              "lgd_block_code": "URB-7161"
+            }
+          ]
         },
         {
           "taluk": "Ayanavaram",
           "lgd_subdistrict_code": 7163,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Ayanavaram (Urban)",
+              "lgd_block_code": "URB-7163"
+            }
+          ]
         },
         {
           "taluk": "Egmore",
           "lgd_subdistrict_code": 7164,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Egmore (Urban)",
+              "lgd_block_code": "URB-7164"
+            }
+          ]
         },
         {
           "taluk": "Guindy",
           "lgd_subdistrict_code": 7169,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Guindy (Urban)",
+              "lgd_block_code": "URB-7169"
+            }
+          ]
         },
         {
           "taluk": "Kolathur",
           "lgd_subdistrict_code": 7514,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Kolathur (Urban)",
+              "lgd_block_code": "URB-7514"
+            }
+          ]
         },
         {
           "taluk": "Maduravoyal",
           "lgd_subdistrict_code": 5981,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Maduravoyal (Urban)",
+              "lgd_block_code": "URB-5981"
+            }
+          ]
         },
         {
           "taluk": "Mambalam",
           "lgd_subdistrict_code": 7165,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Mambalam (Urban)",
+              "lgd_block_code": "URB-7165"
+            }
+          ]
         },
         {
           "taluk": "Mathavaram",
           "lgd_subdistrict_code": 5701,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Mathavaram (Urban)",
+              "lgd_block_code": "URB-5701"
+            }
+          ]
         },
         {
           "taluk": "Mylapore",
           "lgd_subdistrict_code": 7170,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Mylapore (Urban)",
+              "lgd_block_code": "URB-7170"
+            }
+          ]
         },
         {
           "taluk": "Perambur",
           "lgd_subdistrict_code": 7166,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Perambur (Urban)",
+              "lgd_block_code": "URB-7166"
+            }
+          ]
         },
         {
           "taluk": "Purasawalkam",
           "lgd_subdistrict_code": 7167,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Purasawalkam (Urban)",
+              "lgd_block_code": "URB-7167"
+            }
+          ]
         },
         {
           "taluk": "Sholinganallur",
           "lgd_subdistrict_code": 5705,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Sholinganallur (Urban)",
+              "lgd_block_code": "URB-5705"
+            }
+          ]
         },
         {
           "taluk": "Tiruvottiyur",
           "lgd_subdistrict_code": 5982,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Tiruvottiyur (Urban)",
+              "lgd_block_code": "URB-5982"
+            }
+          ]
         },
         {
           "taluk": "Tondiarpet",
           "lgd_subdistrict_code": 7168,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Tondiarpet (Urban)",
+              "lgd_block_code": "URB-7168"
+            }
+          ]
         },
         {
           "taluk": "Velachery",
           "lgd_subdistrict_code": 7171,
-          "blocks": []
+          "blocks": [
+            {
+              "block": "Velachery (Urban)",
+              "lgd_block_code": "URB-7171"
+            }
+          ]
         }
       ]
     }

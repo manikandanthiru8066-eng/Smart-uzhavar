@@ -24,6 +24,41 @@ public class DistrictController {
         this.talukRepository = talukRepository;
     }
 
+    public static String normalizeDistrictName(String name) {
+        if (name == null) return null;
+        String trimmed = name.trim();
+        String lower = trimmed.toLowerCase();
+        switch (lower) {
+            case "thoothukkudi":
+            case "tuticorin":
+                return "Thoothukudi";
+            case "kancheepuram":
+                return "Kanchipuram";
+            case "kanniyakumari":
+            case "kanya kumari":
+                return "Kanyakumari";
+            case "the nilgiris":
+            case "the nilgiri":
+            case "nilgiri":
+                return "Nilgiris";
+            case "thiruvallur":
+                return "Tiruvallur";
+            case "thiruvarur":
+                return "Tiruvarur";
+            case "trichy":
+            case "tiruchy":
+                return "Tiruchirappalli";
+            case "tirupattur":
+                return "Tirupathur";
+            case "villupuram":
+                return "Viluppuram";
+            case "sivagangai":
+                return "Sivaganga";
+            default:
+                return trimmed;
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<District>> getAllDistricts() {
         return ResponseEntity.ok(districtRepository.findAll());
@@ -32,6 +67,16 @@ public class DistrictController {
     @GetMapping("/{districtId}/taluks")
     public ResponseEntity<List<Taluk>> getTaluksByDistrict(@PathVariable("districtId") Long districtId) {
         List<Taluk> taluks = talukRepository.findByDistrictIdOrderByNameAsc(districtId);
+        return ResponseEntity.ok(taluks);
+    }
+
+    @GetMapping("/name/{districtName}/taluks")
+    public ResponseEntity<List<Taluk>> getTaluksByDistrictName(@PathVariable("districtName") String districtName) {
+        String normalized = normalizeDistrictName(districtName);
+        List<Taluk> taluks = talukRepository.findByDistrictNameIgnoreCaseOrderByNameAsc(normalized);
+        if (taluks.isEmpty() && !normalized.equalsIgnoreCase(districtName)) {
+            taluks = talukRepository.findByDistrictNameIgnoreCaseOrderByNameAsc(districtName);
+        }
         return ResponseEntity.ok(taluks);
     }
 }
