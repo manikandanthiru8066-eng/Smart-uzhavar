@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(errors));
     }
 
-    // Catch DB-level unique constraint violations (username / email / phone already exists)
+    // Catch DB-level unique constraint violations (username / email / phone already exists or pkey collision)
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
             org.springframework.dao.DataIntegrityViolationException ex) {
@@ -75,8 +75,10 @@ public class GlobalExceptionHandler {
                 msg = "Phone number is already in use.";
             } else if (lower.contains("farmers_username_key") || lower.contains("username")) {
                 msg = "Username is already taken. Please choose another username.";
+            } else if (lower.contains("farmers_pkey") || lower.contains("primary key")) {
+                msg = "Primary key collision detected. Please try submitting registration again.";
             } else {
-                msg = "Database error: " + cause;
+                msg = "Database constraint violation: " + cause;
             }
         }
         return ResponseEntity

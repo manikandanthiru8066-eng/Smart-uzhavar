@@ -28,6 +28,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Component
 @Transactional
 public class DatabaseSeeder implements CommandLineRunner {
@@ -40,6 +43,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final SubsidySchemeRepository subsidySchemeRepository;
     private final DistrictCropStatRepository districtCropStatRepository;
     private final ObjectMapper objectMapper;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public DatabaseSeeder(DistrictRepository districtRepository,
                           TalukRepository talukRepository,
@@ -62,6 +68,20 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedTalukBlockHierarchy();
         seedDistrictCropStats();
         seedSubsidySchemes();
+        syncSequences();
+    }
+
+    private void syncSequences() {
+        String[] tables = {"farmers", "farmer_profiles", "districts", "taluks", "blocks", "district_crop_stats", "subsidy_schemes", "subsidy_applications", "machinery_bookings"};
+        for (String table : tables) {
+            try {
+                String sql = "SELECT setval(pg_get_serial_sequence('" + table + "', 'id'), COALESCE((SELECT MAX(id) FROM " + table + "), 1))";
+                entityManager.createNativeQuery(sql).getSingleResult();
+            } catch (Exception ignored) {
+                // Non-PostgreSQL or sequence already synced
+            }
+        }
+        log.info("PostgreSQL sequences synchronized for subsidyservice tables.");
     }
 
     private InputStream openResourceStream(String filename) {

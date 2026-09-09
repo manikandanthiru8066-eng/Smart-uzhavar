@@ -24,6 +24,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Component
 @Transactional
 public class DatabaseSeeder implements CommandLineRunner {
@@ -36,6 +39,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final TalukRepository talukRepository;
     private final BlockRepository blockRepository;
     private final ObjectMapper objectMapper;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public DatabaseSeeder(InsuranceSchemeRepository insuranceSchemeRepository,
                           DistrictRepository districtRepository,
@@ -55,6 +61,20 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedDistricts();
         seedTalukBlockHierarchy();
         seedInsuranceSchemes();
+        syncSequences();
+    }
+
+    private void syncSequences() {
+        String[] tables = {"farmers", "farmer_profiles", "districts", "taluks", "blocks", "insurance_schemes", "insurance_estimates", "machinery_bookings"};
+        for (String table : tables) {
+            try {
+                String sql = "SELECT setval(pg_get_serial_sequence('" + table + "', 'id'), COALESCE((SELECT MAX(id) FROM " + table + "), 1))";
+                entityManager.createNativeQuery(sql).getSingleResult();
+            } catch (Exception ignored) {
+                // Non-PostgreSQL or sequence already synced
+            }
+        }
+        log.info("PostgreSQL sequences synchronized for insurance-service tables.");
     }
 
     private InputStream openResourceStream(String filename) {

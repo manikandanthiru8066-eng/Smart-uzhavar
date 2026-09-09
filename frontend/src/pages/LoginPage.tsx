@@ -130,6 +130,23 @@ export const LoginPage: React.FC = () => {
     setPasswordError(null);
   };
 
+  const extractErrorMessage = (err: any, fallback: string): string => {
+    if (!err) return fallback;
+    if (err.response) {
+      const data = err.response.data;
+      if (typeof data === 'string' && data.trim()) return data;
+      if (data && typeof data === 'object') {
+        if (data.message && typeof data.message === 'string') return data.message;
+        if (data.error && typeof data.error === 'string') return data.error;
+      }
+      if (err.response.statusText) return `Server Error (${err.response.status}: ${err.response.statusText})`;
+    }
+    if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
+      return 'Unable to connect to the backend server. Render backend may be starting up (please wait 30 seconds and try again).';
+    }
+    return err.message || fallback;
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -143,8 +160,7 @@ export const LoginPage: React.FC = () => {
       navigate('/', { replace: true });
     } catch (err: any) {
       console.error('[LoginPage] Login error — status:', err?.response?.status, 'body:', err?.response?.data);
-      const backendMsg = err?.response?.data?.message || err?.response?.data?.error;
-      setError(backendMsg || t('loginErrorFallback'));
+      setError(extractErrorMessage(err, t('loginErrorFallback')));
     } finally {
       setSubmitting(false);
     }
@@ -182,8 +198,7 @@ export const LoginPage: React.FC = () => {
       navigate('/', { replace: true });
     } catch (err: any) {
       console.error('[LoginPage] Signup error — status:', err?.response?.status, 'body:', err?.response?.data);
-      const backendMsg = err?.response?.data?.message || err?.response?.data?.error;
-      setError(backendMsg || t('signupErrorFallback'));
+      setError(extractErrorMessage(err, t('signupErrorFallback')));
     } finally {
       setSubmitting(false);
     }
