@@ -85,6 +85,11 @@ public class SecurityConfig {
             "http://localhost:5174",
             "http://127.0.0.1:5173"
         ));
+        configuration.setAllowedOriginPatterns(List.of(
+            "https://*.vercel.app",
+            "http://localhost:*",
+            "http://127.0.0.1:*"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
