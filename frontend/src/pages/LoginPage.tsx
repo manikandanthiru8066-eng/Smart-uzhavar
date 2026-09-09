@@ -197,8 +197,18 @@ export const LoginPage: React.FC = () => {
 
       navigate('/', { replace: true });
     } catch (err: any) {
-      console.error('[LoginPage] Signup error — status:', err?.response?.status, 'body:', err?.response?.data);
-      setError(extractErrorMessage(err, t('signupErrorFallback')));
+      console.error('=== SIGNUP ERROR DEBUG ===');
+      console.error('Status Code:', err?.response?.status);
+      console.error('Response Body:', err?.response?.data);
+      console.error('Error Code:', err?.code);
+      console.error('Full Error Object:', err);
+
+      const statusStr = err?.response?.status ? `[HTTP ${err.response.status}] ` : '[Network Error] ';
+      const bodyStr = err?.response?.data
+        ? (typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data))
+        : (err?.message || 'No response received from server');
+
+      setError(`${statusStr}${bodyStr}`);
     } finally {
       setSubmitting(false);
     }
