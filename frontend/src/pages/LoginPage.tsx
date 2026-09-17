@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { subsidyApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
-import { Sprout, LogIn, UserPlus, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Sprout, LogIn, UserPlus, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 interface DistrictItem {
   id: number;
@@ -39,10 +39,12 @@ export const LoginPage: React.FC = () => {
   // Login form state
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // Signup form state
   const [signupUsername, setSignupUsername] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -128,6 +130,8 @@ export const LoginPage: React.FC = () => {
     setError(null);
     setPhoneError(null);
     setPasswordError(null);
+    setShowLoginPassword(false);
+    setShowSignupPassword(false);
   };
 
   const extractErrorMessage = (err: any, fallback: string): string => {
@@ -303,16 +307,28 @@ export const LoginPage: React.FC = () => {
               <label className="block text-xs font-semibold text-gray-700 mb-1">
                 {t('loginPasswordLabel')}
               </label>
-              <input
-                id="login-password"
-                type="password"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                placeholder={t('loginPasswordPlaceholder')}
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
+              <div className="relative">
+                <input
+                  id="login-password"
+                  type={showLoginPassword ? 'text' : 'password'}
+                  className="w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder={t('loginPasswordPlaceholder')}
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  id="login-password-toggle-btn"
+                  onClick={() => setShowLoginPassword((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors p-1"
+                  aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                  tabIndex={-1}
+                >
+                  {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <button
@@ -366,18 +382,30 @@ export const LoginPage: React.FC = () => {
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   {t('signupPasswordLabel')} *
                 </label>
-                <input
-                  id="signup-password"
-                  type="password"
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                    passwordError ? 'border-red-400 bg-red-50' : 'border-gray-200'
-                  }`}
-                  placeholder="••••••••"
-                  value={signupPassword}
-                  onChange={(e) => handlePasswordChange(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                />
+                <div className="relative">
+                  <input
+                    id="signup-password"
+                    type={showSignupPassword ? 'text' : 'password'}
+                    className={`w-full px-3.5 py-2.5 pr-10 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                      passwordError ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                    }`}
+                    placeholder="••••••••"
+                    value={signupPassword}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    id="signup-password-toggle-btn"
+                    onClick={() => setShowSignupPassword((prev) => !prev)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors p-1"
+                    aria-label={showSignupPassword ? 'Hide password' : 'Show password'}
+                    tabIndex={-1}
+                  >
+                    {showSignupPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
                 {signupPassword && !passwordError && (
                   <p className="mt-1 text-xs text-emerald-600 flex items-center gap-1">
                     <CheckCircle2 size={11} /> Strong ✓
