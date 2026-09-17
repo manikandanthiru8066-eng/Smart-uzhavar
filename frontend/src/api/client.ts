@@ -1,21 +1,15 @@
 import axios from 'axios';
 
-// Support VITE_SUBSIDY_API_URL or VITE_API_URL for subsidy service
-const rawSubsidyUrl = import.meta.env.VITE_SUBSIDY_API_URL || import.meta.env.VITE_API_URL;
-const rawInsuranceUrl = import.meta.env.VITE_INSURANCE_API_URL;
+// Base URLs read exclusively from environment variables with no hardcoded fallbacks
+const SUBSIDY_API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_SUBSIDY_API_URL || '';
+const INSURANCE_API_URL = import.meta.env.VITE_INSURANCE_API_URL || '';
 
-const isDev = import.meta.env.DEV;
-
-// In production, require env vars to prevent silently masking missing production URLs with localhost
-const SUBSIDY_API_URL = rawSubsidyUrl || (isDev ? 'http://localhost:8080' : '');
-const INSURANCE_API_URL = rawInsuranceUrl || (isDev ? 'http://localhost:8081' : '');
-
-if (!rawSubsidyUrl && !isDev) {
-  console.error('[API Client Error] Neither VITE_SUBSIDY_API_URL nor VITE_API_URL is defined in production environment!');
+if (!SUBSIDY_API_URL) {
+  console.error('[API Client Error] VITE_API_URL is not defined in environment variables!');
 }
 
-if (!rawInsuranceUrl && !isDev) {
-  console.error('[API Client Error] VITE_INSURANCE_API_URL is not defined in production environment!');
+if (!INSURANCE_API_URL) {
+  console.error('[API Client Error] VITE_INSURANCE_API_URL is not defined in environment variables!');
 }
 
 export const insuranceApi = axios.create({
