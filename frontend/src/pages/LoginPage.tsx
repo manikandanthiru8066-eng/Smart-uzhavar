@@ -322,9 +322,8 @@ export const LoginPage: React.FC = () => {
                   type="button"
                   id="login-password-toggle-btn"
                   onClick={() => setShowLoginPassword((prev) => !prev)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors p-1"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors p-1 flex items-center justify-center"
                   aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
-                  tabIndex={-1}
                 >
                   {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -399,9 +398,8 @@ export const LoginPage: React.FC = () => {
                     type="button"
                     id="signup-password-toggle-btn"
                     onClick={() => setShowSignupPassword((prev) => !prev)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors p-1"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors p-1 flex items-center justify-center"
                     aria-label={showSignupPassword ? 'Hide password' : 'Show password'}
-                    tabIndex={-1}
                   >
                     {showSignupPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
