@@ -25,10 +25,11 @@ export interface UnifiedScheme {
 }
 
 export function normalizeSchemeUrl(url?: string | null): string {
-  if (!url || !url.trim()) return 'https://www.tnagrisnet.tn.gov.in';
+  if (!url || !url.trim()) return 'https://www.tnagrisnet.tn.gov.in/';
   let clean = url.trim();
   clean = clean.replace(/tntagrisnet\.tn\.gov\.in/gi, 'www.tnagrisnet.tn.gov.in');
-  clean = clean.replace(/^(https?:\/\/)?tnagrisnet\.tn\.gov\.in/gi, 'https://www.tnagrisnet.tn.gov.in');
+  clean = clean.replace(/^(https?:\/\/)?(www\.)?tnagrisnet\.tn\.gov\.in/gi, 'https://www.tnagrisnet.tn.gov.in');
+  clean = clean.replace(/^http:\/\/www\.tnagrisnet\.tn\.gov\.in/gi, 'https://www.tnagrisnet.tn.gov.in');
   if (!/^https?:\/\//i.test(clean)) {
     clean = 'https://' + clean;
   }

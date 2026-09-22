@@ -426,11 +426,19 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedSubsidySchemes() {
+        // Unconditionally auto-correct any schemes with typo in database
+        for (SubsidyScheme s : subsidySchemeRepository.findAll()) {
+            if (s.getSourceUrl() != null && s.getSourceUrl().contains("tntagrisnet")) {
+                s.setSourceUrl(s.getSourceUrl().replace("tntagrisnet.tn.gov.in", "www.tnagrisnet.tn.gov.in"));
+                subsidySchemeRepository.save(s);
+                log.info("Auto-corrected typo in subsidy scheme '{}' sourceUrl", s.getName());
+            }
+        }
+
         long currentCount = subsidySchemeRepository.count();
         boolean hasMissingTa = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getNameTa() == null);
         boolean hasMissingUrl = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getSourceUrl() == null);
-        boolean hasTypoUrl = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getSourceUrl() != null && s.getSourceUrl().contains("tntagrisnet"));
-        if (currentCount == 10 && !hasMissingTa && !hasMissingUrl && !hasTypoUrl) {
+        if (currentCount == 10 && !hasMissingTa && !hasMissingUrl) {
             log.info("Subsidy schemes table already has 10 schemes with Tamil translations and source URLs — skipping seed.");
             return;
         }

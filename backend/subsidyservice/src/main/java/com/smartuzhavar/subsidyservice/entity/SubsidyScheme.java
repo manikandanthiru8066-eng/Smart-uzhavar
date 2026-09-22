@@ -126,12 +126,25 @@ public class SubsidyScheme {
         this.subsidyAmount = subsidyAmount;
     }
 
+    private String sanitizeUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return url;
+        }
+        String clean = url.trim();
+        clean = clean.replaceAll("(?i)tntagrisnet\\.tn\\.gov\\.in", "www.tnagrisnet.tn.gov.in");
+        clean = clean.replaceAll("(?i)^https?://tnagrisnet\\.tn\\.gov\\.in", "https://www.tnagrisnet.tn.gov.in");
+        if (!clean.matches("(?i)^https?://.*")) {
+            clean = "https://" + clean;
+        }
+        return clean;
+    }
+
     public String getSourceUrl() {
-        return sourceUrl;
+        return sanitizeUrl(sourceUrl);
     }
 
     public void setSourceUrl(String sourceUrl) {
-        this.sourceUrl = sourceUrl;
+        this.sourceUrl = sanitizeUrl(sourceUrl);
     }
 
     public Instant getCreatedAt() {
