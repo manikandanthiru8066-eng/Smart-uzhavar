@@ -3,6 +3,7 @@ package com.smartuzhavar.insuranceservice.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "insurance_schemes")
@@ -38,6 +39,9 @@ public class InsuranceScheme {
 
     @Column(name = "sum_insured_per_acre", nullable = false, precision = 12, scale = 2)
     private BigDecimal sumInsuredPerAcre;
+
+    @Column(name = "last_verified_date")
+    private LocalDate lastVerifiedDate;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
@@ -137,5 +141,13 @@ public class InsuranceScheme {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDate getLastVerifiedDate() {
+        return lastVerifiedDate;
+    }
+
+    public void setLastVerifiedDate(LocalDate lastVerifiedDate) {
+        this.lastVerifiedDate = lastVerifiedDate;
     }
 }

@@ -4,10 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartuzhavar.subsidyservice.entity.Block;
+import com.smartuzhavar.subsidyservice.entity.BlockOffice;
 import com.smartuzhavar.subsidyservice.entity.District;
 import com.smartuzhavar.subsidyservice.entity.DistrictCropStat;
 import com.smartuzhavar.subsidyservice.entity.SubsidyScheme;
 import com.smartuzhavar.subsidyservice.entity.Taluk;
+import com.smartuzhavar.subsidyservice.entity.Farmer;
+import com.smartuzhavar.subsidyservice.repository.FarmerRepository;
+import com.smartuzhavar.subsidyservice.repository.BlockOfficeRepository;
 import com.smartuzhavar.subsidyservice.repository.BlockRepository;
 import com.smartuzhavar.subsidyservice.repository.DistrictCropStatRepository;
 import com.smartuzhavar.subsidyservice.repository.DistrictRepository;
@@ -17,22 +21,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @Component
-@Transactional
 public class DatabaseSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseSeeder.class);
@@ -40,8 +48,11 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final DistrictRepository districtRepository;
     private final TalukRepository talukRepository;
     private final BlockRepository blockRepository;
+    private final BlockOfficeRepository blockOfficeRepository;
     private final SubsidySchemeRepository subsidySchemeRepository;
     private final DistrictCropStatRepository districtCropStatRepository;
+    private final FarmerRepository farmerRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
 
     @PersistenceContext
@@ -50,35 +61,52 @@ public class DatabaseSeeder implements CommandLineRunner {
     public DatabaseSeeder(DistrictRepository districtRepository,
                           TalukRepository talukRepository,
                           BlockRepository blockRepository,
+                          BlockOfficeRepository blockOfficeRepository,
                           SubsidySchemeRepository subsidySchemeRepository,
                           DistrictCropStatRepository districtCropStatRepository,
+                          FarmerRepository farmerRepository,
+                          PasswordEncoder passwordEncoder,
                           ObjectMapper objectMapper) {
         this.districtRepository = districtRepository;
         this.talukRepository = talukRepository;
         this.blockRepository = blockRepository;
+        this.blockOfficeRepository = blockOfficeRepository;
         this.subsidySchemeRepository = subsidySchemeRepository;
         this.districtCropStatRepository = districtCropStatRepository;
+        this.farmerRepository = farmerRepository;
+        this.passwordEncoder = passwordEncoder;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    @Transactional
     public void run(String... args) throws Exception {
+        seedAdminUser();
         seedDistricts();
         seedTalukBlockHierarchy();
         seedDistrictCropStats();
         seedSubsidySchemes();
+        seedSchemeVerificationDates();
+        seedBlockOffices();
         syncSequences();
     }
 
     private void syncSequences() {
-        String[] tables = {"farmers", "farmer_profiles", "districts", "taluks", "blocks", "district_crop_stats", "subsidy_schemes", "subsidy_applications", "machinery_bookings"};
+        try {
+            Object ver = entityManager.createNativeQuery("SELECT version()").getSingleResult();
+            if (ver == null || !ver.toString().toLowerCase().contains("postgresql") || ver.toString().toLowerCase().contains("h2")) {
+                return;
+            }
+        } catch (Exception e) {
+            return;
+        }
+
+        String[] tables = {"farmers", "farmer_profiles", "districts", "taluks", "blocks", "district_crop_stats", "subsidy_schemes", "subsidy_applications", "machinery_bookings", "block_offices"};
         for (String table : tables) {
             try {
                 String sql = "SELECT setval(pg_get_serial_sequence('" + table + "', 'id'), COALESCE((SELECT MAX(id) FROM " + table + "), 1))";
                 entityManager.createNativeQuery(sql).getSingleResult();
             } catch (Exception ignored) {
-                // Non-PostgreSQL or sequence already synced
+                // Sequence already synced or non-serial
             }
         }
         log.info("PostgreSQL sequences synchronized for subsidyservice tables.");
@@ -400,8 +428,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     private void seedSubsidySchemes() {
         long currentCount = subsidySchemeRepository.count();
         boolean hasMissingTa = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getNameTa() == null);
-        if (currentCount == 10 && !hasMissingTa) {
-            log.info("Subsidy schemes table already has 10 schemes with Tamil translations — skipping seed.");
+        boolean hasMissingUrl = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getSourceUrl() == null);
+        if (currentCount == 10 && !hasMissingTa && !hasMissingUrl) {
+            log.info("Subsidy schemes table already has 10 schemes with Tamil translations and source URLs — skipping seed.");
             return;
         }
 
@@ -414,7 +443,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         try (InputStream stream = is) {
             List<SubsidyScheme> schemes = objectMapper.readValue(stream, new TypeReference<List<SubsidyScheme>>() {});
             for (SubsidyScheme scheme : schemes) {
-                Optional<SubsidyScheme> existing = subsidySchemeRepository.findByNameIgnoreCase(scheme.getName());
+                Optional<SubsidyScheme> existing = subsidySchemeRepository.findFirstByNameIgnoreCase(scheme.getName());
                 if (existing.isPresent()) {
                     SubsidyScheme s = existing.get();
                     s.setNameTa(scheme.getNameTa());
@@ -424,6 +453,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                     s.setApplicableCropsTa(scheme.getApplicableCropsTa());
                     s.setApplicableDistricts(scheme.getApplicableDistricts());
                     s.setSubsidyAmount(scheme.getSubsidyAmount());
+                    s.setSourceUrl(scheme.getSourceUrl());
                     subsidySchemeRepository.save(s);
                 } else {
                     subsidySchemeRepository.save(scheme);
@@ -432,6 +462,151 @@ public class DatabaseSeeder implements CommandLineRunner {
             log.info("Successfully seeded/synced {} subsidy schemes.", schemes.size());
         } catch (IOException e) {
             log.error("Error reading or seeding subsidy schemes: {}", e.getMessage(), e);
+        }
+    }
+
+    private void seedAdminUser() {
+        Farmer admin = farmerRepository.findByUsernameIgnoreCase("admin")
+                .orElseGet(() -> {
+                    Farmer f = new Farmer();
+                    f.setUsername("admin");
+                    f.setFullName("System Administrator");
+                    f.setEmail("admin@smartuzhavar.gov.in");
+                    f.setPhoneNumber("9876543210");
+                    return f;
+                });
+        admin.setRole("ADMIN");
+        admin.setPassword(passwordEncoder.encode("AdminPassword123!"));
+        farmerRepository.save(admin);
+        log.info("Default ADMIN account seeded/verified successfully with role ADMIN (username: admin)");
+    }
+
+    private void seedSchemeVerificationDates() {
+        List<SubsidyScheme> schemes = subsidySchemeRepository.findAll();
+        if (!schemes.isEmpty()) {
+            LocalDate today = LocalDate.now();
+            for (int i = 0; i < schemes.size(); i++) {
+                SubsidyScheme s = schemes.get(i);
+                if (s.getLastVerifiedDate() == null) {
+                    // First 3 schemes: verified recently within 90 days
+                    // Remaining schemes: verified > 90 days ago so they show "Needs Review"
+                    if (i < 3) {
+                        s.setLastVerifiedDate(today.minusDays(5 * (i + 1)));
+                    } else {
+                        s.setLastVerifiedDate(today.minusDays(95 + (i * 10)));
+                    }
+                    subsidySchemeRepository.save(s);
+                }
+            }
+            log.info("Baseline lastVerifiedDates initialized for subsidy schemes.");
+        }
+    }
+
+    private void seedBlockOffices() {
+        long currentCount = blockOfficeRepository.count();
+        if (currentCount >= 55) {
+            log.info("Block offices table already seeded ({} records) — skipping.", currentCount);
+            return;
+        }
+
+        InputStream is = openResourceStream("tn_block_office_locations.json");
+        if (is == null) {
+            log.error("Could not find tn_block_office_locations.json resource for seeding!");
+            return;
+        }
+
+        Map<String, String> blockAliases = new HashMap<>();
+        blockAliases.put("kumaratchi", "Komaratchi");
+        blockAliases.put("vridhachalam", "Vriddhachalam");
+        blockAliases.put("kilpennathur", "Keelpennathur");
+        blockAliases.put("chetpet", "Chetput");
+        blockAliases.put("elachipalayam", "Elacipalayam");
+        blockAliases.put("kabilarmalai", "Kabilamalai");
+        blockAliases.put("tiruchengode", "Tiruchengodu");
+        blockAliases.put("anthiyur", "Andiyur");
+        blockAliases.put("sathyamangalam", "Satyamangalam");
+        blockAliases.put("orathanadu", "Orattanadu");
+        blockAliases.put("thiruvidaimarudur", "Tiruvidaimarudur");
+        blockAliases.put("sethubavachatram", "Sethubhavachatram");
+
+        List<Block> allDbBlocks = blockRepository.findAll();
+
+        try (InputStream stream = is) {
+            JsonNode root = objectMapper.readTree(stream);
+            JsonNode districtsNode = root.get("districts");
+            if (districtsNode != null && districtsNode.isArray()) {
+                int officeCount = 0;
+                for (JsonNode distNode : districtsNode) {
+                    String districtName = distNode.get("district").asText();
+                    JsonNode blocksNode = distNode.get("blocks");
+                    if (blocksNode != null && blocksNode.isArray()) {
+                        for (JsonNode bNode : blocksNode) {
+                            String rawBlockName = bNode.get("block").asText();
+                            JsonNode officeNameNode = bNode.get("officeName");
+                            String officeName = (officeNameNode != null && !officeNameNode.isNull()) ? officeNameNode.asText() : null;
+                            JsonNode addressNode = bNode.get("address");
+                            String address = (addressNode != null && !addressNode.isNull()) ? addressNode.asText() : null;
+
+                            // Only seed verified offices with actual officeName or address
+                            if (officeName == null && address == null) {
+                                continue;
+                            }
+
+                            // Match block entity
+                            String cleanName = rawBlockName.trim().toLowerCase();
+                            String alias = blockAliases.getOrDefault(cleanName, rawBlockName.trim());
+
+                            Block matchedBlock = allDbBlocks.stream()
+                                    .filter(b -> b.getName().equalsIgnoreCase(rawBlockName.trim()) ||
+                                                 b.getName().equalsIgnoreCase(alias) ||
+                                                 b.getName().replaceAll("[^a-zA-Z0-9]", "").equalsIgnoreCase(cleanName.replaceAll("[^a-zA-Z0-9]", "")))
+                                    .findFirst()
+                                    .orElse(null);
+
+                            Optional<BlockOffice> existing = blockOfficeRepository.findFirstByDistrictNameIgnoreCaseAndBlockNameIgnoreCase(districtName, rawBlockName);
+                            BlockOffice bo = existing.orElseGet(BlockOffice::new);
+                            bo.setBlock(matchedBlock);
+                            bo.setDistrictName(districtName);
+                            bo.setBlockName(rawBlockName);
+                            bo.setOfficeName(officeName);
+                            bo.setAddress(address);
+
+                            JsonNode latNode = bNode.get("latitude");
+                            if (latNode != null && !latNode.isNull() && latNode.isNumber()) {
+                                bo.setLatitude(latNode.asDouble());
+                            } else {
+                                bo.setLatitude(null);
+                            }
+
+                            JsonNode lngNode = bNode.get("longitude");
+                            if (lngNode != null && !lngNode.isNull() && lngNode.isNumber()) {
+                                bo.setLongitude(lngNode.asDouble());
+                            } else {
+                                bo.setLongitude(null);
+                            }
+
+                            JsonNode phoneNode = bNode.get("phone");
+                            if (phoneNode != null && !phoneNode.isNull() && !phoneNode.asText().trim().isEmpty()) {
+                                bo.setPhone(phoneNode.asText().trim());
+                            } else {
+                                bo.setPhone(null);
+                            }
+
+                            JsonNode sourceNode = bNode.get("source");
+                            bo.setSource((sourceNode != null && !sourceNode.isNull()) ? sourceNode.asText() : null);
+
+                            JsonNode noteNode = bNode.get("verificationNote");
+                            bo.setVerificationNote((noteNode != null && !noteNode.isNull()) ? noteNode.asText() : null);
+
+                            blockOfficeRepository.save(bo);
+                            officeCount++;
+                        }
+                    }
+                }
+                log.info("Successfully seeded {} verified block agriculture offices.", officeCount);
+            }
+        } catch (Exception e) {
+            log.error("Error seeding block offices: {}", e.getMessage(), e);
         }
     }
 }

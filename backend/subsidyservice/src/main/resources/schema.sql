@@ -55,8 +55,11 @@ CREATE TABLE IF NOT EXISTS farmers (
     full_name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     phone_number VARCHAR(20) UNIQUE,
+    role VARCHAR(20) DEFAULT 'FARMER',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE farmers ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'FARMER';
+UPDATE farmers SET role = 'FARMER' WHERE role IS NULL;
 
 -- 3. Farmer Profiles table (One farmer can have MULTIPLE crop profiles)
 CREATE TABLE IF NOT EXISTS farmer_profiles (
@@ -88,8 +91,12 @@ CREATE TABLE IF NOT EXISTS subsidy_schemes (
     applicable_crops_ta VARCHAR(255),
     applicable_districts VARCHAR(255), -- Comma-separated list of district names, or "All"
     subsidy_amount VARCHAR(100),
+    source_url VARCHAR(255),
+    last_verified_date DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE subsidy_schemes ADD COLUMN IF NOT EXISTS source_url VARCHAR(255);
+ALTER TABLE subsidy_schemes ADD COLUMN IF NOT EXISTS last_verified_date DATE;
 
 -- 5. Subsidy Applications table
 CREATE TABLE IF NOT EXISTS subsidy_applications (
@@ -118,4 +125,23 @@ CREATE TABLE IF NOT EXISTS machinery_bookings (
     status VARCHAR(50) DEFAULT 'REQUESTED',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 7. Block Agriculture Offices table
+CREATE TABLE IF NOT EXISTS block_offices (
+    id BIGSERIAL PRIMARY KEY,
+    block_id BIGINT REFERENCES blocks(id) ON DELETE CASCADE,
+    district_name VARCHAR(100) NOT NULL,
+    block_name VARCHAR(100) NOT NULL,
+    office_name VARCHAR(255),
+    address TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    phone VARCHAR(50),
+    source VARCHAR(255),
+    verification_note TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_block_offices_block_id ON block_offices(block_id);
+CREATE INDEX IF NOT EXISTS idx_block_offices_block_name ON block_offices(block_name);
+
 

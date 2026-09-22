@@ -14,6 +14,7 @@ public class RecommendedSubsidyResponse {
     private String applicableCropsTa;
     private String applicableDistricts;
     private String subsidyAmount;
+    private String sourceUrl;
     private Instant createdAt;
     private double matchScore;
     private List<String> matchReasons = new ArrayList<>();
@@ -23,6 +24,12 @@ public class RecommendedSubsidyResponse {
     public RecommendedSubsidyResponse(Long id, String name, String nameTa, String description, String descriptionTa,
                                        String applicableCrops, String applicableCropsTa, String applicableDistricts, 
                                        String subsidyAmount, Instant createdAt, double matchScore, List<String> matchReasons) {
+        this(id, name, nameTa, description, descriptionTa, applicableCrops, applicableCropsTa, applicableDistricts, subsidyAmount, null, createdAt, matchScore, matchReasons);
+    }
+
+    public RecommendedSubsidyResponse(Long id, String name, String nameTa, String description, String descriptionTa,
+                                       String applicableCrops, String applicableCropsTa, String applicableDistricts, 
+                                       String subsidyAmount, String sourceUrl, Instant createdAt, double matchScore, List<String> matchReasons) {
         this.id = id;
         this.name = name;
         this.nameTa = nameTa;
@@ -32,6 +39,7 @@ public class RecommendedSubsidyResponse {
         this.applicableCropsTa = applicableCropsTa;
         this.applicableDistricts = applicableDistricts;
         this.subsidyAmount = subsidyAmount;
+        this.sourceUrl = sourceUrl;
         this.createdAt = createdAt;
         this.matchScore = matchScore;
         this.matchReasons = matchReasons != null ? matchReasons : new ArrayList<>();
@@ -107,6 +115,14 @@ public class RecommendedSubsidyResponse {
 
     public void setSubsidyAmount(String subsidyAmount) {
         this.subsidyAmount = subsidyAmount;
+    }
+
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
     }
 
     public Instant getCreatedAt() {

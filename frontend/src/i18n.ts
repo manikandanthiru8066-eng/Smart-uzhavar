@@ -14,6 +14,7 @@ const resources = {
       navProfile: 'Profile',
       navNotifications: 'Notifications',
       navSettings: 'Settings',
+      navAdmin: 'Admin Portal',
       sideFoot: 'Smart Uzhavar v2.0\nDecision support only — not a government portal.',
       userNavName: 'Manikandan',
       
@@ -26,6 +27,7 @@ const resources = {
       subProfile: 'Editable anytime',
       subNotifications: 'Alerts, subsidies, deadlines',
       subSettings: 'Language, theme and preferences',
+      subAdmin: 'Maintain subsidy & insurance schemes',
 
       // Hero / Landing
       heroH1: 'Smart farming starts<br>with <span class="accent">smart decisions</span>',
@@ -225,6 +227,7 @@ const resources = {
       navProfile: 'சுயவிவரம்',
       navNotifications: 'அறிவிப்புகள்',
       navSettings: 'அமைப்புகள்',
+      navAdmin: 'நிர்வாக தளம்',
       sideFoot: 'ஸ்மார்ட் உழவர் பதிப்பு 2.0\nதீர்மான ஆதரவு மட்டுமே — அரசு போர்டல் அல்ல.',
       userNavName: 'மணிகண்டன்',
 
@@ -237,6 +240,7 @@ const resources = {
       subProfile: 'எப்போது வேண்டுமானாலும் திருத்தலாம்',
       subNotifications: 'எச்சரிக்கைகள், மானியங்கள், காலக்கெடு',
       subSettings: 'மொழி, தீம் மற்றும் விருப்பத்தேர்வுகள்',
+      subAdmin: 'மானியங்கள் மற்றும் காப்பீட்டு திட்டங்கள் மேலாண்மை',
 
       // Hero / Landing
       heroH1: 'ஸ்மார்ட் விவசாயம் தொடங்குகிறது<br><span class="accent">ஸ்மார்ட் முடிவுகளுடன்</span>',

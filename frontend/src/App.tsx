@@ -12,6 +12,8 @@ import { MachineryPage } from './pages/MachineryPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { AdminRoute } from './components/AdminRoute';
 
 export const App: React.FC = () => {
   return (
@@ -19,6 +21,18 @@ export const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+
+          {/* Dedicated Protected Admin Route */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AppShell>
+                  <AdminDashboardPage />
+                </AppShell>
+              </AdminRoute>
+            }
+          />
 
           <Route
             path="/*"

@@ -149,6 +149,7 @@ public class ProfileController {
                 fullName,
                 farmer.getEmail(),
                 farmer.getPhoneNumber(),
+                farmer.getRole(),
                 cropDtos
         );
     }

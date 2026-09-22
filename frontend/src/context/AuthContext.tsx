@@ -23,10 +23,13 @@ export interface FarmerProfileData {
   fullName: string;
   email?: string;
   phoneNumber?: string;
+  role?: string;
 
   // Legacy compatibility fields
+  district?: string;
   districtName?: string;
   block?: string;
+  blockId?: number;
   cropGrown?: string;
   cropDurationMonths?: number;
   season?: string;
@@ -41,6 +44,8 @@ export interface FarmerProfileData {
 interface AuthContextType {
   token: string | null;
   username: string | null;
+  role: string | null;
+  isAdmin: boolean;
   profile: FarmerProfileData | null;
   isAuthenticated: boolean;
   loading: boolean;
@@ -54,11 +59,36 @@ interface AuthContextType {
   deleteCropProfile: (id: number) => Promise<FarmerProfileData>;
 }
 
+export function parseJwtRole(token: string | null): string {
+  if (!token) return 'FARMER';
+  try {
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return 'FARMER';
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const parsed = JSON.parse(jsonPayload);
+    return (parsed.role || 'FARMER').toUpperCase();
+  } catch {
+    return 'FARMER';
+  }
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [username, setUsername] = useState<string | null>(() => localStorage.getItem('username'));
+  const [role, setRole] = useState<string | null>(() => {
+    const saved = localStorage.getItem('role');
+    if (saved) return saved;
+    const t = localStorage.getItem('token');
+    return t ? parseJwtRole(t) : null;
+  });
   const [profile, setProfile] = useState<FarmerProfileData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -69,6 +99,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (res.data?.username) {
         setUsername(res.data.username);
         localStorage.setItem('username', res.data.username);
+      }
+      if (res.data?.role) {
+        setRole(res.data.role);
+        localStorage.setItem('role', res.data.role);
       }
     } catch (err: any) {
       if (err?.response?.status === 401) {
@@ -91,19 +125,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const res = await subsidyApi.post('/api/auth/login', { username: u, password: p });
     const newToken = res.data.token;
     const returnedUser = res.data.username || u;
+    const returnedRole = (res.data.role || parseJwtRole(newToken) || 'FARMER').toUpperCase();
 
     localStorage.setItem('token', newToken);
     localStorage.setItem('username', returnedUser);
+    localStorage.setItem('role', returnedRole);
     setToken(newToken);
     setUsername(returnedUser);
+    setRole(returnedRole);
 
     try {
       const profileRes = await subsidyApi.get<FarmerProfileData>('/api/profile', {
         headers: { Authorization: `Bearer ${newToken}` },
       });
       setProfile(profileRes.data);
+      if (profileRes.data?.role) {
+        setRole(profileRes.data.role);
+        localStorage.setItem('role', profileRes.data.role);
+      }
     } catch {
-      setProfile({ username: returnedUser, fullName: returnedUser, crops: [] });
+      setProfile({ username: returnedUser, fullName: returnedUser, role: returnedRole, crops: [] });
     }
   };
 
@@ -139,8 +180,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('role');
     setToken(null);
     setUsername(null);
+    setRole(null);
     setProfile(null);
   };
 
@@ -177,6 +220,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       value={{
         token,
         username,
+        role,
+        isAdmin: role === 'ADMIN',
         profile,
         isAuthenticated: !!token,
         loading,

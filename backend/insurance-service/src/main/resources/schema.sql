@@ -34,8 +34,11 @@ CREATE TABLE IF NOT EXISTS farmers (
     full_name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     phone_number VARCHAR(20) UNIQUE,
+    role VARCHAR(20) DEFAULT 'FARMER',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE farmers ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'FARMER';
+UPDATE farmers SET role = 'FARMER' WHERE role IS NULL;
 
 -- 3. Taluks table
 CREATE TABLE IF NOT EXISTS taluks (
@@ -99,8 +102,10 @@ CREATE TABLE IF NOT EXISTS insurance_schemes (
     applicable_crops_ta VARCHAR(255),
     premium_rate_percentage DECIMAL(5, 2) NOT NULL,
     sum_insured_per_acre DECIMAL(12, 2) NOT NULL,
+    last_verified_date DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE insurance_schemes ADD COLUMN IF NOT EXISTS last_verified_date DATE;
 
 -- Insurance Estimates table
 CREATE TABLE IF NOT EXISTS insurance_estimates (

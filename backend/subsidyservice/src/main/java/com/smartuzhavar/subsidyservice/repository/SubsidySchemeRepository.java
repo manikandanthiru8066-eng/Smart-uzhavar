@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface SubsidySchemeRepository extends JpaRepository<SubsidyScheme, Long> {
     Optional<SubsidyScheme> findByName(String name);
     Optional<SubsidyScheme> findByNameIgnoreCase(String name);
+    Optional<SubsidyScheme> findFirstByNameIgnoreCase(String name);
 }

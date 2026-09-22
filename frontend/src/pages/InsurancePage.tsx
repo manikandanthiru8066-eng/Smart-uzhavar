@@ -11,6 +11,7 @@ import {
   Search,
   Sprout,
 } from 'lucide-react';
+import { NearestOfficeCard } from '../components/NearestOfficeCard';
 
 interface InsuranceSchemeItem {
   id: number;
@@ -202,6 +203,13 @@ export const InsurancePage: React.FC = () => {
                 </span>
               </div>
 
+              {/* Nearest Agriculture Office Card */}
+              <NearestOfficeCard
+                blockId={cropItem.blockId}
+                blockName={cropItem.block}
+                districtName={cropItem.districtName}
+              />
+
               {group.schemes.map((scheme, idx) => (
                 <div key={scheme.id || idx} className="card ins-card mb-4">
                   <div className="ins-top flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -272,6 +280,13 @@ export const InsurancePage: React.FC = () => {
       ) : (
         /* Fallback single list if zero crops */
         <div className="mb-6">
+          {(profile?.blockId || profile?.block) && (
+            <NearestOfficeCard
+              blockId={profile.blockId}
+              blockName={profile.block}
+              districtName={profile.district}
+            />
+          )}
           <h3 className="text-sm font-bold text-gray-800 mb-3.5 uppercase tracking-wider">Recommended Insurance Schemes</h3>
           {fallbackSchemes.map((scheme, idx) => (
             <div key={scheme.id || idx} className="card ins-card mb-4">

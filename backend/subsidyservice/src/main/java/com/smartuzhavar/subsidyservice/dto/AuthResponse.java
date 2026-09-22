@@ -5,11 +5,20 @@ public class AuthResponse {
     private String type = "Bearer";
     private String username;
 
+    private String role;
+
     public AuthResponse() {}
 
     public AuthResponse(String token, String username) {
         this.token = token;
         this.username = username;
+        this.role = "FARMER";
+    }
+
+    public AuthResponse(String token, String username, String role) {
+        this.token = token;
+        this.username = username;
+        this.role = role != null ? role : "FARMER";
     }
 
     public String getToken() {
@@ -34,5 +43,13 @@ public class AuthResponse {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

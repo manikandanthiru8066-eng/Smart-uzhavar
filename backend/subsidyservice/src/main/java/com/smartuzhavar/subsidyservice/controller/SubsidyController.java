@@ -104,6 +104,7 @@ public class SubsidyController {
                                 scheme.getApplicableCropsTa(),
                                 scheme.getApplicableDistricts(),
                                 scheme.getSubsidyAmount(),
+                                scheme.getSourceUrl(),
                                 scheme.getCreatedAt(),
                                 score,
                                 reasons
@@ -130,6 +131,7 @@ public class SubsidyController {
                         scheme.getApplicableCropsTa(),
                         scheme.getApplicableDistricts(),
                         scheme.getSubsidyAmount(),
+                        scheme.getSourceUrl(),
                         scheme.getCreatedAt(),
                         50.0,
                         defaultReasons

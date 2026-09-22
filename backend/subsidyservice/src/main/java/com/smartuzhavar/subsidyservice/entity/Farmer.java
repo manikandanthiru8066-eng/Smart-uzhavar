@@ -26,6 +26,9 @@ public class Farmer {
     @Column(name = "phone_number", unique = true, length = 20)
     private String phoneNumber;
 
+    @Column(name = "role", nullable = false, length = 20)
+    private String role = "FARMER";
+
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
@@ -94,5 +97,13 @@ public class Farmer {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getRole() {
+        return role != null ? role : "FARMER";
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

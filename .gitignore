@@ -156,3 +156,7 @@ hs_err_pid*
 
 # Spring Boot
 spring-shell.log
+
+# Temporary local files
+token.tmp
+

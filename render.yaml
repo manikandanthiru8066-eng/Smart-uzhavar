@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: smart-uzhavar-subsidy
+    env: docker
+    dockerfilePath: backend/subsidyservice/Dockerfile
+    dockerContext: backend/subsidyservice
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+
+  - type: web
+    name: smart-uzhavar-insurance
+    env: docker
+    dockerfilePath: backend/insurance-service/Dockerfile
+    dockerContext: backend/insurance-service
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8081
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false

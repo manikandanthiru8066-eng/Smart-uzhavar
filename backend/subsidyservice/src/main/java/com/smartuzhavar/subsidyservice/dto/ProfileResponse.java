@@ -9,6 +9,7 @@ public class ProfileResponse {
     private String fullName;
     private String email;
     private String phoneNumber;
+    private String role = "FARMER";
 
     // Legacy fields for primary crop compatibility
     private String districtName;
@@ -27,10 +28,16 @@ public class ProfileResponse {
 
     public ProfileResponse(String username, String fullName, String email, String phoneNumber, 
                            List<CropProfileDto> crops) {
+        this(username, fullName, email, phoneNumber, "FARMER", crops);
+    }
+
+    public ProfileResponse(String username, String fullName, String email, String phoneNumber, 
+                           String role, List<CropProfileDto> crops) {
         this.username = username;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.role = role != null ? role : "FARMER";
         if (crops != null) {
             this.crops = crops;
             if (!crops.isEmpty()) {
@@ -149,5 +156,13 @@ public class ProfileResponse {
 
     public void setCrops(List<CropProfileDto> crops) {
         this.crops = crops;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

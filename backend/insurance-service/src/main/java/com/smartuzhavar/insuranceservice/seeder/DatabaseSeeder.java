@@ -18,6 +18,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -61,6 +62,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedDistricts();
         seedTalukBlockHierarchy();
         seedInsuranceSchemes();
+        seedInsuranceVerificationDates();
         syncSequences();
     }
 
@@ -367,6 +369,25 @@ public class DatabaseSeeder implements CommandLineRunner {
             log.info("Successfully seeded/synced {} insurance schemes into insurance-service.", schemes.size());
         } catch (Exception e) {
             log.error("Error reading or seeding insurance schemes: {}", e.getMessage(), e);
+        }
+    }
+
+    private void seedInsuranceVerificationDates() {
+        List<InsuranceScheme> schemes = insuranceSchemeRepository.findAll();
+        if (!schemes.isEmpty()) {
+            LocalDate today = LocalDate.now();
+            for (int i = 0; i < schemes.size(); i++) {
+                InsuranceScheme s = schemes.get(i);
+                if (s.getLastVerifiedDate() == null) {
+                    if (i < 2) {
+                        s.setLastVerifiedDate(today.minusDays(10 * (i + 1)));
+                    } else {
+                        s.setLastVerifiedDate(today.minusDays(100 + (i * 10)));
+                    }
+                    insuranceSchemeRepository.save(s);
+                }
+            }
+            log.info("Baseline lastVerifiedDates initialized for insurance schemes.");
         }
     }
 }

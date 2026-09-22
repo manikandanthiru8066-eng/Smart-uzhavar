@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { subsidyApi } from '../api/client';
 import { useAuth, FarmerCropItem } from '../context/AuthContext';
 import { Info, FileText, ExternalLink, MapPin, Search, Sprout } from 'lucide-react';
+import { NearestOfficeCard } from '../components/NearestOfficeCard';
 
 interface SubsidyItem {
   id: number;
@@ -14,6 +15,7 @@ interface SubsidyItem {
   applicableCropsTa?: string;
   applicableDistricts?: string;
   subsidyAmount?: string;
+  sourceUrl?: string;
   matchScore?: number;
   matchReasons?: string[];
 }
@@ -157,6 +159,13 @@ export const SubsidyPage: React.FC = () => {
                 </span>
               </div>
 
+              {/* Nearest Agriculture Office Card */}
+              <NearestOfficeCard
+                blockId={cropItem.blockId}
+                blockName={cropItem.block}
+                districtName={cropItem.districtName}
+              />
+
               {group.schemes.map((scheme, idx) => (
                 <div key={scheme.id || idx} className="card rec-card mb-4">
                   <div className="rec-top">
@@ -208,12 +217,12 @@ export const SubsidyPage: React.FC = () => {
                       <p><strong>Documents Required:</strong> Chitta/Adangal, Aadhaar Card, Bank Passbook, Passport Photo</p>
                       <div className="flex gap-2 pt-1">
                         <a
-                          href="https://tntagrisnet.tn.gov.in"
+                          href={scheme.sourceUrl || "https://www.tnagrisnet.tn.gov.in"}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-primary btn-sm text-xs flex items-center gap-1"
                         >
-                          <ExternalLink size={12} /> Apply on TN AG RISNET
+                          <ExternalLink size={12} /> {scheme.sourceUrl ? `Official Scheme Portal` : `Apply on TN Agrisnet`}
                         </a>
                       </div>
                     </div>
@@ -226,6 +235,13 @@ export const SubsidyPage: React.FC = () => {
       ) : (
         /* Fallback single list if zero crops */
         <div className="mb-6">
+          {(profile?.blockId || profile?.block) && (
+            <NearestOfficeCard
+              blockId={profile.blockId}
+              blockName={profile.block}
+              districtName={profile.district}
+            />
+          )}
           <h3 className="text-sm font-semibold mb-3">{t('recommendedForYou')}</h3>
           {fallbackRecommended.map((scheme, idx) => (
             <div key={scheme.id || idx} className="card rec-card mb-4">

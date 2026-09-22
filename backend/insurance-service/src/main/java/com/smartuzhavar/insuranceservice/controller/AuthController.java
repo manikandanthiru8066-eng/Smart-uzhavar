@@ -113,7 +113,12 @@ public class AuthController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = tokenProvider.generateToken(loginRequest.getUsername());
-        return ResponseEntity.ok(new AuthResponse(jwt, loginRequest.getUsername()));
+
+        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(loginRequest.getUsername())
+                .orElseGet(() -> farmerRepository.findByUsername(loginRequest.getUsername()).orElse(null));
+        String role = (farmer != null && farmer.getRole() != null) ? farmer.getRole().trim().toUpperCase() : "FARMER";
+
+        String jwt = tokenProvider.generateToken(loginRequest.getUsername(), role);
+        return ResponseEntity.ok(new AuthResponse(jwt, loginRequest.getUsername(), role));
     }
 }

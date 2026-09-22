@@ -17,7 +17,9 @@ import {
   LogOut,
   Menu,
   X,
+  ShieldAlert,
 } from 'lucide-react';
+import { fetchAllAdminSchemes, isSchemeUpToDate } from '../utils/schemeUtils';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -32,15 +34,17 @@ const pageTitles: Record<string, { titleKey: string; subKey: string }> = {
   '/profile': { titleKey: 'navProfile', subKey: 'subProfile' },
   '/notifications': { titleKey: 'navNotifications', subKey: 'subNotifications' },
   '/settings': { titleKey: 'navSettings', subKey: 'subSettings' },
+  '/admin': { titleKey: 'navAdmin', subKey: 'subAdmin' },
 };
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, username, logout } = useAuth();
+  const { profile, username, isAdmin, logout } = useAuth();
   const [isDark, setIsDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [staleSchemeCount, setStaleSchemeCount] = useState<number>(0);
 
   const displayName = profile?.fullName || profile?.username || username || 'Farmer';
   const initialLetter = displayName.charAt(0).toUpperCase();
@@ -57,6 +61,18 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Check scheme staleness count if user is admin
+  useEffect(() => {
+    if (isAdmin) {
+      fetchAllAdminSchemes()
+        .then((schemes) => {
+          const stale = schemes.filter((s) => !isSchemeUpToDate(s.lastVerifiedDate)).length;
+          setStaleSchemeCount(stale);
+        })
+        .catch(() => {});
+    }
+  }, [isAdmin, location.pathname]);
 
   useEffect(() => {
     if (isDark) {
@@ -187,6 +203,23 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             <Settings />
             <span className="lbl">{t('navSettings')}</span>
           </NavLink>
+
+          {isAdmin && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `side-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <ShieldAlert className="text-amber-500" />
+              <span className="lbl font-semibold">{t('navAdmin')}</span>
+              {staleSchemeCount > 0 && (
+                <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-black bg-red-500 text-white">
+                  {staleSchemeCount}
+                </span>
+              )}
+            </NavLink>
+          )}
         </nav>
 
         <div className="side-foot whitespace-pre-line mt-auto">
@@ -248,6 +281,26 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             </button>
           </div>
         </header>
+
+        {/* Staleness Check Banner for Admins */}
+        {isAdmin && staleSchemeCount > 0 && location.pathname !== '/admin' && (
+          <div className="mx-4 sm:mx-6 mt-4 p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-900 dark:text-amber-200 shadow-sm animate-fade-in">
+            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold">
+              <span className="p-1.5 bg-amber-500 text-white rounded-lg shrink-0">
+                <ShieldAlert size={16} />
+              </span>
+              <span>
+                <strong>{staleSchemeCount} {staleSchemeCount === 1 ? 'scheme needs' : 'schemes need'} review:</strong> Scheme data has not been verified within the last 90 days.
+              </span>
+            </div>
+            <NavLink
+              to="/admin?filter=needs-review"
+              className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-sm shrink-0 self-start sm:self-auto"
+            >
+              Review Schemes &rarr;
+            </NavLink>
+          </div>
+        )}
 
         {/* Page Content */}
         <main className="page-content">

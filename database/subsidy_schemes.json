@@ -7,7 +7,8 @@
     "applicableCrops": "All",
     "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
-    "subsidyAmount": "₹6,000/year"
+    "subsidyAmount": "₹6,000/year",
+    "sourceUrl": "https://pmkisan.gov.in/"
   },
   {
     "name": "Sub-Mission on Agricultural Mechanization (SMAM)",
@@ -17,7 +18,8 @@
     "applicableCrops": "All",
     "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
-    "subsidyAmount": "Varies by machinery type"
+    "subsidyAmount": "Varies by machinery type",
+    "sourceUrl": "https://agrimachinery.nic.in/"
   },
   {
     "name": "Per Drop More Crop – Micro Irrigation (PMKSY-MI)",
@@ -27,7 +29,8 @@
     "applicableCrops": "Horticulture, Sugarcane, Cotton, Banana",
     "applicableCropsTa": "தோட்டக்கலை, கரும்பு, பருத்தி, வாழை",
     "applicableDistricts": "All",
-    "subsidyAmount": "Varies by category"
+    "subsidyAmount": "Varies by category",
+    "sourceUrl": "https://tnhorticulture.tn.gov.in/"
   },
   {
     "name": "National Food Security Mission (NFSM)",
@@ -37,7 +40,8 @@
     "applicableCrops": "Paddy, Maize, Pulses, Oilseeds, Cotton",
     "applicableCropsTa": "நெல், மக்காச்சோளம், பருப்பு வகைகள், எண்ணெய் வித்துக்கள், பருத்தி",
     "applicableDistricts": "All",
-    "subsidyAmount": "Input subsidies"
+    "subsidyAmount": "Input subsidies",
+    "sourceUrl": "https://nfsm.gov.in/"
   },
   {
     "name": "Soil Health Card Scheme",
@@ -47,7 +51,8 @@
     "applicableCrops": "All",
     "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
-    "subsidyAmount": "Free"
+    "subsidyAmount": "Free",
+    "sourceUrl": "https://soilhealth.dac.gov.in/"
   },
   {
     "name": "Rashtriya Krishi Vikas Yojana (RKVY)",
@@ -57,7 +62,8 @@
     "applicableCrops": "All",
     "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
-    "subsidyAmount": "Flexible funding"
+    "subsidyAmount": "Flexible funding",
+    "sourceUrl": "https://www.tnagrisnet.tn.gov.in/"
   },
   {
     "name": "Paramparagat Krishi Vikas Yojana (PKVY) – Organic Farming",
@@ -67,7 +73,8 @@
     "applicableCrops": "Vegetables, Millets, Pulses",
     "applicableCropsTa": "காய்கறிகள், சிறுதானியங்கள், பருப்பு வகைகள்",
     "applicableDistricts": "All",
-    "subsidyAmount": "Organic farming inputs and certification"
+    "subsidyAmount": "Organic farming inputs and certification",
+    "sourceUrl": "https://pgsindia-ncof.gov.in/"
   },
   {
     "name": "Kisan Credit Card (KCC)",
@@ -77,7 +84,8 @@
     "applicableCrops": "All",
     "applicableCropsTa": "அனைத்தும்",
     "applicableDistricts": "All",
-    "subsidyAmount": "Subsidized credit"
+    "subsidyAmount": "Subsidized credit",
+    "sourceUrl": "https://www.myscheme.gov.in/schemes/kcc"
   },
   {
     "name": "National Bamboo Mission",
@@ -87,7 +95,8 @@
     "applicableCrops": "Bamboo",
     "applicableCropsTa": "மூங்கில்",
     "applicableDistricts": "All",
-    "subsidyAmount": "Plantation support"
+    "subsidyAmount": "Plantation support",
+    "sourceUrl": "https://tnhorticulture.tn.gov.in/"
   },
   {
     "name": "Tamil Nadu Mission on Sustainable Dryland Agriculture (TNMSDA)",
@@ -97,6 +106,7 @@
     "applicableCrops": "Millets, Pulses, Oilseeds",
     "applicableCropsTa": "சிறுதானியங்கள், பருப்பு வகைகள், எண்ணெய் வித்துக்கள்",
     "applicableDistricts": "All",
-    "subsidyAmount": "Resilient farming support"
+    "subsidyAmount": "Resilient farming support",
+    "sourceUrl": "https://www.tnagrisnet.tn.gov.in/"
   }
 ]

@@ -82,7 +82,7 @@ public class AuthController {
             throw new IllegalArgumentException("Phone number '" + cleanPhone + "' is already in use.");
         }
 
-        // Creating farmer account (Identity details ONLY, no crop profiles created during signup)
+        // Creating farmer account (Identity details ONLY, public signup is strictly FARMER role)
         Farmer farmer = new Farmer();
         farmer.setUsername(signupRequest.getUsername().trim());
         farmer.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
@@ -90,12 +90,13 @@ public class AuthController {
                 ? signupRequest.getFullName().trim() : signupRequest.getUsername().trim());
         farmer.setEmail(cleanEmail);
         farmer.setPhoneNumber(cleanPhone);
+        farmer.setRole("FARMER");
 
         Farmer savedFarmer = farmerRepository.save(farmer);
 
-        // Generate token
-        String jwt = tokenProvider.generateToken(savedFarmer.getUsername());
-        return ResponseEntity.ok(new AuthResponse(jwt, savedFarmer.getUsername()));
+        // Generate token with FARMER role
+        String jwt = tokenProvider.generateToken(savedFarmer.getUsername(), "FARMER");
+        return ResponseEntity.ok(new AuthResponse(jwt, savedFarmer.getUsername(), "FARMER"));
     }
 
 
@@ -108,15 +109,21 @@ public class AuthController {
             throw new IllegalArgumentException("Password is required");
         }
 
+        String username = loginRequest.getUsername().trim();
+        String password = loginRequest.getPassword().trim();
+
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
+                new UsernamePasswordAuthenticationToken(username, password)
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = tokenProvider.generateToken(loginRequest.getUsername());
-        return ResponseEntity.ok(new AuthResponse(jwt, loginRequest.getUsername()));
+
+        Farmer farmer = farmerRepository.findByUsernameIgnoreCase(username)
+                .orElseGet(() -> farmerRepository.findByUsername(username)
+                        .orElse(null));
+        String role = (farmer != null && farmer.getRole() != null) ? farmer.getRole().trim().toUpperCase() : "FARMER";
+
+        String jwt = tokenProvider.generateToken(username, role);
+        return ResponseEntity.ok(new AuthResponse(jwt, username, role));
     }
 }

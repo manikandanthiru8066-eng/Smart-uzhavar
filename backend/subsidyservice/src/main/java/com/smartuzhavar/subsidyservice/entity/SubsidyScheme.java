@@ -2,6 +2,7 @@ package com.smartuzhavar.subsidyservice.entity;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "subsidy_schemes")
@@ -34,6 +35,12 @@ public class SubsidyScheme {
 
     @Column(name = "subsidy_amount", length = 100)
     private String subsidyAmount;
+
+    @Column(name = "source_url", length = 255)
+    private String sourceUrl;
+
+    @Column(name = "last_verified_date")
+    private LocalDate lastVerifiedDate;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
@@ -119,12 +126,28 @@ public class SubsidyScheme {
         this.subsidyAmount = subsidyAmount;
     }
 
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDate getLastVerifiedDate() {
+        return lastVerifiedDate;
+    }
+
+    public void setLastVerifiedDate(LocalDate lastVerifiedDate) {
+        this.lastVerifiedDate = lastVerifiedDate;
     }
 }
  
