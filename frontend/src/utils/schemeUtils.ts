@@ -24,6 +24,17 @@ export interface UnifiedScheme {
   sumInsuredPerAcre?: number;
 }
 
+export function normalizeSchemeUrl(url?: string | null): string {
+  if (!url || !url.trim()) return 'https://www.tnagrisnet.tn.gov.in';
+  let clean = url.trim();
+  clean = clean.replace(/tntagrisnet\.tn\.gov\.in/gi, 'www.tnagrisnet.tn.gov.in');
+  clean = clean.replace(/^(https?:\/\/)?tnagrisnet\.tn\.gov\.in/gi, 'https://www.tnagrisnet.tn.gov.in');
+  if (!/^https?:\/\//i.test(clean)) {
+    clean = 'https://' + clean;
+  }
+  return clean;
+}
+
 export function isSchemeUpToDate(lastVerifiedDate?: string | null): boolean {
   if (!lastVerifiedDate) return false;
   // Parse date string like '2026-09-19'

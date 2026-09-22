@@ -21,6 +21,7 @@ import {
   isSchemeUpToDate,
   formatVerifiedDate,
   getDaysAgoText,
+  normalizeSchemeUrl,
 } from '../utils/schemeUtils';
 import { SchemeEditModal } from '../components/SchemeEditModal';
 import { SchemeAddModal } from '../components/SchemeAddModal';
@@ -451,7 +452,7 @@ export const AdminDashboardPage: React.FC = () => {
                           <span>{scheme.name}</span>
                           {scheme.sourceUrl && (
                             <a
-                              href={scheme.sourceUrl}
+                              href={normalizeSchemeUrl(scheme.sourceUrl)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-gray-400 hover:text-emerald-600 transition-colors"

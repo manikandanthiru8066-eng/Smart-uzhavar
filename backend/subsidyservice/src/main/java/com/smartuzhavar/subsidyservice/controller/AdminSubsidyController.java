@@ -45,6 +45,7 @@ public class AdminSubsidyController {
 
         // Newly created or verified schemes have lastVerifiedDate set to today
         scheme.setLastVerifiedDate(LocalDate.now());
+        scheme.setSourceUrl(sanitizeSourceUrl(scheme.getSourceUrl()));
         SubsidyScheme saved = subsidySchemeRepository.save(scheme);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
@@ -81,7 +82,7 @@ public class AdminSubsidyController {
             existing.setSubsidyAmount(updateData.getSubsidyAmount().trim());
         }
         if (updateData.getSourceUrl() != null) {
-            existing.setSourceUrl(updateData.getSourceUrl().trim());
+            existing.setSourceUrl(sanitizeSourceUrl(updateData.getSourceUrl()));
         }
 
         // On successful save, automatically set lastVerifiedDate to today's date
@@ -98,5 +99,18 @@ public class AdminSubsidyController {
         }
         subsidySchemeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private String sanitizeSourceUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return null;
+        }
+        String clean = url.trim();
+        clean = clean.replaceAll("(?i)tntagrisnet\\.tn\\.gov\\.in", "www.tnagrisnet.tn.gov.in");
+        clean = clean.replaceAll("(?i)^https?://tnagrisnet\\.tn\\.gov\\.in", "https://www.tnagrisnet.tn.gov.in");
+        if (!clean.matches("(?i)^https?://.*")) {
+            clean = "https://" + clean;
+        }
+        return clean;
     }
 }

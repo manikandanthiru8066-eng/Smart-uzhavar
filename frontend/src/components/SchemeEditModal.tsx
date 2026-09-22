@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, AlertTriangle, Save, ExternalLink } from 'lucide-react';
-import { UnifiedScheme } from '../utils/schemeUtils';
+import { UnifiedScheme, normalizeSchemeUrl } from '../utils/schemeUtils';
 import { subsidyApi, insuranceApi } from '../api/client';
 
 interface SchemeEditModalProps {
@@ -67,7 +67,7 @@ export const SchemeEditModal: React.FC<SchemeEditModalProps> = ({
           applicableCropsTa: formData.applicableCropsTa?.trim() || null,
           applicableDistricts: formData.applicableDistricts.trim(),
           subsidyAmount: formData.subsidyAmount?.trim() || '',
-          sourceUrl: formData.sourceUrl?.trim() || '',
+          sourceUrl: formData.sourceUrl?.trim() ? normalizeSchemeUrl(formData.sourceUrl.trim()) : '',
         });
       } else {
         await insuranceApi.put(`/api/admin/insurance/${scheme.id}`, {
@@ -252,7 +252,7 @@ export const SchemeEditModal: React.FC<SchemeEditModalProps> = ({
                 <label className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                   Source URL
                   {formData.sourceUrl && (
-                    <a href={formData.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                    <a href={normalizeSchemeUrl(formData.sourceUrl)} target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 hover:underline">
                       <ExternalLink size={12} />
                     </a>
                   )}

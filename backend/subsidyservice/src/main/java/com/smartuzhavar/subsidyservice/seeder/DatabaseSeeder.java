@@ -429,7 +429,8 @@ public class DatabaseSeeder implements CommandLineRunner {
         long currentCount = subsidySchemeRepository.count();
         boolean hasMissingTa = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getNameTa() == null);
         boolean hasMissingUrl = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getSourceUrl() == null);
-        if (currentCount == 10 && !hasMissingTa && !hasMissingUrl) {
+        boolean hasTypoUrl = currentCount > 0 && subsidySchemeRepository.findAll().stream().anyMatch(s -> s.getSourceUrl() != null && s.getSourceUrl().contains("tntagrisnet"));
+        if (currentCount == 10 && !hasMissingTa && !hasMissingUrl && !hasTypoUrl) {
             log.info("Subsidy schemes table already has 10 schemes with Tamil translations and source URLs — skipping seed.");
             return;
         }
@@ -459,6 +460,16 @@ public class DatabaseSeeder implements CommandLineRunner {
                     subsidySchemeRepository.save(scheme);
                 }
             }
+
+            // Also auto-correct any existing custom or legacy schemes with the tntagrisnet typo
+            for (SubsidyScheme s : subsidySchemeRepository.findAll()) {
+                if (s.getSourceUrl() != null && s.getSourceUrl().contains("tntagrisnet")) {
+                    s.setSourceUrl(s.getSourceUrl().replace("tntagrisnet.tn.gov.in", "www.tnagrisnet.tn.gov.in"));
+                    subsidySchemeRepository.save(s);
+                    log.info("Auto-corrected typo in subsidy scheme '{}' sourceUrl", s.getName());
+                }
+            }
+
             log.info("Successfully seeded/synced {} subsidy schemes.", schemes.size());
         } catch (IOException e) {
             log.error("Error reading or seeding subsidy schemes: {}", e.getMessage(), e);

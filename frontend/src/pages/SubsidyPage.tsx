@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { subsidyApi } from '../api/client';
 import { useAuth, FarmerCropItem } from '../context/AuthContext';
-import { Info, FileText, ExternalLink, MapPin, Search, Sprout } from 'lucide-react';
+import { Info, FileText, ExternalLink, Search, Sprout } from 'lucide-react';
 import { NearestOfficeCard } from '../components/NearestOfficeCard';
+import { normalizeSchemeUrl } from '../utils/schemeUtils';
 
 interface SubsidyItem {
   id: number;
@@ -20,11 +21,12 @@ interface SubsidyItem {
   matchReasons?: string[];
 }
 
-
 interface CropSubsidyGroup {
   cropProfile: FarmerCropItem;
   schemes: SubsidyItem[];
 }
+
+export const getValidSchemeUrl = normalizeSchemeUrl;
 
 export const SubsidyPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -217,7 +219,7 @@ export const SubsidyPage: React.FC = () => {
                       <p><strong>Documents Required:</strong> Chitta/Adangal, Aadhaar Card, Bank Passbook, Passport Photo</p>
                       <div className="flex gap-2 pt-1">
                         <a
-                          href={scheme.sourceUrl || "https://www.tnagrisnet.tn.gov.in"}
+                          href={getValidSchemeUrl(scheme.sourceUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-primary btn-sm text-xs flex items-center gap-1"
@@ -262,6 +264,16 @@ export const SubsidyPage: React.FC = () => {
                 )}
               </div>
               <p className="rec-desc">{(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}</p>
+              <div className="flex gap-2 pt-2">
+                <a
+                  href={getValidSchemeUrl(scheme.sourceUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary btn-sm text-xs flex items-center gap-1 inline-flex"
+                >
+                  <ExternalLink size={12} /> {scheme.sourceUrl ? 'Official Scheme Portal' : 'Apply on TN Agrisnet'}
+                </a>
+              </div>
             </div>
           ))}
         </div>
@@ -317,9 +329,19 @@ export const SubsidyPage: React.FC = () => {
                   )}
                 </div>
                 <p className="text-xs text-gray-600 mb-2">{(isTa && scheme.descriptionTa) ? scheme.descriptionTa : scheme.description}</p>
-                <div className="flex gap-2 text-xs text-gray-500">
-                  <span>🌾 {scheme.applicableCrops || 'All Crops'}</span>
-                  <span>📍 {scheme.applicableDistricts || 'All Districts'}</span>
+                <div className="flex justify-between items-center text-xs text-gray-500 pt-1">
+                  <div className="flex gap-2">
+                    <span>🌾 {scheme.applicableCrops || 'All Crops'}</span>
+                    <span>📍 {scheme.applicableDistricts || 'All Districts'}</span>
+                  </div>
+                  <a
+                    href={getValidSchemeUrl(scheme.sourceUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-700 hover:text-emerald-800 font-semibold flex items-center gap-1 hover:underline ml-auto"
+                  >
+                    <ExternalLink size={11} /> {scheme.sourceUrl ? 'Official Portal' : 'Apply on TN Agrisnet'}
+                  </a>
                 </div>
               </div>
             ))}

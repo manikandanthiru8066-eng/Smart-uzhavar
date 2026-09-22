@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Plus, AlertTriangle, CheckCircle } from 'lucide-react';
-import { SchemeCategory } from '../utils/schemeUtils';
+import { SchemeCategory, normalizeSchemeUrl } from '../utils/schemeUtils';
 import { subsidyApi, insuranceApi } from '../api/client';
 
 interface SchemeAddModalProps {
@@ -77,7 +77,7 @@ export const SchemeAddModal: React.FC<SchemeAddModalProps> = ({
           applicableCropsTa: formData.applicableCropsTa.trim() || null,
           applicableDistricts: formData.applicableDistricts.trim(),
           subsidyAmount: formData.subsidyAmount.trim() || null,
-          sourceUrl: formData.sourceUrl.trim() || null,
+          sourceUrl: formData.sourceUrl.trim() ? normalizeSchemeUrl(formData.sourceUrl.trim()) : null,
         });
       } else {
         await insuranceApi.post('/api/admin/insurance', {
