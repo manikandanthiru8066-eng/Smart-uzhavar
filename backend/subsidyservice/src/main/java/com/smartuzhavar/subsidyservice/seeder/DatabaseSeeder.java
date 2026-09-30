@@ -548,12 +548,16 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
     }
 
-    private void seedBlockOffices() {
+    @Transactional
+    public void seedBlockOffices() {
         long currentCount = blockOfficeRepository.count();
-        if (currentCount >= 55) {
-            log.info("Block offices table already seeded ({} records) — skipping.", currentCount);
+        if (currentCount >= 290) {
+            log.info("Block offices table already contains full dataset ({} records) — skipping.", currentCount);
             return;
         }
+
+        log.info("Replacing existing block offices data (current count: {}) with new full dataset...", currentCount);
+        blockOfficeRepository.deleteAll();
 
         InputStream is = openResourceStream("tn_block_office_locations.json");
         if (is == null) {
@@ -589,13 +593,19 @@ public class DatabaseSeeder implements CommandLineRunner {
                         for (JsonNode bNode : blocksNode) {
                             String rawBlockName = bNode.get("block").asText();
                             JsonNode officeNameNode = bNode.get("officeName");
-                            String officeName = (officeNameNode != null && !officeNameNode.isNull()) ? officeNameNode.asText() : null;
+                            String officeName = (officeNameNode != null && !officeNameNode.isNull()) ? officeNameNode.asText().trim() : null;
                             JsonNode addressNode = bNode.get("address");
-                            String address = (addressNode != null && !addressNode.isNull()) ? addressNode.asText() : null;
+                            String address = (addressNode != null && !addressNode.isNull()) ? addressNode.asText().trim() : null;
+                            JsonNode phoneNode = bNode.get("phone");
+                            String phone = (phoneNode != null && !phoneNode.isNull() && !phoneNode.asText().trim().isEmpty()) ? phoneNode.asText().trim() : null;
 
-                            // Only seed verified offices with actual officeName or address
-                            if (officeName == null && address == null) {
+                            // Only seed verified offices with actual officeName, address, or phone
+                            if ((officeName == null || officeName.isEmpty()) && (address == null || address.isEmpty()) && phone == null) {
                                 continue;
+                            }
+
+                            if (officeName == null || officeName.isEmpty()) {
+                                officeName = "Assistant Director of Agriculture, " + rawBlockName;
                             }
 
                             // Match block entity
@@ -609,8 +619,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                                     .findFirst()
                                     .orElse(null);
 
-                            Optional<BlockOffice> existing = blockOfficeRepository.findFirstByDistrictNameIgnoreCaseAndBlockNameIgnoreCase(districtName, rawBlockName);
-                            BlockOffice bo = existing.orElseGet(BlockOffice::new);
+                            BlockOffice bo = new BlockOffice();
                             bo.setBlock(matchedBlock);
                             bo.setDistrictName(districtName);
                             bo.setBlockName(rawBlockName);
@@ -631,12 +640,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                                 bo.setLongitude(null);
                             }
 
-                            JsonNode phoneNode = bNode.get("phone");
-                            if (phoneNode != null && !phoneNode.isNull() && !phoneNode.asText().trim().isEmpty()) {
-                                bo.setPhone(phoneNode.asText().trim());
-                            } else {
-                                bo.setPhone(null);
-                            }
+                            bo.setPhone(phone);
 
                             JsonNode sourceNode = bNode.get("source");
                             bo.setSource((sourceNode != null && !sourceNode.isNull()) ? sourceNode.asText() : null);
@@ -649,7 +653,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         }
                     }
                 }
-                log.info("Successfully seeded {} verified block agriculture offices.", officeCount);
+                log.info("Successfully seeded {} verified block agriculture offices (replaced old partial dataset).", officeCount);
             }
         } catch (Exception e) {
             log.error("Error seeding block offices: {}", e.getMessage(), e);
