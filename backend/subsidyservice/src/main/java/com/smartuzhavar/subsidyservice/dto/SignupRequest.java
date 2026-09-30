@@ -6,6 +6,7 @@ public class SignupRequest {
     private String email;
     private String phoneNumber;
     private String fullName;
+    private String districtName;
 
     public SignupRequest() {}
 
@@ -47,5 +48,13 @@ public class SignupRequest {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getDistrictName() {
+        return districtName;
+    }
+
+    public void setDistrictName(String districtName) {
+        this.districtName = districtName;
     }
 }

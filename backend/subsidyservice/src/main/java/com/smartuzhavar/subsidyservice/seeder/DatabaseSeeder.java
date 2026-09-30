@@ -19,6 +19,7 @@ import com.smartuzhavar.subsidyservice.repository.SubsidySchemeRepository;
 import com.smartuzhavar.subsidyservice.repository.TalukRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,6 +45,12 @@ import jakarta.persistence.PersistenceContext;
 public class DatabaseSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseSeeder.class);
+
+    @Value("${app.admin.personal-username:manikandan_admin}")
+    private String personalAdminUsername;
+
+    @Value("${app.admin.personal-password:ManikandanAdmin2026!}")
+    private String personalAdminPassword;
 
     private final DistrictRepository districtRepository;
     private final TalukRepository talukRepository;
@@ -81,6 +88,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         seedAdminUser();
+        seedPersonalAdminUser();
         seedDistricts();
         seedTalukBlockHierarchy();
         seedDistrictCropStats();
@@ -498,6 +506,25 @@ public class DatabaseSeeder implements CommandLineRunner {
         admin.setPassword(passwordEncoder.encode("AdminPassword123!"));
         farmerRepository.save(admin);
         log.info("Default ADMIN account seeded/verified successfully with role ADMIN (username: admin)");
+    }
+
+    private void seedPersonalAdminUser() {
+        if (personalAdminUsername != null && !personalAdminUsername.trim().isEmpty()) {
+            String cleanUsername = personalAdminUsername.trim();
+            Farmer personalAdmin = farmerRepository.findByUsernameIgnoreCase(cleanUsername)
+                    .orElseGet(() -> {
+                        Farmer f = new Farmer();
+                        f.setUsername(cleanUsername);
+                        f.setFullName("Personal Administrator");
+                        f.setEmail("manikandan.admin@smartuzhavar.gov.in");
+                        f.setPhoneNumber("9876543219");
+                        return f;
+                    });
+            personalAdmin.setRole("ADMIN");
+            personalAdmin.setPassword(passwordEncoder.encode(personalAdminPassword));
+            farmerRepository.save(personalAdmin);
+            log.info("Personal ADMIN account seeded/verified successfully with role ADMIN (username: {})", cleanUsername);
+        }
     }
 
     private void seedSchemeVerificationDates() {

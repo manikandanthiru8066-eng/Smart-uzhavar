@@ -28,6 +28,9 @@ app:
     # 256-bit secret key for signing JWTs (in a real app, load this securely)
     secret: 9a67471b7f1910d2ee81363241b1b8b64e56b8564e56b8564e56b8564e56b856
     expiration-ms: 86400000 # 24 hours
+  admin:
+    personal-username: ${PERSONAL_ADMIN_USERNAME:manikandan_admin}
+    personal-password: ${PERSONAL_ADMIN_PASSWORD:ManikandanAdmin2026!}
 
 logging:
   level:

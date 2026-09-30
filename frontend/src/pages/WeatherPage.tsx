@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { insuranceApi, subsidyApi } from '../api/client';
 import { useAuth, FarmerCropItem } from '../context/AuthContext';
@@ -20,14 +21,10 @@ import {
   Sparkles,
   CheckCircle2,
   ThermometerSun,
+  UserPlus,
+  ArrowRight,
 } from 'lucide-react';
-
-interface DistrictItem {
-  id?: number;
-  name: string;
-  latitude?: number;
-  longitude?: number;
-}
+import { DistrictItem, ALL_TN_DISTRICTS } from '../utils/districtData';
 
 interface ForecastDay {
   date: string;
@@ -57,21 +54,11 @@ interface WeatherData {
   forecast?: ForecastDay[];
 }
 
-const ALL_TN_DISTRICTS: string[] = [
-  'Ariyalur', 'Chengalpattu', 'Chennai', 'Coimbatore', 'Cuddalore',
-  'Dharmapuri', 'Dindigul', 'Erode', 'Kallakurichi', 'Kanchipuram',
-  'Kanyakumari', 'Karur', 'Krishnagiri', 'Madurai', 'Mayiladuthurai',
-  'Nagapattinam', 'Namakkal', 'Nilgiris', 'Perambalur', 'Pudukkottai',
-  'Ramanathapuram', 'Ranipet', 'Salem', 'Sivaganga', 'Tenkasi',
-  'Thanjavur', 'Theni', 'Thoothukudi', 'Tiruchirappalli', 'Tirunelveli',
-  'Tirupathur', 'Tiruppur', 'Tiruvallur', 'Tiruvannamalai', 'Tiruvarur',
-  'Vellore', 'Viluppuram', 'Virudhunagar'
-];
-
 export const WeatherPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isTa = i18n.language === 'ta';
-  const { profile } = useAuth();
+  const navigate = useNavigate();
+  const { profile, updateProfile } = useAuth();
 
   const registeredCrops: FarmerCropItem[] = Array.isArray(profile?.crops) && profile.crops.length > 0
     ? profile.crops
@@ -82,26 +69,21 @@ export const WeatherPage: React.FC = () => {
   const firstCropDistrict = registeredCrops[0]?.districtName || '';
 
   const [districts, setDistricts] = useState<DistrictItem[]>([]);
-  const [selectedDistrict, setSelectedDistrict] = useState<string>(firstCropDistrict || 'Thanjavur');
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(firstCropDistrict);
   const [loading, setLoading] = useState<boolean>(false);
-  const [weather, setWeather] = useState<WeatherData>({
-    district: firstCropDistrict || 'Thanjavur',
-    latitude: 10.7870,
-    longitude: 79.1378,
-    temperatureCelsius: 32.0,
-    humidityPercentage: 65.0,
-    rainfallMm: 0.0,
-    condition: 'Partly Cloudy',
-    conditionTa: 'பகுதி மேகமூட்டம்',
-    windSpeedKmph: 12.0,
-    weatherCode: 2,
-    isLive: true,
-  });
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [savingProfile, setSavingProfile] = useState<boolean>(false);
+  const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
   useEffect(() => {
-    const primaryDist = registeredCrops[0]?.districtName || 'Thanjavur';
-    setSelectedDistrict(primaryDist);
-    fetchWeather(primaryDist);
+    const primaryDist = registeredCrops[0]?.districtName || '';
+    if (primaryDist) {
+      setSelectedDistrict(primaryDist);
+      fetchWeather(primaryDist);
+    } else {
+      setSelectedDistrict('');
+      setWeather(null);
+    }
     fetchDistricts();
   }, [profile]);
 
@@ -151,10 +133,17 @@ export const WeatherPage: React.FC = () => {
     } catch (err) {
       console.error('Failed to fetch weather:', err);
       setWeather((prev) => ({
-        ...prev,
         district: districtName,
+        temperatureCelsius: prev?.temperatureCelsius ?? 31,
+        humidityPercentage: prev?.humidityPercentage ?? 65,
+        rainfallMm: prev?.rainfallMm ?? 0,
+        condition: prev?.condition ?? 'Partly Cloudy',
+        conditionTa: prev?.conditionTa ?? 'பகுதி மேகமூட்டம்',
+        windSpeedKmph: prev?.windSpeedKmph ?? 14,
+        weatherCode: prev?.weatherCode ?? 2,
         isFallback: true,
         isLive: false,
+        forecast: prev?.forecast ?? generateFallbackForecast(),
       }));
     } finally {
       setLoading(false);
@@ -240,12 +229,26 @@ export const WeatherPage: React.FC = () => {
     }
   };
 
+  const handleSaveDistrictToProfile = async () => {
+    if (!selectedDistrict || savingProfile) return;
+    setSavingProfile(true);
+    try {
+      await updateProfile({ districtName: selectedDistrict });
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to save district to profile:', err);
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
   // Dynamic Crop Advisory Rules based on Live Open-Meteo metrics & Forecast
-  const totalForecastRain = weather.forecast?.reduce((acc, curr) => acc + (curr.precipitationMm || 0), 0) || 0;
-  const maxForecastWind = weather.windSpeedKmph || 10;
-  const maxForecastTemp = Math.max(...(weather.forecast?.map(f => f.tempMax) || [weather.temperatureCelsius]));
-  const hasThunderstorm = (weather.weatherCode !== undefined && weather.weatherCode >= 95) ||
-    weather.forecast?.some(f => (f.weatherCode ?? 0) >= 95);
+  const totalForecastRain = weather?.forecast?.reduce((acc, curr) => acc + (curr.precipitationMm || 0), 0) || 0;
+  const maxForecastWind = weather?.windSpeedKmph || 10;
+  const maxForecastTemp = Math.max(...(weather?.forecast?.map(f => f.tempMax) || [weather?.temperatureCelsius || 30]));
+  const hasThunderstorm = (weather?.weatherCode !== undefined && weather.weatherCode >= 95) ||
+    weather?.forecast?.some(f => (f.weatherCode ?? 0) >= 95);
 
   const dynamicAdvisories = [];
 
@@ -260,12 +263,12 @@ export const WeatherPage: React.FC = () => {
     });
   }
 
-  if (weather.rainfallMm > 5 || totalForecastRain > 8) {
+  if ((weather?.rainfallMm ?? 0) > 5 || totalForecastRain > 8) {
     dynamicAdvisories.push({
       type: 'warn',
       icon: <TriangleAlert className="text-amber-600 shrink-0 mt-0.5" size={18} />,
-      titleEn: `Rainfall Advisory (${Math.max(weather.rainfallMm, Math.round(totalForecastRain))} mm expected)`,
-      titleTa: `மழை ஆலோசனை (எதிர்பார்க்கப்படும் மழை அளவு: ${Math.max(weather.rainfallMm, Math.round(totalForecastRain))} மிமீ)`,
+      titleEn: `Rainfall Advisory (${Math.max(weather?.rainfallMm ?? 0, Math.round(totalForecastRain))} mm expected)`,
+      titleTa: `மழை ஆலோசனை (எதிர்பார்க்கப்படும் மழை அளவு: ${Math.max(weather?.rainfallMm ?? 0, Math.round(totalForecastRain))} மிமீ)`,
       textEn: 'Avoid nitrogenous fertilizer broadcast and chemical pesticide spraying. Ensure field drainage channels are cleared to prevent standing water in root zones.',
       textTa: 'உரமிடுதல் மற்றும் பூச்சிக்கொல்லி தெளிப்பதை தள்ளிப்போடவும். பயிர்களின் வேர் அழுகலை தடுக்க வடிகால் வசதிகளை சீரமைக்கவும்.',
     });
@@ -313,7 +316,9 @@ export const WeatherPage: React.FC = () => {
             {t('weatherPageTitle')}
           </h1>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('weatherPageSubPrefix')} <strong className="text-emerald-700 dark:text-emerald-400">{selectedDistrict}</strong>
+            {selectedDistrict
+              ? <>{t('weatherPageSubPrefix')} <strong className="text-emerald-700 dark:text-emerald-400">{selectedDistrict}</strong></>
+              : (isTa ? 'நேரலை வானிலை மற்றும் பயிர் ஆலோசனையைக் காண உங்கள் மாவட்டத்தைத் தேர்ந்தெடுக்கவும்.' : 'Please choose your district to view live weather and crop advisories.')}
           </p>
         </div>
 
@@ -324,68 +329,141 @@ export const WeatherPage: React.FC = () => {
             <span>Open-Meteo Live API</span>
           </div>
 
-          <button
-            onClick={() => fetchWeather(selectedDistrict)}
-            disabled={loading}
-            className="p-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 text-gray-600 dark:text-gray-300 transition shadow-sm disabled:opacity-50"
-            title="Refresh Live Weather"
-          >
-            <RefreshCw size={15} className={loading ? 'animate-spin text-emerald-600' : ''} />
-          </button>
+          {selectedDistrict && (
+            <button
+              onClick={() => fetchWeather(selectedDistrict)}
+              disabled={loading}
+              className="p-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 text-gray-600 dark:text-gray-300 transition shadow-sm disabled:opacity-50"
+              title="Refresh Live Weather"
+            >
+              <RefreshCw size={15} className={loading ? 'animate-spin text-emerald-600' : ''} />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Quick Farmer Crop Districts Selector */}
-      {registeredCrops.length > 0 && (
-        <div className="mb-4 flex items-center gap-2 flex-wrap text-xs">
-          <span className="text-gray-500 font-medium">{isTa ? 'உங்கள் பண்ணை மாவட்டங்கள்:' : 'Your Farm Districts:'}</span>
-          {registeredCrops.map((crop, idx) => {
-            const dName = crop.districtName || 'Thanjavur';
-            const isSelected = dName.toLowerCase() === selectedDistrict.toLowerCase();
-            return (
-              <button
-                key={idx}
-                onClick={() => handleQuickDistrictSelect(dName)}
-                className={`px-3 py-1 rounded-lg font-semibold transition border ${
-                  isSelected
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-emerald-400'
-                }`}
-              >
-                📍 {crop.cropGrown} ({dName})
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {(!selectedDistrict || !weather) ? (
+        /* Empty State: Prompt user to choose their district */
+        <div className="card p-6 sm:p-10 rounded-3xl border border-dashed border-emerald-500/40 bg-surface-2/60 shadow-sm text-center max-w-2xl mx-auto my-8 space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center shadow-sm">
+            <MapPin size={32} />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            {isTa ? 'வானிலை தகவலுக்கு உங்கள் மாவட்டத்தைத் தேர்ந்தெடுக்கவும்' : 'Choose Your District to View Live Weather'}
+          </h2>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 max-w-md mx-auto leading-relaxed">
+            {isTa
+              ? 'தமிழ்நாட்டின் 38 மாவட்டங்களுக்கும் Open-Meteo API வழியாக நேரலை வானிலை, 7-நாள் முன்னறிவிப்பு மற்றும் வேளாண் ஆலோசனைகள் வழங்கப்படுகின்றன. உங்கள் மாவட்டத்தைத் தேர்ந்தெடுத்து துல்லியமான வானிலை தகவல்களைக் காண்க.'
+              : 'Real-time hyperlocal weather, 7-day rainfall forecasts, and agronomy advisories powered by Open-Meteo are available for all 38 Tamil Nadu districts. Please choose your district to begin.'}
+          </p>
 
-      {/* District Info & Geo-Coordinates Card */}
-      <div
-        className="card p-3.5 mb-5 flex items-center justify-between gap-3 text-xs"
-        style={{
-          background: 'var(--amber-soft)',
-          borderColor: 'transparent',
-          color: '#6b4f10',
-        }}
-      >
-        <div className="flex items-center gap-2.5">
-          <Compass size={16} className="shrink-0 text-amber-700" />
-          <span>
-            {isTa ? 'ஹைப்பர்லோகல் வானிலை கணிப்பு: ' : 'Hyperlocal weather forecast for '}
-            <b>{selectedDistrict}</b>
-            {weather.latitude && weather.longitude && (
-              <span className="opacity-80 font-mono ml-1.5">
-                (Lat: {weather.latitude.toFixed(2)}°N, Lng: {weather.longitude.toFixed(2)}°E)
-              </span>
+          <div className="max-w-xs mx-auto space-y-3 pt-2">
+            <select
+              id="choose-district-select"
+              value={selectedDistrict}
+              onChange={handleDistrictChange}
+              className="w-full p-3 rounded-xl border border-emerald-400 dark:border-emerald-700 bg-white dark:bg-gray-800 text-sm font-semibold text-gray-900 dark:text-white outline-none shadow-sm focus:ring-2 focus:ring-emerald-500"
+            >
+              <option value="">{isTa ? '-- மாவட்டத்தைத் தேர்ந்தெடுக்கவும் --' : '-- Choose Your District --'}</option>
+              {districts.map((d) => (
+                <option key={d.id || d.name} value={d.name}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+
+            {loading && (
+              <div className="flex items-center justify-center gap-2 text-xs text-emerald-600 font-semibold py-2">
+                <RefreshCw size={14} className="animate-spin" />
+                <span>{isTa ? 'வானிலை பெறப்படுகிறது...' : 'Fetching live Open-Meteo weather...'}</span>
+              </div>
             )}
-          </span>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => navigate('/profile')}
+                className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center justify-center gap-1 mx-auto"
+              >
+                <UserPlus size={14} />
+                <span>{isTa ? 'விவசாயி சுயவிவரத்தில் பண்ணை விவரங்களை சேர்க்க' : 'Or set farm details in Profile'}</span>
+                <ArrowRight size={12} />
+              </button>
+            </div>
+          </div>
         </div>
-        {weather.cached && (
-          <span className="text-[10px] bg-amber-200/60 px-2 py-0.5 rounded font-medium text-amber-900">
-            {isTa ? 'விரைவு தற்காலிக நினைவகம்' : 'Fast Cached'}
-          </span>
-        )}
-      </div>
+      ) : (
+        <>
+          {/* Quick Farmer Crop Districts Selector */}
+          {registeredCrops.length > 0 && (
+            <div className="mb-4 flex items-center gap-2 flex-wrap text-xs">
+              <span className="text-gray-500 font-medium">{isTa ? 'உங்கள் பண்ணை மாவட்டங்கள்:' : 'Your Farm Districts:'}</span>
+              {registeredCrops.map((crop, idx) => {
+                const dName = crop.districtName || '';
+                if (!dName) return null;
+                const isSelected = dName.toLowerCase() === selectedDistrict.toLowerCase();
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleQuickDistrictSelect(dName)}
+                    className={`px-3 py-1 rounded-lg font-semibold transition border ${
+                      isSelected
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-emerald-400'
+                    }`}
+                  >
+                    📍 {crop.cropGrown} ({dName})
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* District Info & Geo-Coordinates Card */}
+          <div
+            className="card p-3.5 mb-5 flex items-center justify-between gap-3 text-xs"
+            style={{
+              background: 'var(--amber-soft)',
+              borderColor: 'transparent',
+              color: '#6b4f10',
+            }}
+          >
+            <div className="flex items-center gap-2.5">
+              <Compass size={16} className="shrink-0 text-amber-700" />
+              <span>
+                {isTa ? 'ஹைப்பர்லோகல் வானிலை கணிப்பு: ' : 'Hyperlocal weather forecast for '}
+                <b>{selectedDistrict}</b>
+                {weather.latitude && weather.longitude && (
+                  <span className="opacity-80 font-mono ml-1.5">
+                    (Lat: {weather.latitude.toFixed(2)}°N, Lng: {weather.longitude.toFixed(2)}°E)
+                  </span>
+                )}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {weather.cached && (
+                <span className="text-[10px] bg-amber-200/60 px-2 py-0.5 rounded font-medium text-amber-900">
+                  {isTa ? 'விரைவு தற்காலிக நினைவகம்' : 'Fast Cached'}
+                </span>
+              )}
+              {saveSuccess ? (
+                <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+                  <CheckCircle2 size={12} /> {isTa ? 'சுயவிவரத்தில் சேமிக்கப்பட்டது' : 'Saved to Profile'}
+                </span>
+              ) : !firstCropDistrict && (
+                <button
+                  type="button"
+                  onClick={handleSaveDistrictToProfile}
+                  disabled={savingProfile}
+                  className="text-[11px] font-semibold text-emerald-800 bg-emerald-100/80 hover:bg-emerald-200/80 border border-emerald-300 px-2.5 py-0.5 rounded-lg transition flex items-center gap-1"
+                >
+                  <CheckCircle2 size={12} />
+                  <span>{savingProfile ? '...' : (isTa ? 'சுயவிவரத்தில் சேமி' : 'Save as My District')}</span>
+                </button>
+              )}
+            </div>
+          </div>
 
       {/* Weather Hero Banner */}
       <div className="weather-hero relative overflow-hidden">
@@ -538,6 +616,8 @@ export const WeatherPage: React.FC = () => {
           </span>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };

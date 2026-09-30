@@ -4,11 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { subsidyApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import { Sprout, LogIn, UserPlus, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
-
-interface DistrictItem {
-  id: number;
-  name: string;
-}
+import { DistrictItem, getFallbackDistricts } from '../utils/districtData';
 
 // Generate username suggestion from full name
 // e.g. "Manikandan T" → "manikandant", "Ramesh Kumar" → "rameshk"
@@ -71,21 +67,12 @@ export const LoginPage: React.FC = () => {
         const res = await subsidyApi.get<DistrictItem[]>('/api/districts');
         if (Array.isArray(res.data) && res.data.length > 0) {
           setDistricts(res.data);
-          setDistrictName(res.data[0].name);
-          if (res.data.length < 10) {
-            console.warn('[LoginPage] Only', res.data.length, 'districts returned — expected 38.');
-          }
+          // Do NOT auto-set a random district before the user chooses
+        } else {
+          setDistricts(getFallbackDistricts());
         }
       } catch (err) {
-        console.error('[LoginPage] Failed to load districts from API:', err);
-        const fallback = [
-          { id: 1, name: 'Thanjavur' },
-          { id: 2, name: 'Thiruvarur' },
-          { id: 3, name: 'Nagapattinam' },
-          { id: 4, name: 'Tiruchirappalli' },
-        ];
-        setDistricts(fallback);
-        setDistrictName(fallback[0].name);
+        setDistricts(getFallbackDistricts());
       }
     };
     loadDistricts();
@@ -197,6 +184,7 @@ export const LoginPage: React.FC = () => {
         fullName: fullName.trim(),
         email: email.trim() || undefined,
         phoneNumber: phoneNumber || undefined,
+        districtName: districtName.trim() || undefined,
       });
 
       navigate('/', { replace: true });
@@ -477,6 +465,31 @@ export const LoginPage: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
+            </div>
+
+            {/* District Selection (Optional) */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                {t('signupDistrictLabel') || 'District'} <span className="font-normal text-gray-400">({i18n.language === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})</span>
+              </label>
+              <select
+                id="signup-district"
+                value={districtName}
+                onChange={(e) => setDistrictName(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option value="">{i18n.language === 'ta' ? '-- உங்கள் மாவட்டத்தைத் தேர்ந்தெடுக்கவும் (விருப்பத்தேர்வு) --' : '-- Choose your district (Optional) --'}</option>
+                {districts.map((d) => (
+                  <option key={d.id || d.name} value={d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-[11px] text-gray-400">
+                {i18n.language === 'ta'
+                  ? 'நீங்கள் மாவட்டத்தைத் தேர்ந்தெடுக்கும் வரை எந்த சீரற்ற மாவட்ட வானிலையோ தகவலோ காட்டப்படாது.'
+                  : 'No random district weather or schemes will be shown until you choose your district.'}
+              </p>
             </div>
 
             <button

@@ -94,6 +94,17 @@ public class AuthController {
 
         Farmer savedFarmer = farmerRepository.save(farmer);
 
+        if (signupRequest.getDistrictName() != null && !signupRequest.getDistrictName().trim().isEmpty()) {
+            String distName = signupRequest.getDistrictName().trim();
+            districtRepository.findByNameIgnoreCase(distName).ifPresent(district -> {
+                FarmerProfile profile = new FarmerProfile();
+                profile.setFarmer(savedFarmer);
+                profile.setFullName(savedFarmer.getFullName());
+                profile.setDistrict(district);
+                farmerProfileRepository.save(profile);
+            });
+        }
+
         // Generate token with FARMER role
         String jwt = tokenProvider.generateToken(savedFarmer.getUsername(), "FARMER");
         return ResponseEntity.ok(new AuthResponse(jwt, savedFarmer.getUsername(), "FARMER"));

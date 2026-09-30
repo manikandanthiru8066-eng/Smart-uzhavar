@@ -77,12 +77,38 @@ export const DashboardPage: React.FC = () => {
       fetchDashboardData(selectedWeatherDistrict);
     } else {
       setWeatherTemp(null);
-      fetchDashboardData('Thanjavur'); // general background fetch
+      setDistrictCropStats([]);
+      fetchGeneralCounts();
     }
   }, [selectedWeatherDistrict, profile]);
 
+  const fetchGeneralCounts = async () => {
+    try {
+      const res = await subsidyApi.get('/api/subsidies');
+      if (Array.isArray(res.data)) {
+        setSubsidiesCount(res.data.length);
+      }
+    } catch {
+      setSubsidiesCount(0);
+    }
+
+    try {
+      const res = await insuranceApi.get('/api/insurance');
+      if (Array.isArray(res.data)) {
+        setInsuranceCount(res.data.length);
+      }
+    } catch {
+      setInsuranceCount(0);
+    }
+  };
 
   const fetchDashboardData = async (targetDistrict: string) => {
+    if (!targetDistrict) {
+      setWeatherTemp(null);
+      setDistrictCropStats([]);
+      return;
+    }
+
     // 1. Fetch weather for selected district
     try {
       const res = await insuranceApi.get('/api/weather', { params: { district: targetDistrict } });
@@ -90,22 +116,18 @@ export const DashboardPage: React.FC = () => {
         setWeatherTemp(Math.round(res.data.temperatureCelsius));
       }
     } catch {
-      setWeatherTemp(32);
+      setWeatherTemp(null);
     }
 
     // 2. Fetch district crop stats
-    if (targetDistrict) {
-      try {
-        const res = await subsidyApi.get(`/api/districts/name/${encodeURIComponent(targetDistrict)}/crop-stats`);
-        if (Array.isArray(res.data)) {
-          setDistrictCropStats(res.data);
-        } else {
-          setDistrictCropStats([]);
-        }
-      } catch {
+    try {
+      const res = await subsidyApi.get(`/api/districts/name/${encodeURIComponent(targetDistrict)}/crop-stats`);
+      if (Array.isArray(res.data)) {
+        setDistrictCropStats(res.data);
+      } else {
         setDistrictCropStats([]);
       }
-    } else {
+    } catch {
       setDistrictCropStats([]);
     }
 
@@ -116,7 +138,7 @@ export const DashboardPage: React.FC = () => {
         setSubsidiesCount(res.data.length);
       }
     } catch {
-      setSubsidiesCount(2);
+      setSubsidiesCount(0);
     }
 
     // 4. Fetch recommended insurance
@@ -126,7 +148,7 @@ export const DashboardPage: React.FC = () => {
         setInsuranceCount(res.data.length);
       }
     } catch {
-      setInsuranceCount(1);
+      setInsuranceCount(0);
     }
   };
 
@@ -158,9 +180,18 @@ export const DashboardPage: React.FC = () => {
         {/* Main Weather Widget */}
         <div className="weather-mini flex flex-col items-end gap-1">
           <div className="l text-right" style={{ fontSize: '11px', opacity: 0.85 }}>
-            📍 Weather: <strong className="underline">{selectedWeatherDistrict || 'Not Set'}</strong>
+            📍 Weather: <strong className={selectedWeatherDistrict ? "underline" : ""}>{selectedWeatherDistrict || 'District Not Set'}</strong>
           </div>
           <div className="t">{selectedWeatherDistrict && weatherTemp !== null ? `${weatherTemp}°C` : '--'}</div>
+          {!selectedWeatherDistrict && (
+            <button
+              type="button"
+              onClick={() => navigate('/weather')}
+              className="text-[10px] font-bold text-emerald-800 bg-white/95 hover:bg-white px-2 py-0.5 rounded shadow-sm transition cursor-pointer mt-0.5"
+            >
+              Choose District
+            </button>
+          )}
 
           {/* District Switcher for Multi-Crop Farmers */}
           {cropsList.length > 1 && (
@@ -288,7 +319,7 @@ export const DashboardPage: React.FC = () => {
           <h4>{t('modWeatherTitle')}</h4>
           <div className="m-detail">{t('modWeatherDetail')}</div>
           <div className="m-foot">
-            <span className="badge badge-amber">{selectedWeatherDistrict} Forecast</span>
+            <span className="badge badge-amber">{selectedWeatherDistrict ? `${selectedWeatherDistrict} Forecast` : 'Choose District'}</span>
             <span
               className="btn-sm"
               style={{ color: 'var(--emerald-deep)', fontWeight: 700 }}
@@ -348,7 +379,7 @@ export const DashboardPage: React.FC = () => {
           <div className="l">Live Temperature</div>
           <div className="v">{weatherTemp !== null ? `${weatherTemp}°C` : '--'}</div>
           <div className="trend" style={{ color: 'var(--sky)' }}>
-            {selectedWeatherDistrict}
+            {selectedWeatherDistrict || 'Choose District'}
           </div>
         </div>
 

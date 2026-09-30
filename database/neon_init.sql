@@ -66,6 +66,12 @@ VALUES ('admin', '$2a$10$RJNkAGXZirDR7iVsg2h6F.bxbKU91dkXYpv/w6lpXkVAJAwJEQnJe',
 ON CONFLICT (username) DO UPDATE 
 SET role = 'ADMIN', password = '$2a$10$RJNkAGXZirDR7iVsg2h6F.bxbKU91dkXYpv/w6lpXkVAJAwJEQnJe';
 
+-- Ensure personal admin user exists (Credentials: manikandan_admin / ManikandanAdmin2026!)
+INSERT INTO farmers (username, password, full_name, email, phone_number, role)
+VALUES ('manikandan_admin', '$2a$10$u8GH4ZgXbvXZB.Hp5wt44eNnjeVFfAOAFIwXcr67/PA0T3aPWK1gO', 'Personal Administrator', 'manikandan.admin@smartuzhavar.gov.in', '9876543219', 'ADMIN')
+ON CONFLICT (username) DO UPDATE 
+SET role = 'ADMIN', password = '$2a$10$u8GH4ZgXbvXZB.Hp5wt44eNnjeVFfAOAFIwXcr67/PA0T3aPWK1gO';
+
 -- 7. Farmer Profiles table
 CREATE TABLE IF NOT EXISTS farmer_profiles (
     id BIGSERIAL PRIMARY KEY,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { insuranceApi } from '../api/client';
 import { useAuth, FarmerCropItem } from '../context/AuthContext';
@@ -10,8 +11,12 @@ import {
   MapPin,
   Search,
   Sprout,
+  UserPlus,
+  ArrowRight,
+  CheckCircle2,
 } from 'lucide-react';
 import { NearestOfficeCard } from '../components/NearestOfficeCard';
+import { DistrictItem, getFallbackDistricts } from '../utils/districtData';
 
 interface InsuranceSchemeItem {
   id: number;
@@ -37,9 +42,16 @@ interface CropInsuranceGroup {
 export const InsurancePage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isTa = i18n.language === 'ta';
-  const { profile } = useAuth();
+  const navigate = useNavigate();
+  const { profile, updateProfile } = useAuth();
 
   const [cropGroups, setCropGroups] = useState<CropInsuranceGroup[]>([]);
+  const [chosenDistrict, setChosenDistrict] = useState<string>(() => {
+    return profile?.crops?.[0]?.districtName || profile?.districtName || '';
+  });
+  const [districts, setDistricts] = useState<DistrictItem[]>([]);
+  const [savingDistrict, setSavingDistrict] = useState(false);
+  const [savedDistrictSuccess, setSavedDistrictSuccess] = useState(false);
   const [fallbackSchemes, setFallbackSchemes] = useState<InsuranceSchemeItem[]>([]);
   const [allSchemes, setAllSchemes] = useState<InsuranceSchemeItem[]>([]);
   const [showAll, setShowAll] = useState(false);
@@ -54,9 +66,47 @@ export const InsurancePage: React.FC = () => {
   const [estimatedCoverage, setEstimatedCoverage] = useState<number>(100000);
 
   useEffect(() => {
+    const initialDistrict = profile?.crops?.[0]?.districtName || profile?.districtName || '';
+    setChosenDistrict(initialDistrict);
+    fetchDistricts();
     fetchGroupedInsurance();
     fetchAllSchemes();
   }, [profile]);
+
+  const fetchDistricts = async () => {
+    try {
+      const res = await insuranceApi.get<DistrictItem[]>('/api/districts');
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setDistricts(res.data);
+      } else {
+        setDistricts(getFallbackDistricts());
+      }
+    } catch {
+      setDistricts(getFallbackDistricts());
+    }
+  };
+
+  const handleDistrictSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setChosenDistrict(val);
+    if (val && fallbackSchemes.length > 0) {
+      calculateEstimate(selectedSchemeId, calcAcres, calcCrop);
+    }
+  };
+
+  const handleSaveDistrict = async () => {
+    if (!chosenDistrict || savingDistrict) return;
+    setSavingDistrict(true);
+    try {
+      await updateProfile({ districtName: chosenDistrict });
+      setSavedDistrictSuccess(true);
+      setTimeout(() => setSavedDistrictSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to save district in insurance page:', err);
+    } finally {
+      setSavingDistrict(false);
+    }
+  };
 
   const fetchGroupedInsurance = async () => {
     const crops: FarmerCropItem[] = Array.isArray(profile?.crops) ? profile.crops : [];
@@ -277,17 +327,101 @@ export const InsurancePage: React.FC = () => {
             </div>
           );
         })
+      ) : !chosenDistrict ? (
+        /* Empty District State - Prompt User to Choose District */
+        <div className="card p-6 mb-8 border-2 border-emerald-200 bg-white rounded-2xl shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pb-4 border-b border-gray-100">
+            <div className="p-3 bg-emerald-50 text-emerald-700 rounded-2xl shrink-0">
+              <MapPin size={28} />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-gray-900">
+                {isTa ? 'பயிர் காப்பீட்டுத் திட்டங்களைக் காண உங்கள் மாவட்டத்தைத் தேர்வுசெய்யவும்' : 'Choose Your District to View Crop Insurance'}
+              </h3>
+              <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                {isTa
+                  ? 'PMFBY மற்றும் தமிழக அரசின் பயிர் காப்பீட்டு திட்டங்களின் கீழ் காப்பீட்டுக் கட்டணம், அறிவிக்கப்பட்ட பயிர்கள் மற்றும் காப்பீட்டு நிறுவனங்கள் மாவட்டத்திற்கு மாவட்டம் மாறுபடும். உங்கள் மாவட்டத்தைத் தேர்வு செய்யவும்.'
+                  : 'Under PMFBY and Tamil Nadu Crop Insurance, notified crops, premium rates, and implementing insurance companies vary by district. Please select your district.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="relative flex-1">
+              <select
+                value={chosenDistrict}
+                onChange={handleDistrictSelect}
+                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-xs bg-white font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
+              >
+                <option value="">{isTa ? '-- மாவட்டத்தைத் தேர்ந்தெடுக்கவும் --' : '-- Select Your District --'}</option>
+                {(districts.length > 0 ? districts : getFallbackDistricts()).map((d) => (
+                  <option key={d.name} value={d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              onClick={() => navigate('/profile')}
+              className="btn btn-primary btn-sm text-xs flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer py-2.5 px-4"
+            >
+              <UserPlus size={14} /> {isTa ? 'பயிர் விவரங்களை சேர்க்க' : 'Add Farm Crops'} <ArrowRight size={14} />
+            </button>
+          </div>
+        </div>
       ) : (
-        /* Fallback single list if zero crops */
+        /* District is chosen but no specific crop group yet */
         <div className="mb-6">
-          {(profile?.blockId || profile?.block) && (
-            <NearestOfficeCard
-              blockId={profile.blockId}
-              blockName={profile.block}
-              districtName={profile.district}
-            />
-          )}
-          <h3 className="text-sm font-bold text-gray-800 mb-3.5 uppercase tracking-wider">Recommended Insurance Schemes</h3>
+          <div className="p-4 mb-5 bg-emerald-50 border border-emerald-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <MapPin size={18} className="text-emerald-700 shrink-0" />
+              <div>
+                <span className="text-xs text-emerald-800 font-medium">Selected District:</span>
+                <span className="ml-1.5 text-xs font-bold text-emerald-950">{chosenDistrict}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <select
+                value={chosenDistrict}
+                onChange={handleDistrictSelect}
+                className="px-2.5 py-1.5 border border-emerald-300 rounded-xl text-xs bg-white text-emerald-900 font-medium focus:outline-none"
+              >
+                {(districts.length > 0 ? districts : getFallbackDistricts()).map((d) => (
+                  <option key={d.name} value={d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                onClick={handleSaveDistrict}
+                disabled={savingDistrict}
+                className="btn btn-secondary btn-sm text-xs flex items-center gap-1 whitespace-nowrap cursor-pointer"
+              >
+                {savedDistrictSuccess ? (
+                  <>
+                    <CheckCircle2 size={13} className="text-emerald-600" /> {isTa ? 'சேமிக்கப்பட்டது!' : 'Saved!'}
+                  </>
+                ) : (
+                  <>
+                    {savingDistrict ? 'Saving...' : (isTa ? 'சேமி' : 'Save to Profile')}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <NearestOfficeCard
+            blockId={profile?.blockId}
+            blockName={profile?.block}
+            districtName={chosenDistrict}
+          />
+
+          <h3 className="text-sm font-bold text-gray-800 mb-3.5 uppercase tracking-wider">
+            {isTa ? `${chosenDistrict} மாவட்டத்திற்கான பயிர் காப்பீட்டுத் திட்டங்கள்` : `Recommended Insurance Schemes for ${chosenDistrict}`}
+          </h3>
           {fallbackSchemes.map((scheme, idx) => (
             <div key={scheme.id || idx} className="card ins-card mb-4">
               <div className="ins-top flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -297,6 +431,7 @@ export const InsurancePage: React.FC = () => {
                   </h4>
                   <div className="ins-meta mt-2 flex flex-wrap items-center gap-2">
                     <span className="badge badge-sky">{scheme.schemeType?.replace('_', ' ') || 'YIELD_BASED'}</span>
+                    <span className="badge badge-amber">📍 {chosenDistrict}</span>
                   </div>
                 </div>
 
