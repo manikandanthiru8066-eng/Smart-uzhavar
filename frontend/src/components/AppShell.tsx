@@ -18,6 +18,8 @@ import {
   Menu,
   X,
   ShieldAlert,
+  Layers,
+  Users,
 } from 'lucide-react';
 import { fetchAllAdminSchemes, isSchemeUpToDate } from '../utils/schemeUtils';
 
@@ -55,7 +57,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   };
 
   const currentPath = location.pathname;
-  const currentMeta = pageTitles[currentPath] || { titleKey: 'brandName', subKey: 'subDashboard' };
+  let currentMeta = pageTitles[currentPath] || { titleKey: 'brandName', subKey: 'subDashboard' };
+  if (currentPath === '/admin' && location.search.includes('tab=users')) {
+    currentMeta = { titleKey: 'navRegisteredUsers', subKey: 'subAdmin' };
+  } else if (currentPath === '/admin') {
+    currentMeta = { titleKey: 'navAdminSchemes', subKey: 'subAdmin' };
+  }
 
   // Close mobile drawer whenever route changes
   useEffect(() => {
@@ -205,20 +212,36 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           </NavLink>
 
           {isAdmin && (
-            <NavLink
-              to="/admin"
-              className={({ isActive }) =>
-                `side-link ${isActive ? 'active' : ''}`
-              }
-            >
-              <ShieldAlert className="text-amber-500" />
-              <span className="lbl font-semibold">{t('navAdmin')}</span>
-              {staleSchemeCount > 0 && (
-                <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-black bg-red-500 text-white">
-                  {staleSchemeCount}
-                </span>
-              )}
-            </NavLink>
+            <div className="pt-2 mt-2 border-t border-gray-200/70 dark:border-zinc-800 space-y-1">
+              <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
+                {t('navAdmin')}
+              </div>
+              <NavLink
+                to="/admin"
+                end
+                className={({ isActive }) =>
+                  `side-link ${isActive && !location.search.includes('tab=users') ? 'active' : ''}`
+                }
+              >
+                <Layers className="text-emerald-600 dark:text-emerald-400" />
+                <span className="lbl">{t('navAdminSchemes')}</span>
+                {staleSchemeCount > 0 && (
+                  <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-black bg-red-500 text-white">
+                    {staleSchemeCount}
+                  </span>
+                )}
+              </NavLink>
+
+              <NavLink
+                to="/admin?tab=users"
+                className={() =>
+                  `side-link ${location.pathname === '/admin' && location.search.includes('tab=users') ? 'active' : ''}`
+                }
+              >
+                <Users className="text-blue-600 dark:text-blue-400" />
+                <span className="lbl">{t('navRegisteredUsers')}</span>
+              </NavLink>
+            </div>
           )}
         </nav>
 

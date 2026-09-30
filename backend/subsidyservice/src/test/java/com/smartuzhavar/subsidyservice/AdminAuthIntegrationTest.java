@@ -146,4 +146,31 @@ public class AdminAuthIntegrationTest {
         mockMvc.perform(get("/api/admin/subsidies"))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    @DisplayName("7. Admin JWT accesses /api/admin/users and sees total counts and registered user details")
+    void testAdminCanAccessAdminUsers() throws Exception {
+        String adminToken = jwtTokenProvider.generateToken("admin", "ADMIN");
+
+        mockMvc.perform(get("/api/admin/users")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalUsers").value(2))
+                .andExpect(jsonPath("$.totalFarmers").value(1))
+                .andExpect(jsonPath("$.totalAdmins").value(1))
+                .andExpect(jsonPath("$.users").isArray())
+                .andExpect(jsonPath("$.users[0].username").isNotEmpty())
+                .andExpect(jsonPath("$.users[0].password").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("8. Regular Farmer JWT is rejected from /api/admin/users with HTTP 403 Forbidden")
+    void testFarmerRejectedFromAdminUsers() throws Exception {
+        String farmerToken = jwtTokenProvider.generateToken("farmer_test", "FARMER");
+
+        mockMvc.perform(get("/api/admin/users")
+                        .header("Authorization", "Bearer " + farmerToken))
+                .andExpect(status().isForbidden());
+    }
 }
+

@@ -15,6 +15,8 @@ const resources = {
       navNotifications: 'Notifications',
       navSettings: 'Settings',
       navAdmin: 'Admin Portal',
+      navAdminSchemes: 'Schemes Manager',
+      navRegisteredUsers: 'Registered Users',
       sideFoot: 'Smart Uzhavar v2.0\nDecision support only — not a government portal.',
       userNavName: 'Manikandan',
       
@@ -30,6 +32,7 @@ const resources = {
       subAdmin: 'Maintain subsidy & insurance schemes',
 
       // Hero / Landing
+
       heroH1: 'Smart farming starts<br>with <span class="accent">smart decisions</span>',
       heroSub: 'Helping farmers discover personalized subsidies, crop insurance, weather insights and machinery services — matched to your land, your crop, your block.',
       getStarted: 'Get Started',
@@ -228,6 +231,8 @@ const resources = {
       navNotifications: 'அறிவிப்புகள்',
       navSettings: 'அமைப்புகள்',
       navAdmin: 'நிர்வாக தளம்',
+      navAdminSchemes: 'திட்டங்கள் மேலாண்மை',
+      navRegisteredUsers: 'பதிவுசெய்த பயனர்கள்',
       sideFoot: 'ஸ்மார்ட் உழவர் பதிப்பு 2.0\nதீர்மான ஆதரவு மட்டுமே — அரசு போர்டல் அல்ல.',
       userNavName: 'மணிகண்டன்',
 

@@ -14,6 +14,7 @@ import {
   ExternalLink,
   CheckCircle2,
   Clock,
+  Users,
 } from 'lucide-react';
 import {
   UnifiedScheme,
@@ -25,6 +26,8 @@ import {
 } from '../utils/schemeUtils';
 import { SchemeEditModal } from '../components/SchemeEditModal';
 import { SchemeAddModal } from '../components/SchemeAddModal';
+import { RegisteredUsersTab } from '../components/RegisteredUsersTab';
+
 
 export const AdminDashboardPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -118,6 +121,22 @@ export const AdminDashboardPage: React.FC = () => {
     setIsEditModalOpen(true);
   };
 
+  const tabParam = searchParams.get('tab');
+  const activeTab: 'schemes' | 'users' = tabParam === 'users' ? 'users' : 'schemes';
+
+  const handleTabChange = (newTab: 'schemes' | 'users') => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (newTab === 'users') {
+        next.set('tab', 'users');
+        next.delete('filter');
+      } else {
+        next.delete('tab');
+      }
+      return next;
+    });
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in">
       {/* Toast Notification */}
@@ -128,8 +147,50 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* Header & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Segmented Navigation Tabs */}
+      <div className="flex items-center gap-2 p-1.5 bg-gray-100 dark:bg-zinc-800/80 rounded-2xl w-fit border border-gray-200 dark:border-zinc-700 shadow-xs">
+        <button
+          type="button"
+          onClick={() => handleTabChange('schemes')}
+          className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+            activeTab === 'schemes'
+              ? 'bg-white dark:bg-zinc-900 text-emerald-800 dark:text-emerald-400 shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+          }`}
+        >
+          <Layers size={17} />
+          <span>Schemes Management</span>
+          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
+            {schemes.length}
+          </span>
+          {staleCount > 0 && (
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-red-500 text-white">
+              {staleCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTabChange('users')}
+          className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+            activeTab === 'users'
+              ? 'bg-white dark:bg-zinc-900 text-blue-700 dark:text-blue-400 shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+          }`}
+        >
+          <Users size={17} />
+          <span>Registered Users</span>
+        </button>
+      </div>
+
+      {activeTab === 'users' ? (
+        <RegisteredUsersTab />
+      ) : (
+        <>
+          {/* Header & Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
         <div>
           <div className="flex items-center gap-2">
             <span className="p-2 bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
@@ -543,6 +604,8 @@ export const AdminDashboardPage: React.FC = () => {
           </table>
         </div>
       </div>
+        </>
+      )}
 
       {/* Edit Scheme Modal */}
       <SchemeEditModal
