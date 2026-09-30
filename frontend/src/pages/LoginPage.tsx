@@ -327,23 +327,6 @@ export const LoginPage: React.FC = () => {
               <LogIn size={18} />
               {submitting ? t('loginSubmitting') : t('loginSubmitBtn')}
             </button>
-
-            {/* Quick Demo Credentials for Admin / Review */}
-            <div className="pt-2 border-t border-gray-100 flex flex-col items-center gap-1.5 text-center">
-              <span className="text-[11px] text-gray-500 font-medium">Administrator Access Demo</span>
-              <button
-                type="button"
-                id="fill-admin-creds-btn"
-                onClick={() => {
-                  setLoginUsername('admin');
-                  setLoginPassword('AdminPassword123!');
-                  setError(null);
-                }}
-                className="text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
-              >
-                Auto-fill Admin Credentials (admin / AdminPassword123!)
-              </button>
-            </div>
           </form>
         ) : (
           <form id="signup-form" onSubmit={handleSignupSubmit} className="space-y-3">
