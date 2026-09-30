@@ -1,5 +1,18 @@
 import { subsidyApi } from '../api/client';
 
+export interface AdminCropProfile {
+  id?: number;
+  cropGrown?: string | null;
+  district?: string | null;
+  taluk?: string | null;
+  block?: string | null;
+  landSizeAcres?: number | null;
+  landSizeHectares?: number | null;
+  irrigationType?: string | null;
+  cropDurationMonths?: number | null;
+  season?: string | null;
+}
+
 export interface AdminUser {
   id: number;
   username: string;
@@ -13,7 +26,12 @@ export interface AdminUser {
   block?: string | null;
   primaryCrop?: string | null;
   landSizeAcres?: number | null;
+  landSizeHectares?: number | null;
+  irrigationType?: string | null;
+  cropDurationMonths?: number | null;
+  season?: string | null;
   cropProfileCount?: number;
+  crops?: AdminCropProfile[];
 }
 
 export interface AdminUsersSummary {
@@ -47,6 +65,10 @@ export function exportUsersToCSV(users: AdminUser[], filename = 'smart_uzhavar_r
     'Block',
     'Primary Crop',
     'Land Size (Acres)',
+    'Land Size (Hectares)',
+    'Irrigation Type',
+    'Season',
+    'Crop Duration (Months)',
     'Total Crop Profiles',
     'Registered Date'
   ];
@@ -63,7 +85,11 @@ export function exportUsersToCSV(users: AdminUser[], filename = 'smart_uzhavar_r
     `"${(u.block || '').replace(/"/g, '""')}"`,
     `"${(u.primaryCrop || '').replace(/"/g, '""')}"`,
     u.landSizeAcres != null ? u.landSizeAcres : '',
-    u.cropProfileCount ?? 0,
+    u.landSizeHectares != null ? u.landSizeHectares : '',
+    `"${(u.irrigationType || '').replace(/"/g, '""')}"`,
+    `"${(u.season || '').replace(/"/g, '""')}"`,
+    u.cropDurationMonths != null ? u.cropDurationMonths : '',
+    u.cropProfileCount ?? (u.crops ? u.crops.length : 0),
     u.createdAt ? new Date(u.createdAt).toISOString() : ''
   ]);
 

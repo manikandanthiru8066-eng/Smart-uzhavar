@@ -1,5 +1,6 @@
 package com.smartuzhavar.subsidyservice.controller;
 
+import com.smartuzhavar.subsidyservice.dto.AdminCropProfileDto;
 import com.smartuzhavar.subsidyservice.dto.AdminUserDto;
 import com.smartuzhavar.subsidyservice.dto.AdminUsersSummaryResponse;
 import com.smartuzhavar.subsidyservice.entity.Farmer;
@@ -8,6 +9,7 @@ import com.smartuzhavar.subsidyservice.repository.FarmerProfileRepository;
 import com.smartuzhavar.subsidyservice.repository.FarmerRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +34,7 @@ public class AdminUserController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public ResponseEntity<AdminUsersSummaryResponse> getAllRegisteredUsers() {
         List<Farmer> farmers = farmerRepository.findAll();
 
@@ -92,10 +95,36 @@ public class AdminUserController {
                 }
                 dto.setPrimaryCrop(primary.getCropGrown());
                 dto.setLandSizeAcres(primary.getLandSizeAcres());
+                dto.setLandSizeHectares(primary.getLandSizeHectares());
+                dto.setSeason(primary.getSeason());
+                dto.setIrrigationType(primary.getIrrigationType());
+                dto.setCropDurationMonths(primary.getCropDurationMonths());
+
+                List<AdminCropProfileDto> cropDtos = new ArrayList<>();
+                for (FarmerProfile p : userProfiles) {
+                    AdminCropProfileDto cropDto = new AdminCropProfileDto();
+                    cropDto.setId(p.getId());
+                    cropDto.setCropGrown(p.getCropGrown());
+                    if (p.getDistrict() != null) cropDto.setDistrict(p.getDistrict().getName());
+                    if (p.getTaluk() != null) cropDto.setTaluk(p.getTaluk().getName());
+                    if (p.getBlockEntity() != null) {
+                        cropDto.setBlock(p.getBlockEntity().getName());
+                    } else if (p.getBlock() != null) {
+                        cropDto.setBlock(p.getBlock());
+                    }
+                    cropDto.setLandSizeAcres(p.getLandSizeAcres());
+                    cropDto.setLandSizeHectares(p.getLandSizeHectares());
+                    cropDto.setSeason(p.getSeason());
+                    cropDto.setIrrigationType(p.getIrrigationType());
+                    cropDto.setCropDurationMonths(p.getCropDurationMonths());
+                    cropDtos.add(cropDto);
+                }
+                dto.setCrops(cropDtos);
             }
 
             dtos.add(dto);
         }
+
 
         AdminUsersSummaryResponse response = new AdminUsersSummaryResponse();
         response.setTotalUsers(farmers.size());

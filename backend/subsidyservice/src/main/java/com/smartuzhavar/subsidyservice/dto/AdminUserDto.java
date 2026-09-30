@@ -2,6 +2,8 @@ package com.smartuzhavar.subsidyservice.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminUserDto {
     private Long id;
@@ -18,7 +20,14 @@ public class AdminUserDto {
     private String block;
     private String primaryCrop;
     private BigDecimal landSizeAcres;
+    private BigDecimal landSizeHectares;
+    private String season;
+    private String irrigationType;
+    private Integer cropDurationMonths;
     private int cropProfileCount;
+
+    // All crop profiles
+    private List<AdminCropProfileDto> crops = new ArrayList<>();
 
     public AdminUserDto() {}
 
@@ -118,11 +127,51 @@ public class AdminUserDto {
         this.landSizeAcres = landSizeAcres;
     }
 
+    public BigDecimal getLandSizeHectares() {
+        return landSizeHectares;
+    }
+
+    public void setLandSizeHectares(BigDecimal landSizeHectares) {
+        this.landSizeHectares = landSizeHectares;
+    }
+
+    public String getSeason() {
+        return season;
+    }
+
+    public void setSeason(String season) {
+        this.season = season;
+    }
+
+    public String getIrrigationType() {
+        return irrigationType;
+    }
+
+    public void setIrrigationType(String irrigationType) {
+        this.irrigationType = irrigationType;
+    }
+
+    public Integer getCropDurationMonths() {
+        return cropDurationMonths;
+    }
+
+    public void setCropDurationMonths(Integer cropDurationMonths) {
+        this.cropDurationMonths = cropDurationMonths;
+    }
+
     public int getCropProfileCount() {
         return cropProfileCount;
     }
 
     public void setCropProfileCount(int cropProfileCount) {
         this.cropProfileCount = cropProfileCount;
+    }
+
+    public List<AdminCropProfileDto> getCrops() {
+        return crops;
+    }
+
+    public void setCrops(List<AdminCropProfileDto> crops) {
+        this.crops = crops;
     }
 }
