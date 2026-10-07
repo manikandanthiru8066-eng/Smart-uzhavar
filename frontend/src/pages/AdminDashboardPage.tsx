@@ -490,10 +490,29 @@ export const AdminDashboardPage: React.FC = () => {
                   <td colSpan={5} className="px-5 py-12 text-center text-gray-500">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <AlertCircle size={32} className="text-gray-400" />
-                      <p className="font-medium text-gray-700 dark:text-gray-300">No schemes found</p>
-                      <p className="text-xs text-gray-400">
-                        Try changing your filter or search criteria, or click "Add New Scheme".
+                      <p className="font-medium text-gray-700 dark:text-gray-300">No schemes match criteria</p>
+                      <p className="text-xs text-gray-400 max-w-md">
+                        {activeFilter !== 'all' || searchTerm ? (
+                          <span>
+                            No schemes found matching filter "<strong>{activeFilter}</strong>"{searchTerm ? ` and search "${searchTerm}"` : ''}.
+                          </span>
+                        ) : (
+                          'No schemes currently available in the catalog.'
+                        )}
                       </p>
+                      {(activeFilter !== 'all' || searchTerm) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveFilter('all');
+                            setSearchTerm('');
+                            setSearchParams({});
+                          }}
+                          className="mt-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 rounded-xl transition"
+                        >
+                          Reset Filters & View All Schemes ({totalCount})
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
